@@ -6,7 +6,7 @@ using USPSimGame.Services;
 using USPSimGame.Services.Costing;
 using USPSimGame.Services.Layers;
 using USPSimGame.Services.Plans;
-using USPSimGame.Services.Presets;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +33,7 @@ builder.Services.AddSingleton<IPasswordHasher, PasswordHasherService>();
 builder.Services.AddSingleton<IGameSessionNotifierService, GameSessionNotifierService>();
 builder.Services.AddSingleton<ITeamNotifierService, TeamNotifierService>();
 builder.Services.AddSingleton<IPlanNotifierService, PlanNotifierService>();
-builder.Services.AddScoped<IPresetFileService, PresetFileService>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGameSessionService, GameSessionService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
