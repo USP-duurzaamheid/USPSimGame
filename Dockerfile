@@ -1,21 +1,23 @@
 
-# Build stage with .NET 10 SDK
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["USPSimGame.csproj", "."]
-RUN dotnet restore "./USPSimGame.csproj"
+COPY ["Directory.Build.props", "./"]
+COPY ["USPSimGame.sln", "./"]
+COPY ["src/USPSimGame.Domain/USPSimGame.Domain.csproj", "src/USPSimGame.Domain/"]
+COPY ["src/USPSimGame.Application/USPSimGame.Application.csproj", "src/USPSimGame.Application/"]
+COPY ["src/USPSimGame.Infrastructure/USPSimGame.Infrastructure.csproj", "src/USPSimGame.Infrastructure/"]
+COPY ["src/USPSimGame.Web/USPSimGame.Web.csproj", "src/USPSimGame.Web/"]
+RUN dotnet restore "src/USPSimGame.Web/USPSimGame.Web.csproj"
 
-COPY . .
-RUN dotnet publish "./USPSimGame.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+COPY src/ src/
+RUN dotnet publish "src/USPSimGame.Web/USPSimGame.Web.csproj" \
+    -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Final runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
-
 ENV ASPNETCORE_URLS=http://+:5261
 EXPOSE 5261
-
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "USPSimGame.dll"]
+ENTRYPOINT ["dotnet", "USPSimGame.Web.dll"]
