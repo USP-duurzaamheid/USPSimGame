@@ -1,0 +1,28 @@
+services:
+  web:
+    build:
+      target: build
+    working_dir: /src
+    entrypoint: ["dotnet", "watch", "run", "--project", "src/USPSimGame.Web/USPSimGame.Web.csproj", "--urls", "http://+:5261", "--no-launch-profile"]
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    volumes:
+      - .:/src
+      - domain_bin:/src/src/USPSimGame.Domain/bin
+      - domain_obj:/src/src/USPSimGame.Domain/obj
+      - application_bin:/src/src/USPSimGame.Application/bin
+      - application_obj:/src/src/USPSimGame.Application/obj
+      - infrastructure_bin:/src/src/USPSimGame.Infrastructure/bin
+      - infrastructure_obj:/src/src/USPSimGame.Infrastructure/obj
+      - web_bin:/src/src/USPSimGame.Web/bin
+      - web_obj:/src/src/USPSimGame.Web/obj
+
+volumes:
+  domain_bin:
+  domain_obj:
+  application_bin:
+  application_obj:
+  infrastructure_bin:
+  infrastructure_obj:
+  web_bin:
+  web_obj:
