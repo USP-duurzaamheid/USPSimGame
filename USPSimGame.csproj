@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
-    <DefaultItemExcludes>$(DefaultItemExcludes);scratch\**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);scratch\**;USPSimGame.Tests\**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>

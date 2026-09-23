@@ -3,6 +3,9 @@ using USPSimGame.Data;
 using USPSimGame.Data.Entities;
 using USPSimGame.Data.Enums;
 using USPSimGame.Services.Costing;
+using USPSimGame.Services.GameSessions;
+using USPSimGame.Services.Plans;
+using USPSimGame.Services.Teams;
 
 namespace USPSimGame.Services.Simulation;
 
@@ -78,7 +81,7 @@ public class GameLoopBackgroundService : BackgroundService
 
                     var costService = scope.ServiceProvider.GetRequiredService<USPSimGame.Services.Costing.ICostCalculationService>();
                     var teamBudgetService = scope.ServiceProvider.GetRequiredService<USPSimGame.Services.Costing.ITeamBudgetService>();
-                    var teamNotifier = scope.ServiceProvider.GetRequiredService<USPSimGame.Services.ITeamNotifierService>();
+                    var teamNotifier = scope.ServiceProvider.GetRequiredService<ITeamNotifierService>();
 
                     // 2. Automate Plan Lifecycle Transitions
                     var sessionPlans = await context.Plans
