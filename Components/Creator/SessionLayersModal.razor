@@ -1,0 +1,223 @@
+@namespace USPSimGame.Components.Creator
+@using USPSimGame.Data.Entities
+
+<div class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom pb-3">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-layers-half text-primary me-2"></i>Session Layer Configuration
+                    </h5>
+                    <small class="text-muted">Session #@Session.Id - <strong>@Session.Name</strong></small>
+                </div>
+                <button type="button" class="btn-close" @onclick="CloseAsync"></button>
+            </div>
+            <div class="modal-body p-4">
+                @if (IsLoading)
+                {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="text-muted mt-2">Loading session layers...</p>
+                    </div>
+                }
+                else
+                {
+                    <!-- Section 1: Baseline OpenData Map Layers -->
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0">
+                                <i class="bi bi-hdd-stack text-primary me-2"></i>Baseline OpenData Map Layers (@SessionMapLayers.Count)
+                            </h6>
+                        </div>
+
+                        <!-- Attach Map Layer Bar -->
+                        <div class="card border-0 bg-primary-subtle p-3 rounded-3 mb-3">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-12 col-md-8">
+                                    <select class="form-select form-select-sm" @bind="SelectedMapLayerId">
+                                        <option value="0">-- Attach Optional Baseline Map Layer --</option>
+                                        @foreach (var def in AvailableMapDefinitions.Where(d => !SessionMapLayers.Any(l => l.MapLayerDefinitionId == d.Id)))
+                                        {
+                                            <option value="@def.Id">@def.Name (@def.Category)</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <button class="btn btn-sm btn-primary w-100" disabled="@(SelectedMapLayerId == 0 || IsAttachingMapLayer)" @onclick="AttachMapLayerAsync">
+                                        @if (IsAttachingMapLayer)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                            <span>Pre-caching...</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-cloud-download me-1"></i><span>Attach & Pre-cache</span>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!SessionMapLayers.Any())
+                        {
+                            <div class="alert alert-warning border-0 rounded-3 small">
+                                <i class="bi bi-exclamation-triangle me-1"></i>No baseline map layers currently attached to this session.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-column gap-3">
+                                @foreach (var layer in SessionMapLayers)
+                                {
+                                    bool isCustom = (layer.TranslatorTags != layer.LayerDefinition.TranslatorTags || layer.SimulatorTags != layer.LayerDefinition.SimulatorTags);
+
+                                    <div class="card border rounded-3 p-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <span class="badge bg-secondary-subtle text-secondary fw-semibold mb-1 me-1">
+                                                    @layer.LayerDefinition.Category
+                                                </span>
+                                                <h6 class="fw-bold text-dark mb-0">@layer.LayerDefinition.Name</h6>
+                                                <small class="text-muted"><code>@layer.LayerDefinition.Key</code></small>
+                                            </div>
+
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if (isCustom)
+                                                {
+                                                    <span class="badge bg-warning-subtle text-dark border border-warning-subtle px-2 py-1">
+                                                        <i class="bi bi-pencil-fill me-1"></i>Session Override
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                                        <i class="bi bi-link-45deg me-1"></i>Catalog Defaults
+                                                    </span>
+                                                }
+                                                <button class="btn btn-sm btn-outline-danger p-0 px-2 action-btn-small" title="Remove map layer" @onclick="() => RemoveMapLayerAsync(layer.Id)">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-12 col-md-6">
+                                                <label class="form-label text-uppercase fw-bold text-muted small mb-1 tag-label-micro">
+                                                    <i class="bi bi-translate text-primary me-1"></i>Translator Tags
+                                                </label>
+                                                <input type="text" class="form-control form-control-sm font-monospace" @bind="layer.TranslatorTags" />
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <label class="form-label text-uppercase fw-bold text-muted small mb-1 tag-label-micro">
+                                                    <i class="bi bi-cpu text-success me-1"></i>Simulator Tags
+                                                </label>
+                                                <input type="text" class="form-control form-control-sm font-monospace" @bind="layer.SimulatorTags" />
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                            <small class="text-muted payload-info-text">
+                                                <i class="bi bi-hdd me-1"></i>Payload: @(string.IsNullOrEmpty(layer.CachedDataContent) ? "0 bytes" : $"{layer.CachedDataContent.Length / 1024} KB")
+                                            </small>
+
+                                            <div class="d-flex gap-2">
+                                                @if (isCustom)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-link text-secondary p-0 text-decoration-none action-btn-reset" @onclick="() => ResetMapLayerTagsAsync(layer.Id)">
+                                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                                                    </button>
+                                                }
+                                                <button type="button" class="btn btn-sm btn-primary py-0 px-2 action-btn-save" @onclick="() => SaveMapLayerTagsAsync(layer)">
+                                                    <i class="bi bi-check-lg me-1"></i>Save Tags
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Section 2: Plannable Development Layers -->
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0">
+                                <i class="bi bi-pencil-square text-success me-2"></i>Plannable Development Layers (@SessionPlannableLayers.Count)
+                            </h6>
+                        </div>
+
+                        <!-- Attach Plannable Layer Bar -->
+                        <div class="card border-0 bg-success-subtle p-3 rounded-3 mb-3">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-12 col-md-8">
+                                    <select class="form-select form-select-sm" @bind="SelectedPlannableLayerId">
+                                        <option value="0">-- Attach Optional Plannable Layer --</option>
+                                        @foreach (var pDef in AvailablePlannableDefinitions.Where(p => !SessionPlannableLayers.Any(l => l.PlannableLayerDefinitionId == p.Id)))
+                                        {
+                                            <option value="@pDef.Id">@pDef.Name (@pDef.GeometryType - @pDef.Category)</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <button class="btn btn-sm btn-success w-100" disabled="@(SelectedPlannableLayerId == 0 || IsAttachingPlannableLayer)" @onclick="AttachPlannableLayerAsync">
+                                        @if (IsAttachingPlannableLayer)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                            <span>Attaching...</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-plus-lg me-1"></i><span>Attach to Session</span>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!SessionPlannableLayers.Any())
+                        {
+                            <div class="alert alert-info border-0 rounded-3 small">
+                                <i class="bi bi-info-circle me-1"></i>No plannable layers attached to this session. Players will not be able to draw development plans until a plannable layer is attached.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-column gap-3">
+                                @foreach (var pLayer in SessionPlannableLayers)
+                                {
+                                    <div class="card border rounded-3 p-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center text-white" style="background-color: @(string.IsNullOrEmpty(pLayer.PlannableLayerDefinition.DefaultColor) ? "#10b981" : pLayer.PlannableLayerDefinition.DefaultColor); width: 36px; height: 36px;">
+                                                    <i class="bi @(string.IsNullOrEmpty(pLayer.PlannableLayerDefinition.Icon) ? "bi-layers-fill" : pLayer.PlannableLayerDefinition.Icon) small mb-0"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-secondary-subtle text-secondary fw-semibold mb-1 me-1">
+                                                        @pLayer.PlannableLayerDefinition.Category
+                                                    </span>
+                                                    <span class="badge bg-warning-subtle text-dark fw-semibold mb-1">
+                                                        @pLayer.PlannableLayerDefinition.GeometryType
+                                                    </span>
+                                                    <h6 class="fw-bold text-dark mb-0">@pLayer.PlannableLayerDefinition.Name</h6>
+                                                    <small class="text-muted"><code>@pLayer.PlannableLayerDefinition.Key</code></small>
+                                                </div>
+                                            </div>
+
+                                            <button class="btn btn-sm btn-outline-danger p-0 px-2 action-btn-small" title="Remove plannable layer" @onclick="() => RemovePlannableLayerAsync(pLayer.Id)">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="modal-footer border-top pt-3">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" @onclick="CloseAsync">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

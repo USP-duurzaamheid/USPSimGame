@@ -1,0 +1,164 @@
+@namespace USPSimGame.Components.Game
+@using USPSimGame.Data.Enums
+
+<!-- Top-Left Overlay: Session, Player, Team Info & Disconnect -->
+<div class="game-info-overlay lefthandside position-absolute top-0 start-0 m-3 z-3 bg-white p-3 rounded shadow-sm border">
+    <div class="d-flex align-items-center gap-3">
+        <div>
+            <h5 class="mb-0 text-dark fw-bold">@PlayerSessionState.CurrentGameSession?.Name</h5>
+            <small class="text-muted">
+                @if (PlayerSessionState.IsAdmin)
+                {
+                    <span><strong class="text-danger">@PlayerSessionState.CurrentAdminUser?.Username</strong> | </span>
+                    <span class="badge bg-danger"><i class="bi bi-shield-lock-fill me-1"></i>Game Admin</span>
+                }
+                else
+                {
+                    <span><strong class="text-primary">@PlayerSessionState.CurrentPlayerSession?.UserName</strong> | </span>
+                    <span>Team: <span class="badge" style="background-color: @(PlayerSessionState.CurrentTeam?.Color ?? "#3b82f6");">@(PlayerSessionState.CurrentTeam?.Name ?? "Team")</span></span>
+                }
+            </small>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary ms-auto" @onclick="Disconnect">
+            <i class="bi bi-box-arrow-left me-1"></i>Leave Game
+        </button>
+    </div>
+</div>
+
+<!-- Top-Middle Team Budget Widget -->
+@if (PlayerSessionState.CurrentTeam != null)
+{
+    <!-- div class="position-fixed top-0 end-0 m-3 z-3 pointer-events-none" -->
+        <TeamBudgetWidget TeamId="@PlayerSessionState.CurrentTeam.Id" />
+    <!-- /div -->
+}
+
+<!-- Top-Right Overlay: Current Month & Year Display & Game State -->
+<div class="game-date-overlay righthandside position-absolute top-0 end-0 m-3 z-3 bg-white p-3 rounded shadow-sm border">
+    <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 2.5rem; height: 2.5rem;" @onclick="ToggleKpiChartModal" title="View KPI & Investment Points charts">
+            <i class="bi bi-bar-chart-line-fill"></i>
+        </button>
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-calendar-event-fill text-primary fs-4"></i>
+            <div class="text-start">
+                <span class="d-block text-uppercase text-muted fw-bold extra-small">Current Date</span>
+                <span class="fw-bold text-dark fs-5 mb-0 leading-tight">@FormattedGameDate</span>
+            </div>
+        </div>
+        @if (PlayerSessionState.CurrentGameSession != null)
+        {
+            <div class="border-start ps-3 text-center">
+                @if (PlayerSessionState.IsAdmin)
+                {
+                    <button type="button" class="btn p-0 border-0 align-baseline cursor-pointer" @onclick="ToggleStateControlPanel" title="Click to control game session state">
+                        <span class="badge @PlayerSessionState.CurrentGameSession.State.GetGameStateBadgeClass() fs-6 shadow-sm">
+                            @PlayerSessionState.CurrentGameSession.State <i class="bi bi-sliders ms-1"></i>
+                        </span>
+                    </button>
+                }
+                else
+                {
+                    <span class="badge @PlayerSessionState.CurrentGameSession.State.GetGameStateBadgeClass() fs-6">
+                        @PlayerSessionState.CurrentGameSession.State
+                    </span>
+                }
+
+                @if ((PlayerSessionState.CurrentGameSession.State == GameState.Play || PlayerSessionState.CurrentGameSession.State == GameState.Pause) && !string.IsNullOrEmpty(RemainingTimeFormatted))
+                {
+                    <div class="mt-1">
+                        <span class="badge bg-dark text-white font-monospace px-2 py-1 small shadow-sm" title="@(PlayerSessionState.CurrentGameSession.State == GameState.Pause ? "Timer paused" : "Time remaining in month")">
+                            <i class="bi bi-stopwatch me-1 text-warning"></i>@RemainingTimeFormatted
+                        </span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Admin Center Modal: Game State Controls -->
+@if (ShowStateControlPanel && PlayerSessionState.CurrentGameSession != null)
+{
+    <div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 z-3 d-flex align-items-center justify-content-center">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="width: 440px; max-width: calc(100vw - 32px);">
+            <div class="card-header bg-transparent border-bottom p-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders text-primary fs-5"></i>
+                    <h6 class="fw-bold text-dark mb-0">Game State & Timer Control Panel</h6>
+                </div>
+                <button type="button" class="btn-close" @onclick="ToggleStateControlPanel" title="Close panel"></button>
+            </div>
+
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <span class="text-uppercase text-muted fw-bold extra-small d-block mb-1">Current State</span>
+                    <span class="badge @PlayerSessionState.CurrentGameSession.State.GetGameStateBadgeClass() fs-5 px-3 py-2">
+                        @PlayerSessionState.CurrentGameSession.State
+                    </span>
+                </div>
+
+                <div class="bg-light p-3 rounded-3 mb-4 border text-start">
+                    <label class="form-label fw-bold text-dark small mb-2">
+                        <i class="bi bi-stopwatch text-primary me-1"></i>Month Duration in Play Phase
+                    </label>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-4">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white text-muted">Min</span>
+                                <input type="number" class="form-control" min="0" max="60" @bind="DurationMinutes" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white text-muted">Sec</span>
+                                <input type="number" class="form-control" min="0" max="59" step="5" @bind="DurationSeconds" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-sm btn-outline-primary w-100 fw-semibold" @onclick="ApplyDurationAsync">
+                                <i class="bi bi-check2 me-1"></i>Apply
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted extra-small d-block mt-1">Each month will automatically countdown for this duration when in Play state.</small>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    <button type="button" class="btn btn-warning btn-lg rounded-3 py-2 fw-bold d-flex align-items-center justify-content-center gap-2"
+                            @onclick="() => ChangeGameStateAsync(GameState.Pause)"
+                            disabled="@(PlayerSessionState.CurrentGameSession.State == GameState.Pause)">
+                        <i class="bi bi-pause-circle-fill fs-4"></i> Pause Game Session
+                    </button>
+
+                    <button type="button" class="btn btn-success btn-lg rounded-3 py-2 fw-bold d-flex align-items-center justify-content-center gap-2"
+                            @onclick="() => ChangeGameStateAsync(GameState.Play)"
+                            disabled="@(PlayerSessionState.CurrentGameSession.State == GameState.Play)">
+                        <i class="bi bi-play-circle-fill fs-4"></i> Play Game Session
+                    </button>
+
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 mt-2"
+                            @onclick="() => ChangeGameStateAsync(GameState.Setup)"
+                            disabled="@(PlayerSessionState.CurrentGameSession.State == GameState.Setup)">
+                        <i class="bi bi-gear-fill"></i> Reset to Setup Phase
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-footer bg-transparent border-top p-3 text-end">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" @onclick="ToggleStateControlPanel">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- KPI & Investment Points Chart Modal -->
+@if (ShowKpiChartModal && PlayerSessionState.CurrentGameSession != null)
+{
+    <KpiChartModal GameSessionId="@PlayerSessionState.CurrentGameSession.Id"
+                   ScopeTeamId="@(PlayerSessionState.IsAdmin ? (int?)null : PlayerSessionState.CurrentTeam?.Id)"
+                   StartYear="@PlayerSessionState.CurrentGameSession.StartYear"
+                   OnClose="ToggleKpiChartModal" />
+}

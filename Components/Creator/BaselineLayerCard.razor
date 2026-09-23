@@ -1,0 +1,91 @@
+@namespace USPSimGame.Components.Creator
+@using USPSimGame.Data.Entities
+
+@if (Layer != null)
+{
+    <div class="card border-0 shadow-sm rounded-4 h-100 layer-card">
+        <div class="card-body p-4 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <span class="badge bg-secondary-subtle text-secondary fw-semibold mb-2 me-1">
+                        <i class="bi bi-tag-fill me-1"></i>@Layer.Category
+                    </span>
+                    <span class="badge bg-info-subtle text-info fw-semibold mb-2">
+                        <i class="bi bi-file-earmark-code me-1"></i>@Layer.LayerType
+                    </span>
+                    <h4 class="card-title fw-bold text-dark mb-1">@Layer.Name</h4>
+                    <code class="text-muted small">@Layer.Key</code>
+                </div>
+                @if (Layer.IsEnabledByDefault)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+                        <i class="bi bi-check-circle-fill me-1"></i>Default Active
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 rounded-pill">
+                        Optional
+                    </span>
+                }
+            </div>
+
+            <p class="card-text text-muted mb-4 flex-grow-1">
+                @Layer.Description
+            </p>
+
+            <div class="tags-section bg-light p-3 rounded-3 mb-3 border">
+                <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                    <span class="fw-bold text-dark small text-uppercase tags-section-header">
+                        <i class="bi bi-globe me-1 text-primary"></i>Catalog Default Tags
+                    </span>
+                    <button class="btn btn-sm btn-outline-primary py-0 px-2 edit-btn-small" @onclick="HandleEditTagsAsync">
+                        <i class="bi bi-pencil me-1"></i>Edit Catalog Defaults
+                    </button>
+                </div>
+
+                <div class="mb-2">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1 tag-label-micro">
+                        <i class="bi bi-translate me-1 text-primary"></i>Translator Tags
+                    </small>
+                    @if (!string.IsNullOrWhiteSpace(Layer.TranslatorTags))
+                    {
+                        <div class="d-flex flex-wrap gap-1">
+                            @foreach (var tag in Layer.TranslatorTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace tag-badge">
+                                    @tag
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="text-muted small italic tag-empty-text">No default translator tags set</span>
+                    }
+                </div>
+
+                <div>
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1 tag-label-micro">
+                        <i class="bi bi-cpu me-1 text-success"></i>Simulator Tags
+                    </small>
+                    @if (!string.IsNullOrWhiteSpace(Layer.SimulatorTags))
+                    {
+                        <div class="d-flex flex-wrap gap-1">
+                            @foreach (var tag in Layer.SimulatorTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace tag-badge">
+                                    @tag
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="text-muted small italic tag-empty-text">No default simulator tags set</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

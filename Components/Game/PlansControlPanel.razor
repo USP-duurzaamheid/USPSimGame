@@ -1,0 +1,122 @@
+@namespace USPSimGame.Components.Game
+@using USPSimGame.Data.Entities
+@if (!(GameState == GameState.Setup))
+{
+<div class="plans-control-panel-container z-3">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden plans-control-card d-flex flex-column-reverse">
+        <!-- Panel Header -->
+        <div class="card-header bg-white border-top p-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="p-2 rounded-3 bg-success-subtle text-success">
+                    <i class="bi bi-diagram-3-fill h5 mb-0"></i>
+                </span>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">Development Plans</h6>
+                    <small class="text-muted">@Plans.Count Plan(s) Registered</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                @if (!IsAdmin)
+                {
+                    <button class="btn btn-sm btn-success rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center create-plan-btn"
+                            @onclick="TriggerOpenNewPlanAsync"
+                            title="Create New Development Plan">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                }
+                <button class="btn btn-sm btn-light rounded-circle shadow-sm" @onclick="ToggleCollapse" title="@(IsCollapsed ? "Expand panel" : "Collapse panel")">
+                    <i class="bi @(IsCollapsed ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                </button>
+            </div>
+        </div>
+
+        @if (!IsCollapsed)
+        {
+            <div class="card-body p-3 panel-content-body overflow-auto">
+                @if (IsLoading)
+                {
+                    <div class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                        <span class="ms-2 text-muted small">Loading development plans...</span>
+                    </div>
+                }
+                else if (!Plans.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-folder-x display-6 d-block mb-2"></i>
+                        <p class="small mb-2">No development plans registered yet.</p>
+                    </div>
+                }
+                else
+                {
+                    var stateGroups = Enum.GetValues<PlanState>()
+                        .Select(state => new {
+                            State = state,
+                            Plans = Plans.Where(p => p.State == state).ToList()
+                        })
+                        .Where(g => g.Plans.Any())
+                        .ToList();
+
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var group in stateGroups)
+                        {
+                            bool isExpanded = IsStateExpanded(group.State);
+
+                            <div class="state-group-container">
+                                <!-- State Sub-Header with Expand/Collapse Toggle -->
+                                <div class="d-flex align-items-center justify-content-between py-1 px-2 mb-1 bg-light rounded cursor-pointer state-group-header user-select-none"
+                                     @onclick="() => ToggleStateGroup(group.State)">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi @(isExpanded ? "bi-chevron-down" : "bi-chevron-right") small text-muted"></i>
+                                        <span class="fw-bold text-dark micro-text text-uppercase">@group.State</span>
+                                        <span class="badge bg-secondary-subtle text-secondary micro-text rounded-pill">@group.Plans.Count</span>
+                                    </div>
+                                </div>
+
+                                @if (isExpanded)
+                                {
+                                    <div class="d-flex flex-column gap-1 ps-1">
+                                        @foreach (var plan in group.Plans)
+                                        {
+                                            bool isSelected = ActivePlan?.Id == plan.Id;
+                                            bool isLocked = !string.IsNullOrWhiteSpace(plan.LockedBySessionId);
+                                            string teamColor = string.IsNullOrEmpty(plan.Team?.Color) ? "#3b82f6" : plan.Team.Color;
+
+                                            <div class="card border rounded-3 px-2 py-1 plan-item-card cursor-pointer transition-all @(isSelected ? "border-success bg-success-subtle shadow-sm" : "bg-white hover-bg-light")"
+                                                 @onclick="() => SelectPlanAsync(plan)">
+                                                <div class="d-flex align-items-center justify-content-between w-100 gap-2">
+                                                    <!-- 1. Team-Colored Dot or Lock Icon -->
+                                                    <div class="d-flex align-items-center justify-content-center plan-icon-wrapper">
+                                                        @if (isLocked)
+                                                        {
+                                                            <i class="bi bi-lock-fill fs-6" style="color: @teamColor;"
+                                                               title="Locked and currently being edited by @(plan.LockedByUserName ?? "another player")"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="bi bi-circle-fill micro-text" style="color: @teamColor;"
+                                                               title="Proposed by @(plan.Team?.Name ?? "Team")"></i>
+                                                        }
+                                                    </div>
+
+                                                    <!-- 2. Plan Name -->
+                                                    <span class="fw-bold text-dark small text-truncate flex-grow-1" title="@plan.Name">@plan.Name</span>
+
+                                                    <!-- 3. Target Date -->
+                                                    <small class="text-muted fw-semibold micro-text text-nowrap">
+                                                        @FormatMonthYear(plan.StartMonth)
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+}

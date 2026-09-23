@@ -6,8 +6,6 @@
 **/obj
 **/out
 scratch/
-tests/
-docs/
 *.zip
 *.shp
 *.dbf

@@ -1,0 +1,216 @@
+@namespace USPSimGame.Components.Game
+@using USPSimGame.Data.Entities
+@using USPSimGame.Data.Models
+@using USPSimGame.Services.Layers
+
+<div class="map-control-panel-container z-3">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden map-control-card d-flex flex-column-reverse">
+        <!-- Panel Header -->
+        <div class="card-header bg-white border-top p-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="p-2 rounded-3 bg-primary-subtle text-primary">
+                    <i class="bi bi-layers-half h5 mb-0"></i>
+                </span>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">Map Layers & Legend</h6>
+                    <small class="text-muted">@VisibleCount / @TotalLayersCount Visible</small>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-light rounded-circle shadow-sm" @onclick="ToggleCollapse" title="@(IsCollapsed ? "Expand panel" : "Collapse panel")">
+                <i class="bi @(IsCollapsed ? "bi-chevron-up" : "bi-chevron-down")"></i>
+            </button>
+        </div>
+
+        @if (!IsCollapsed)
+        {
+            <!-- Panel Nav Tabs -->
+            <div class="px-3 pt-2 bg-light border-bottom">
+                <ul class="nav nav-tabs nav-fill border-0 small">
+                    <li class="nav-item">
+                        <button class="nav-link py-2 fw-semibold @(ActiveTab == "layers" ? "active text-primary" : "text-muted")" @onclick='() => ActiveTab = "layers"'>
+                            <i class="bi bi-layers me-1"></i>Layers (@TotalLayersCount)
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link py-2 fw-semibold @(ActiveTab == "legend" ? "active text-primary" : "text-muted")" @onclick='() => ActiveTab = "legend"'>
+                            <i class="bi bi-palette me-1"></i>Legend & Order
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Panel Content -->
+            <div class="card-body p-3 panel-content-body overflow-auto">
+                @if (ActiveTab == "layers")
+                {
+                    <div class="text-uppercase text-muted fw-bold extra-small mb-2 tab-section-title">
+                        Select Layers to Display
+                    </div>
+
+                    <div class="d-flex flex-column gap-2">
+                        <!-- Existing Team Areas Toggle -->
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white layer-item @(ShowTeamAreas ? "border-start border-primary border-3" : "")">
+                            <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0 mb-0">
+                                <label class="form-check-label flex-grow-1 cursor-pointer me-2" for="switch-team-areas">
+                                    <div class="fw-bold text-dark small mb-1">Existing Team Areas</div>
+                                </label>
+                                <input class="form-check-input ms-0 cursor-pointer" type="checkbox" role="switch" id="switch-team-areas" checked="@ShowTeamAreas" @onchange="(e) => ToggleTeamAreasVisibilityAsync((bool)e.Value!)" />
+                            </div>
+                        </div>
+
+                        <!-- Implemented Developments Toggle -->
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white layer-item @(ShowImplementedFeatures ? "border-start border-success border-3" : "")">
+                            <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0 mb-0">
+                                <label class="form-check-label flex-grow-1 cursor-pointer me-2" for="switch-implemented-features">
+                                    <div class="fw-bold text-dark small mb-1">Implemented Developments</div>
+                                </label>
+                                <input class="form-check-input ms-0 cursor-pointer" type="checkbox" role="switch" id="switch-implemented-features" checked="@ShowImplementedFeatures" @onchange="(e) => ToggleImplementedFeaturesVisibilityAsync((bool)e.Value!)" />
+                            </div>
+                        </div>
+
+                        @foreach (var layer in SessionLayers)
+                        {
+                            bool isVisible = LayerVisibilities.TryGetValue(layer.LayerDefinition.Key, out bool vis) ? vis : true;
+
+                            <div class="card border-0 shadow-sm p-3 rounded-3 bg-white layer-item @(isVisible ? "border-start border-primary border-3" : "")">
+                                <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0 mb-0">
+                                    <label class="form-check-label flex-grow-1 cursor-pointer me-2" for="switch-@layer.Id">
+                                        <div class="fw-bold text-dark small mb-1">@layer.LayerDefinition.Name</div>
+                                    </label>
+                                    <input class="form-check-input ms-0 cursor-pointer" type="checkbox" role="switch" id="switch-@layer.Id" checked="@isVisible" @onchange="(e) => ToggleLayerVisibilityAsync(layer.LayerDefinition.Key, (bool)e.Value!)" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else if (ActiveTab == "legend")
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-uppercase text-muted fw-bold extra-small tab-section-title">
+                            Selected Layer Order & Legends
+                        </div>
+                        <small class="text-muted italic extra-small">Drag or use arrows to reorder z-index</small>
+                    </div>
+
+                    <div class="d-flex flex-column gap-2">
+                        @if (!OrderedVisibleLayers.Any())
+                        {
+                            <div class="text-center py-4 text-muted small">
+                                <i class="bi bi-eye-slash d-block display-6 mb-2 text-secondary"></i>
+                                No layers currently selected. Select layers in the <strong>Layers</strong> tab to view legend.
+                            </div>
+                        }
+                        @for (int index = 0; index < OrderedVisibleLayers.Count; index++)
+                        {
+                            var item = OrderedVisibleLayers[index];
+                            int currentIndex = index;
+
+                            <div class="card border rounded-3 bg-white p-3 shadow-sm legend-card"
+                                    draggable="true"
+                                    @ondragstart="() => HandleDragStart(currentIndex)"
+                                    @ondragover:preventDefault
+                                    @ondrop="() => HandleDropAsync(currentIndex)">
+
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-grip-vertical text-muted cursor-grab fs-5"></i>
+                                        <span class="badge bg-primary-subtle text-primary rounded-circle layer-badge-number">
+                                            @(OrderedVisibleLayers.Count - index)
+                                        </span>
+                                        <strong class="text-dark small">@item.Name</strong>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-light btn-sm py-0 px-1 border" disabled="@(currentIndex == 0)" @onclick="() => MoveLayerUpAsync(currentIndex)" title="Move Layer Up (Bring to Front)">
+                                                <i class="bi bi-arrow-up"></i>
+                                            </button>
+                                            <button class="btn btn-light btn-sm py-0 px-1 border" disabled="@(currentIndex == OrderedVisibleLayers.Count - 1)" @onclick="() => MoveLayerDownAsync(currentIndex)" title="Move Layer Down (Send to Back)">
+                                                <i class="bi bi-arrow-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Layer Legend Box -->
+                                @if (item.Key == "team-areas-layer")
+                                {
+                                    <div class="legend-box bg-light p-2 rounded-2 border">
+                                        <div class="d-flex flex-column gap-1 extra-small">
+                                            @foreach (var team in SessionTeams)
+                                            {
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background-color:@team.Color; border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0;"></span>
+                                                    <span class="fw-semibold text-dark">@team.Name</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else if (item.Key == "implemented-features-layer")
+                                {
+                                    <div class="legend-box bg-light p-2 rounded-2 border">
+                                        @if (SessionPlannableLayers.Any())
+                                        {
+                                            <div class="d-flex flex-column gap-1 extra-small">
+                                                @foreach (var pLayer in SessionPlannableLayers)
+                                                {
+                                                    var def = pLayer.PlannableLayerDefinition;
+                                                    if (def == null) continue;
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background-color:@(def.DefaultColor ?? "#10b981"); border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0;"></span>
+                                                        <i class="bi @(def.Icon ?? "bi-layers-fill") micro-text text-muted me-1"></i>
+                                                        <span class="fw-semibold text-dark">@def.Name</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="extra-small text-muted italic">Implemented Development Geometry</div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="legend-box bg-light p-2 rounded-2 border">
+                                        @{
+                                            var legendInfo = MapLayerService.GetLegendForProvider(item.Key);
+                                        }
+                                        @if (legendInfo.Items.Any())
+                                        {
+                                            <div class="d-flex flex-column gap-1 extra-small">
+                                                @foreach (var legendItem in legendInfo.Items)
+                                                {
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        @if (legendItem.Shape == LegendItemShape.Line)
+                                                        {
+                                                            <span style="display:inline-block; width:18px; height:@(legendItem.LineWidthPx.ToString(System.Globalization.CultureInfo.InvariantCulture))px; background-color:@legendItem.Color; @(legendItem.IsDashed ? $"border-bottom: 2px dashed {legendItem.Color}; background-color: transparent;" : "")"></span>
+                                                        }
+                                                        else if (legendItem.Shape == LegendItemShape.Point)
+                                                        {
+                                                            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:@legendItem.Color; border: 1px solid @(legendItem.BorderColor ?? "#ffffff"); flex-shrink: 0;"></span>
+                                                        }
+                                                        else if (legendItem.Shape == LegendItemShape.PolygonSwatch)
+                                                        {
+                                                            <span style="display:inline-block; width:16px; height:12px; border-radius:2px; background-color:@legendItem.Color; border: 1px solid @(legendItem.BorderColor ?? legendItem.Color); flex-shrink: 0;"></span>
+                                                        }
+                                                        <span>@legendItem.Label</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="extra-small text-muted italic">Vector GeoJSON Features</div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

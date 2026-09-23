@@ -1,0 +1,98 @@
+@namespace USPSimGame.Components.Game
+@using USPSimGame.Data.Entities
+
+<div class="team-area-panel-container position-fixed bottom-0 end-0 m-3 z-3">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden team-area-card" style="width: 360px; max-width: calc(100vw - 32px);">
+        <!-- Header -->
+        <div class="card-header bg-transparent border-bottom p-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2 overflow-hidden">
+                <i class="bi bi-geo-alt-fill fs-5" style="color: @(Team?.Color ?? "#3b82f6");"></i>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0 text-truncate">Team Area Definition</h6>
+                    <small class="text-muted">Setup Phase • @(Team?.Name ?? "Team")</small>
+                </div>
+            </div>
+            <span class="badge bg-warning-subtle text-dark border border-warning-subtle micro-text">Setup Phase</span>
+        </div>
+
+        <div class="card-body p-3 overflow-auto" style="max-height: 380px;">
+            @if (ErrorMessage != null)
+            {
+                <div class="alert alert-danger border-0 small rounded-3 p-2 mb-3">
+                    <i class="bi bi-exclamation-circle me-1"></i>@ErrorMessage
+                </div>
+            }
+
+            @if (IsLockedByOther)
+            {
+                <div class="alert alert-warning border-0 rounded-3 p-2 small mb-3 d-flex align-items-center gap-2" title="Team area is locked by @(Team?.LockedByUserName ?? "another team member")">
+                    <i class="bi bi-lock-fill text-warning fs-5"></i>
+                    <div>
+                        <strong class="d-block">Currently Locked</strong>
+                        <span class="micro-text">Being defined by team member <strong>@(Team?.LockedByUserName ?? "another player")</strong></span>
+                    </div>
+                </div>
+            }
+
+            @if (IsEditing)
+            {
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <GeometryDrawControls LayerName="@($"{Team?.Name ?? "Team"} Territory")"
+                                         GeometryType="Polygon"
+                                         Category="Team Area"
+                                         Color="@(Team?.Color ?? "#3b82f6")"
+                                         Icon="bi-geo-alt-fill"
+                                         IsActive="true"
+                                         OnUndoPoint="UndoPointAsync"
+                                         OnRedoPoint="RedoPointAsync"
+                                         OnDeletePoint="DeletePointAsync" />
+
+                    <div class="alert alert-info border-0 rounded-3 small p-2 mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle-fill text-info h6 mb-0"></i>
+                        <span class="micro-text">Click on the map to draw team territory polygons. Double-click to complete each polygon.</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="bg-light p-3 rounded-3 border mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold text-dark small">Defined Territory</span>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle micro-text">
+                            @(string.IsNullOrWhiteSpace(Team?.AreaDefinition) ? "No Polygons Defined" : "Area Defined")
+                        </span>
+                    </div>
+                    <p class="text-muted micro-text mb-0">
+                        Define your team's territory boundaries by placing polygons on the map. 3D buildings inside your territory will automatically adopt your team's color.
+                    </p>
+                </div>
+            }
+        </div>
+
+        <div class="card-footer bg-transparent border-top p-3 d-flex justify-content-end gap-2">
+            @if (IsEditing)
+            {
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" @onclick="CancelAsync" disabled="@IsSaving">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-sm btn-success rounded-pill px-4" @onclick="SaveAsync" disabled="@IsSaving">
+                    @if (IsSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <span><i class="bi bi-check-circle me-1"></i>Save Team Area</span>
+                    }
+                </button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-sm btn-primary rounded-pill px-4" @onclick="StartEditingAsync" disabled="@IsLockedByOther">
+                    <i class="bi bi-pencil-square me-1"></i>Edit Team Area
+                </button>
+            }
+        </div>
+    </div>
+</div>

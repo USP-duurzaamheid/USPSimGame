@@ -1,0 +1,58 @@
+@namespace USPSimGame.Components.Home
+
+<div class="session-selector-container">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-dark mb-2"><i class="bi bi-controller me-2 text-primary"></i>Select Game Session</h3>
+        <p class="text-muted">Choose an active game session to view teams and connect.</p>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading sessions...</span>
+            </div>
+            <p class="text-muted mt-2">Fetching game sessions...</p>
+        </div>
+    }
+    else if (GameSessions == null || !GameSessions.Any())
+    {
+        <div class="card shadow-sm text-center py-5 px-4 empty-sessions-card">
+            <div class="card-body">
+                <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
+                <h4 class="card-title text-secondary">No Active Game Sessions</h4>
+                <p class="card-text text-muted">There are currently no active game sessions hosted on this server.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 justify-content-center">
+            @foreach (var session in GameSessions)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm session-card @(SelectedSessionId == session.Id ? "selected-card" : "")"
+                    @onclick="() => SelectSession(session)">
+                    <div class="card-body d-flex flex-column justify-content-between p-4">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title fw-bold text-dark mb-0">@session.Name</h5>
+                                <span class="badge @session.State.GetGameStateBadgeClass()">@session.State</span>
+                            </div>
+                            <div class="session-details text-muted small mb-3">
+                                <div class="mb-1"><i class="bi bi-geo-alt me-2 text-primary"></i>Center: <code>@session.CenterLatLong</code></div>
+                                <div class="mb-1"><i class="bi bi-calendar3 me-2 text-primary"></i>Start Year: @session.StartYear</div>
+                                <div><i class="bi bi-clock-history me-2 text-primary"></i>Month: @session.CurrentMonth</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn @(SelectedSessionId == session.Id ? "btn-primary" : "btn-outline-primary") w-100 mt-2">
+                            <i class="bi @(SelectedSessionId == session.Id ? "bi-check-circle-fill" : "bi-box-arrow-in-right") me-1"></i>
+                            @(SelectedSessionId == session.Id ? "Selected" : "Select Session")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+</div>

@@ -1,0 +1,140 @@
+@namespace USPSimGame.Components.Game
+
+@if (IsOpen)
+{
+    <div class="plannable-layer-modal-backdrop animate-fade-in" @onclick="Close">
+        <div class="plannable-layer-modal-dialog shadow-lg rounded-4 overflow-hidden border" @onclick:stopPropagation="true">
+            <!-- Header -->
+            <div class="modal-header-custom p-3 text-white d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle p-2 bg-success text-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="bi bi-grid-3x3-gap-fill h5 mb-0"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Development Option Catalog</h5>
+                        <small class="text-black-50">Select a development layer option to draw on the map canvas</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+            </div>
+
+            <!-- Body: Grid of Plannable Layers -->
+            <div class="modal-body-custom p-4 bg-light overflow-y-auto" style="max-height: 70vh;">
+                @if (AvailableLayers == null || !AvailableLayers.Any())
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-layers-half display-4 d-block mb-2 text-secondary"></i>
+                        <p class="mb-0">No plannable development options available for this session.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-3">
+                        @foreach (var layer in AvailableLayers)
+                        {
+                            var def = layer.PlannableLayerDefinition;
+                            if (def == null) continue;
+
+                            bool isSelected = SelectedLayerId == layer.Id;
+                            bool isAlreadyIncluded = IncludedLayerIds.Contains(layer.Id);
+
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden layer-option-card transition-all @(isSelected ? "ring-2 ring-success bg-success-subtle" : "bg-white")">
+                                    <div class="card-body p-3 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <!-- Card Header & Badges -->
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center text-white shadow-sm"
+                                                         style="background-color: @(def.DefaultColor ?? "#3b82f6"); width: 34px; height: 34px;">
+                                                        <i class="bi @(def.Icon ?? "bi-layers-fill") small"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="fw-bold text-dark mb-0 text-truncate" style="max-width: 160px;" title="@def.Name">@def.Name</h6>
+                                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle micro-text">
+                                                            @def.Category
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle micro-text">
+                                                    @GetGeometryTypeDisplay(def.GeometryType)
+                                                </span>
+                                            </div>
+
+                                            <!-- Description -->
+                                            <p class="text-muted small mb-3 line-clamp-2" style="font-size: 0.82rem; min-height: 2.5rem;">
+                                                @(string.IsNullOrWhiteSpace(def.Description) ? "Plannable spatial development option for map integration." : def.Description)
+                                            </p>
+
+                                            <!-- Costing Breakdown Table -->
+                                            <div class="p-2 rounded-2 bg-light border mb-3 overflow-hidden">
+                                                <table class="table table-sm table-borderless micro-text mb-0 align-middle">
+                                                    <tbody>
+                                                        <tr class="border-bottom">
+                                                            <td class="fw-bold text-dark pe-2 align-top" style="width: 25%;">Investment</td>
+                                                            <td class="text-muted pe-1 py-0" style="width: 20%;">Base</td>
+                                                            <td class="fw-bold text-success py-0">@def.BaseInvestmentPoints pts</td>
+                                                        </tr>
+                                                        <tr class="border-bottom">
+                                                            <td></td>
+                                                            <td class="text-muted pe-1 py-0">Addition</td>
+                                                            <td class="fw-bold text-success py-0">@def.InvestmentPointsPerUnit @GetInvestmentUnitDisplay(def.GeometryType)</td>
+                                                        </tr>
+                                                        <tr class="border-bottom">
+                                                            <td class="fw-bold text-dark pe-2 align-top">Expense</td>
+                                                            <td class="text-muted pe-1 py-0">Base</td>
+                                                            <td class="fw-bold text-danger py-0">@def.BaseMonthlyExpensePoints pts / month</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td class="text-muted pe-1 py-0">Addition</td>
+                                                            <td class="fw-bold text-danger py-0">@def.MonthlyExpensePointsPerUnit @GetExpenseUnitDisplay(def.GeometryType)</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- SimulatorTags Badges -->
+                                            @if (!string.IsNullOrWhiteSpace(def.SimulatorTags))
+                                            {
+                                                <div class="d-flex flex-wrap gap-1 mb-3">
+                                                    @foreach (var tag in def.SimulatorTags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                                    {
+                                                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle micro-text">
+                                                            <i class="bi bi-activity me-1"></i>@tag.Trim()
+                                                        </span>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <!-- Select Button -->
+                                        <button type="button" class="btn btn-sm @(isAlreadyIncluded ? "btn-outline-success" : "btn-success") w-100 rounded-pill fw-semibold shadow-sm"
+                                                @onclick="() => SelectLayer(layer.Id)">
+                                            @if (isAlreadyIncluded)
+                                            {
+                                                <span><i class="bi bi-check-circle-fill me-1"></i>Included (Select)</span>
+                                            }
+                                            else
+                                            {
+                                                <span><i class="bi bi-plus-lg me-1"></i>Select & Start Drawing</span>
+                                            }
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer-custom p-3 bg-white border-top d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4" @onclick="Close">
+                    Close Catalog
+                </button>
+            </div>
+        </div>
+    </div>
+}

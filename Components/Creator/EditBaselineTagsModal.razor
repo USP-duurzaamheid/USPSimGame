@@ -1,0 +1,46 @@
+@namespace USPSimGame.Components.Creator
+@using USPSimGame.Data.Entities
+
+@if (IsOpen && Layer != null)
+{
+    <div class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-bottom pb-3">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-sliders text-primary me-2"></i>Edit Catalog Default Tags
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="HandleCloseAsync"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-start gap-2">
+                        <i class="bi bi-info-circle-fill text-info h5 mb-0"></i>
+                        <div class="small">
+                            Editing global default tags for <strong>@Layer.Name</strong>.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small text-uppercase">
+                            <i class="bi bi-translate text-primary me-1"></i>Default Translator Tags
+                        </label>
+                        <input type="text" class="form-control font-monospace" @bind="TranslatorTags" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small text-uppercase">
+                            <i class="bi bi-cpu text-success me-1"></i>Default Simulator Tags
+                        </label>
+                        <input type="text" class="form-control font-monospace" @bind="SimulatorTags" />
+                    </div>
+                </div>
+                <div class="modal-footer border-top pt-3">
+                    <button type="button" class="btn btn-light rounded-pill px-4" @onclick="HandleCloseAsync">Cancel</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" @onclick="HandleSaveAsync">
+                        <i class="bi bi-check-lg me-1"></i>Save Defaults
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

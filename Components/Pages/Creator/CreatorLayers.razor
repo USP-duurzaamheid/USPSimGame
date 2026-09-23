@@ -1,0 +1,111 @@
+@page "/creator/layers"
+@using USPSimGame.Components.Creator
+@using USPSimGame.Data.Entities
+@inject NavigationManager Navigation
+@inject USPSimGame.Services.CreatorAuthState AuthState
+@inject USPSimGame.Services.Layers.IMapLayerService MapLayerService
+@rendermode InteractiveServer
+
+<PageTitle>Map & Plannable Layers - Creator Portal</PageTitle>
+
+<div class="creator-page bg-light min-vh-100 pb-5">
+    <CreatorHeader />
+
+    <div class="container">
+        @if (!AuthState.IsAuthenticated)
+        {
+            <div class="card shadow-sm p-4 text-center border-0 rounded-4">
+                <i class="bi bi-shield-lock display-4 text-secondary mb-3"></i>
+                <h4 class="fw-bold">Access Restricted</h4>
+                <p class="text-muted mb-3">Please log in to access the Creator Portal.</p>
+                <div>
+                    <a href="creator" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Go to Login
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                <div>
+                    <h2 class="fw-bold mb-1 text-dark">
+                        <i class="bi bi-layers-fill text-primary me-2"></i>Global Catalog Management
+                    </h2>
+                    <p class="text-muted mb-0">
+                        Manage baseline OpenData layers and plannable development layers for Game Sessions.
+                    </p>
+                </div>
+                @if (ActiveTab == "plannable")
+                {
+                    <div>
+                        <button class="btn btn-success rounded-pill px-4" @onclick="OpenCreatePlannableModal">
+                            <i class="bi bi-plus-lg me-1"></i>New Plannable Layer
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <!-- Tab Navigation -->
+            <ul class="nav nav-pills mb-4 gap-2 bg-white p-2 rounded-4 shadow-sm border">
+                <li class="nav-item">
+                    <button class="nav-link rounded-pill px-4 @(ActiveTab == "baseline" ? "active" : "")" @onclick='() => SetTab("baseline")'>
+                        <i class="bi bi-hdd-stack me-2"></i>Baseline Map Layers (@LayerDefinitions.Count)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link rounded-pill px-4 @(ActiveTab == "plannable" ? "active" : "")" @onclick='() => SetTab("plannable")'>
+                        <i class="bi bi-pencil-square me-2"></i>Plannable Development Layers (@PlannableDefinitions.Count)
+                    </button>
+                </li>
+            </ul>
+
+            @if (IsLoading)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading catalog...</span>
+                    </div>
+                    <p class="text-muted mt-2">Loading Layer Catalog...</p>
+                </div>
+            }
+            else if (ActiveTab == "baseline")
+            {
+                <!-- Baseline Map Layers Tab -->
+                <div class="row g-4">
+                    @foreach (var layer in LayerDefinitions)
+                    {
+                        <div class="col-12 col-lg-6">
+                            <BaselineLayerCard Layer="@layer" OnEditTags="OpenEditBaselineModal" />
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Plannable Layers Tab -->
+                <div class="row g-4">
+                    @foreach (var pDef in PlannableDefinitions)
+                    {
+                        <div class="col-12 col-lg-6">
+                            <PlannableLayerCard Layer="@pDef" OnEdit="OpenEditPlannableModal" OnDelete="DeletePlannableLayerAsync" />
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Edit Baseline Tags Modal Subcomponent -->
+<EditBaselineTagsModal IsOpen="@ShowEditBaselineModal"
+                       Layer="@EditingBaselineLayer"
+                       OnSave="SaveBaselineTagsAsync"
+                       OnClose="CloseEditBaselineModal" />
+
+<!-- Create / Edit Plannable Layer Modal Subcomponent -->
+<PlannableLayerFormModal IsOpen="@ShowPlannableModal"
+                         IsEditMode="@IsEditingPlannable"
+                         Layer="@EditingPlannableLayer"
+                         OnSave="SavePlannableLayerAsync"
+                         OnClose="ClosePlannableModal" />

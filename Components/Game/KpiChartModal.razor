@@ -1,0 +1,81 @@
+@namespace USPSimGame.Components.Game
+@using USPSimGame.Services.Simulation
+
+<div class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom pb-3">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-bar-chart-line-fill text-primary me-2"></i>KPI Charts
+                    </h5>
+                    <small class="text-muted">Select a dataset to view its history over time</small>
+                </div>
+                <button type="button" class="btn-close" @onclick="CloseAsync"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="border rounded-3 bg-light" style="max-height: 500px; overflow-y: auto;">
+                            @if (IsLoadingDatasets)
+                            {
+                                <div class="text-center py-4">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                    <span class="ms-2 text-muted">Loading datasets...</span>
+                                </div>
+                            }
+                            else if (!AvailableDatasets.Any())
+                            {
+                                <div class="text-center text-muted py-4 px-2 small">
+                                    <i class="bi bi-inbox me-1"></i>No KPI datasets recorded yet.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="list-group list-group-flush">
+                                    @foreach (var option in AvailableDatasets)
+                                    {
+                                        <button type="button"
+                                                class="list-group-item list-group-item-action @(IsSelected(option) ? "active" : "")"
+                                                @onclick="() => SelectDatasetAsync(option)">
+                                            @option.DisplayLabel
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        @if (SelectedOption == null)
+                        {
+                            <div class="text-muted text-center py-5">
+                                <i class="bi bi-cursor-fill me-2"></i>Select a dataset on the left to view its chart.
+                            </div>
+                        }
+                        else if (IsLoadingSeries)
+                        {
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                        }
+                        else if (!HasData)
+                        {
+                            <div class="text-muted text-center py-5">
+                                <i class="bi bi-graph-down me-2"></i>No data recorded yet for this dataset.
+                            </div>
+                        }
+                        <div style="@(ShowChart ? "" : "display:none;")">
+                            <LineChart @ref="lineChart" Width="700" Height="420" />
+                            @if (ShowChart && HasPlanMarkers)
+                            {
+                                <small class="text-muted d-block mt-1">
+                                    <i class="bi bi-info-circle me-1"></i>Red markers indicate months where a plan was implemented — hover over one to see which plan.
+                                </small>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
