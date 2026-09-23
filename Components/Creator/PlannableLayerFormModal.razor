@@ -1,0 +1,124 @@
+@namespace USPSimGame.Components.Creator
+@using USPSimGame.Data.Entities
+
+@if (IsOpen && Layer != null)
+{
+    <div class="modal fade show d-block modal-backdrop-custom" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-bottom pb-3">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-pencil-square text-primary me-2"></i>@(IsEditMode ? "Edit Plannable Layer Definition" : "Create New Plannable Layer")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="HandleCloseAsync"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Layer Key Identifier</label>
+                            <input type="text" class="form-control font-monospace" @bind="Layer.Key" disabled="@IsEditMode" placeholder="e.g. solar-farm" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Display Name</label>
+                            <input type="text" class="form-control" @bind="Layer.Name" placeholder="e.g. Solar Farm Area" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark small">Description</label>
+                            <textarea class="form-control" rows="2" @bind="Layer.Description" placeholder="Description of what players can draw/plan with this layer..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Category</label>
+                            <select class="form-select" @bind="Layer.Category">
+                                @foreach (var cat in Enum.GetValues<MapLayerCategory>())
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Geometry Type</label>
+                            <select class="form-select" @bind="Layer.GeometryType">
+                                @foreach (var gtype in Enum.GetValues<PlannableGeometryType>())
+                                {
+                                    <option value="@gtype">@gtype</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark small">Bootstrap Icon Class</label>
+                            <input type="text" class="form-control font-monospace" @bind="Layer.Icon" placeholder="bi-sun-fill" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark small">Default Color (Hex)</label>
+                            <input type="color" class="form-control form-control-color w-100" @bind="Layer.DefaultColor" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark small">Line Width (px)</label>
+                            <input type="number" step="0.5" class="form-control" @bind="Layer.DefaultLineWidthPx" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small">Base Investment</label>
+                            <input type="number" step="1" min="0" class="form-control" @bind="Layer.BaseInvestmentPoints" placeholder="0.0" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small">Investment / Unit</label>
+                            <input type="number" step="1" min="0" class="form-control" @bind="Layer.InvestmentPointsPerUnit" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small">Base Expense / Mo</label>
+                            <input type="number" step="0.1" min="0" class="form-control" @bind="Layer.BaseMonthlyExpensePoints" placeholder="0.0" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small">Expense / Unit / Mo</label>
+                            <input type="number" step="0.1" min="0" class="form-control" @bind="Layer.MonthlyExpensePointsPerUnit" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Base Construction Time (Months)</label>
+                            <input type="number" step="1" min="0" class="form-control" @bind="Layer.BaseConstructionTimeMonths" placeholder="0" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">
+                                Construction Time Modifier
+                                <small class="text-muted d-block fw-normal">
+                                    @if (Layer.GeometryType == PlannableGeometryType.Point)
+                                    {
+                                        <span>Months per point feature</span>
+                                    }
+                                    else if (Layer.GeometryType == PlannableGeometryType.Line)
+                                    {
+                                        <span>Months per meter of line length</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Months per m² of surface area</span>
+                                    }
+                                </small>
+                            </label>
+                            <input type="number" step="0.0001" min="0" class="form-control" @bind="Layer.ConstructionTimeModifierPerUnit" placeholder="0.0" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Translator Tags</label>
+                            <input type="text" class="form-control font-monospace" @bind="Layer.TranslatorTags" placeholder="e.g. solar_pv, area" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Simulator Tags</label>
+                            <input type="text" class="form-control font-monospace" @bind="Layer.SimulatorTags" placeholder="e.g. pv_generation, grid_supply" />
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="enabledByDefault" @bind="Layer.IsEnabledByDefault" />
+                                <label class="form-check-label fw-semibold text-dark" for="enabledByDefault">Enable by Default in New Game Sessions</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top pt-3">
+                    <button type="button" class="btn btn-light rounded-pill px-4" @onclick="HandleCloseAsync">Cancel</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" @onclick="HandleSaveAsync">
+                        <i class="bi bi-check-lg me-1"></i>Save Plannable Layer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

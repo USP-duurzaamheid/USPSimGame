@@ -1,0 +1,47 @@
+@namespace USPSimGame.Components.Creator
+
+<div class="login-card-container">
+    <div class="card shadow-lg login-card">
+        <div class="card-header text-center bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Creator Authentication</h4>
+        </div>
+        <div class="card-body p-4">
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>@ErrorMessage
+                </div>
+            }
+
+            <EditForm Model="@this" OnValidSubmit="HandleLogin">
+                <div class="mb-3">
+                    <label for="username" class="form-label font-weight-bold">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input id="username" type="text" class="form-control" placeholder="Enter username (e.g. Admin)" @bind="Username" required />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label font-weight-bold">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input id="password" type="password" class="form-control" placeholder="Password (leave blank for Admin)" @bind="Password" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 font-weight-bold" disabled="@IsLoading">
+                    @if (IsLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>Authenticating...</span>
+                    }
+                    else
+                    {
+                        <span><i class="bi bi-box-arrow-in-right me-2"></i>Log In</span>
+                    }
+                </button>
+            </EditForm>
+        </div>
+    </div>
+</div>

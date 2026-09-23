@@ -1,0 +1,25 @@
+@namespace USPSimGame.Components.Game
+
+<div class="team-budget-widget-container position-fixed start-50 translate-middle-x m-3 z-3 pointer-events-none d-flex align-items-center gap-2">
+    <!-- Investment Points Balance Pill -->
+    <div class="pill-badge d-flex align-items-center gap-2 px-3 py-1 rounded shadow-sm transition-all @(CurrentBalance < 0 ? "bg-danger text-white border-danger animate-pulse" : "bg-white text-dark")"
+         title="@(CurrentBalance < 0 ? "Debt Warning: Your team has a negative Investment Points balance!" : "Available Investment Points Balance")">
+        <div class="rounded-circle p-1 d-flex align-items-center justify-content-center @(CurrentBalance < 0 ? "bg-white text-danger" : "bg-success text-white")" style="width: 24px; height: 24px;">
+            <i class="bi @(CurrentBalance < 0 ? "bi-exclamation-triangle-fill" : "bi-bank") micro-text"></i>
+        </div>
+        <div class="d-flex flex-column leading-none">
+            <strong class="small fw-bold">@CurrentBalance.ToString("N0") pts</strong>
+        </div>
+    </div>
+
+    <!-- Active Recurring Monthly Expense Pill -->
+    <div class="pill-badge d-flex align-items-center gap-2 px-3 py-1 rounded shadow-sm bg-white text-dark"
+         title="Active recurring monthly expense burden for implemented plans">
+        <div class="rounded-circle p-1 d-flex align-items-center justify-content-center bg-info text-white" style="width: 24px; height: 24px;">
+            <i class="bi bi-arrow-repeat micro-text"></i>
+        </div>
+        <div class="d-flex flex-column leading-none">
+            <strong class="small fw-bold text-danger">-@MonthlyExpenseBurden.ToString("N1") pts/mo</strong>
+        </div>
+    </div>
+</div>

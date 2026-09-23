@@ -1,0 +1,216 @@
+@using USPSimGame.Data.Entities
+@using USPSimGame.Services.Plans
+@using USPSimGame.Services
+
+@inject IPlanService PlanService
+@inject IPlanApprovalEvaluationService EvaluationService
+@inject PlayerSessionState PlayerState
+
+@if (IsOpen && TargetPlan != null)
+{
+    <div class="judgment-panel-overlay" @onclick="Close">
+        <div class="judgment-panel-container shadow-lg" @onclick:stopPropagation="true">
+            <!-- Header -->
+            <div class="judgment-panel-header d-flex align-items-center justify-content-between p-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-primary fs-5"></i>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Plan Judgments & Approvals</h6>
+                        <small class="text-muted extra-small">Plan: @TargetPlan.Name (@(TargetPlan.Team?.Name ?? "Unknown Team"))</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="judgment-panel-body p-3">
+                @if (IsLoading)
+                {
+                    <div class="text-center py-4 text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                        <p class="mb-0 extra-small">Evaluating required team approvals...</p>
+                    </div>
+                }
+                else
+                {
+                    @if (Evaluation != null && !string.IsNullOrWhiteSpace(Evaluation.ExplanatoryText))
+                    {
+                        <div class="alert alert-info py-2 px-3 mb-3 extra-small border-0 shadow-sm d-flex align-items-start gap-2">
+                            <i class="bi bi-info-circle-fill text-info mt-1 fs-6"></i>
+                            <div>@Evaluation.ExplanatoryText</div>
+                        </div>
+                    }
+
+                    @if (CostEstimate.TotalInvestmentPoints > 0 || CostEstimate.TotalMonthlyExpensePoints > 0)
+                    {
+                        <div class="card border-0 bg-primary-subtle p-3 rounded-3 mb-3 shadow-sm">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="fw-bold text-primary small"><i class="bi bi-pie-chart-fill me-1"></i>Cost-Sharing Breakdown</span>
+                                <span class="badge bg-primary text-white micro-text">
+                                    @(CostEstimate.ConfirmedJoinedTeamCount) Team(s) Joined
+                                </span>
+                            </div>
+
+                            <div class="row g-2 extra-small text-dark">
+                                <div class="col-6">
+                                    <div class="p-2 bg-white rounded border">
+                                        <span class="d-block text-muted micro-text">Confirmed Share (@CostEstimate.ConfirmedJoinedTeamCount team(s))</span>
+                                        <strong class="text-success d-block">⚡ @CostEstimate.ConfirmedPerTeamInvestmentShare pts</strong>
+                                        <small class="text-danger d-block">📉 -@CostEstimate.ConfirmedPerTeamMonthlyExpenseShare pts/mo</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="p-2 bg-white rounded border">
+                                        <span class="d-block text-muted micro-text">Potential Share (If all @CostEstimate.PotentialTotalTeamCount join)</span>
+                                        <strong class="text-success d-block">⚡ @CostEstimate.PotentialPerTeamInvestmentShare pts</strong>
+                                        <small class="text-danger d-block">📉 -@CostEstimate.PotentialPerTeamMonthlyExpenseShare pts/mo</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <h6 class="fw-bold text-secondary mb-2 extra-small text-uppercase tracking-wider">Required Team Judgments</h6>
+
+                    @if (!RequiredTeams.Any())
+                    {
+                        <p class="text-muted extra-small italic">No other teams are required to evaluate this plan.</p>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-2 mb-4">
+                            @foreach (var team in RequiredTeams)
+                            {
+                                var j = Judgments.FirstOrDefault(x => x.TeamId == team.Id);
+                                var currentType = j?.Judgment ?? PlanJudgmentType.Undecided;
+                                bool isMyTeam = CurrentPlayerTeamId == team.Id;
+
+                                <div class="team-judgment-card p-3 rounded border bg-white shadow-sm @(isMyTeam ? "border-primary-subtle ring-1" : "")">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span style="display:inline-block; width:14px; height:14px; border-radius:50%; background-color:@team.Color; border:1px solid rgba(0,0,0,0.15);"></span>
+                                            <span class="fw-bold text-dark fs-6">@team.Name</span>
+                                            @if (isMyTeam)
+                                            {
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small ms-1">Your Team</span>
+                                            }
+                                        </div>
+
+                                        <!-- Judgment Badge -->
+                                        @switch (currentType)
+                                        {
+                                            case PlanJudgmentType.Approve:
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>
+                                                break;
+                                            case PlanJudgmentType.Join:
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-people-fill me-1"></i> Joined</span>
+                                                break;
+                                            case PlanJudgmentType.Reject:
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-x-circle-fill me-1"></i> Rejected</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1"><i class="bi bi-dash-circle me-1"></i> Undecided</span>
+                                                break;
+                                        }
+                                    </div>
+
+                                    <!-- Interactive Judgments (if current player's team or Admin) -->
+                                    @if (isMyTeam || PlayerState.IsAdmin)
+                                    {
+                                        <div class="mt-2 pt-2 border-top">
+                                            <small class="text-muted extra-small d-block mb-1">Select your team's judgment:</small>
+                                            <div class="btn-group btn-group-sm w-100" role="group">
+                                                <button type="button" class="btn btn-outline-secondary @(currentType == PlanJudgmentType.Undecided ? "active" : "")"
+                                                        @onclick="() => SubmitJudgment(team.Id, PlanJudgmentType.Undecided)">
+                                                    Undecided
+                                                </button>
+                                                <button type="button" class="btn btn-outline-success @(currentType == PlanJudgmentType.Approve ? "active" : "")"
+                                                        @onclick="() => SubmitJudgment(team.Id, PlanJudgmentType.Approve)">
+                                                    <i class="bi bi-check-lg me-1"></i> Approve
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary @(currentType == PlanJudgmentType.Join ? "active" : "")"
+                                                        @onclick="() => SubmitJudgment(team.Id, PlanJudgmentType.Join)">
+                                                    <i class="bi bi-people me-1"></i> Join
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger @(currentType == PlanJudgmentType.Reject ? "active" : "")"
+                                                        @onclick="() => SubmitJudgment(team.Id, PlanJudgmentType.Reject)">
+                                                    <i class="bi bi-x-lg me-1"></i> Reject
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <h6 class="fw-bold text-secondary mb-2 extra-small text-uppercase tracking-wider">Other Teams (may join)</h6>
+
+                    @if (!OptionalTeams.Any())
+                    {
+                        <p class="text-muted extra-small italic">No other teams are available to join this plan.</p>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-2 mb-4">
+                            @foreach (var team in OptionalTeams)
+                            {
+                                var j = Judgments.FirstOrDefault(x => x.TeamId == team.Id);
+                                var currentType = j?.Judgment ?? PlanJudgmentType.Undecided;
+                                bool isMyTeam = CurrentPlayerTeamId == team.Id;
+
+                                <div class="team-judgment-card p-3 rounded border bg-white shadow-sm @(isMyTeam ? "border-primary-subtle ring-1" : "")">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span style="display:inline-block; width:14px; height:14px; border-radius:50%; background-color:@team.Color; border:1px solid rgba(0,0,0,0.15);"></span>
+                                            <span class="fw-bold text-dark fs-6">@team.Name</span>
+                                            @if (isMyTeam)
+                                            {
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small ms-1">Your Team</span>
+                                            }
+                                        </div>
+
+                                        <!-- Judgment Badge -->
+                                        @switch (currentType)
+                                        {
+                                            case PlanJudgmentType.Join:
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-people-fill me-1"></i> Joined</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1"><i class="bi bi-dash-circle me-1"></i> Undecided</span>
+                                                break;
+                                        }
+                                    </div>
+
+                                    <!-- Interactive Judgments (if current player's team or Admin) -->
+                                    @if (isMyTeam || PlayerState.IsAdmin)
+                                    {
+                                        <div class="mt-2 pt-2 border-top">
+                                            <small class="text-muted extra-small d-block mb-1">Select your team's judgment:</small>
+                                            <div class="btn-group btn-group-sm w-100" role="group">
+                                                <button type="button" class="btn btn-outline-secondary @(currentType == PlanJudgmentType.Undecided ? "active" : "")"
+                                                        @onclick="() => SubmitJudgment(team.Id, PlanJudgmentType.Undecided)">
+                                                    Undecided
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary @(currentType == PlanJudgmentType.Join ? "active" : "")"
+                                                        @onclick="() => SubmitJudgment(team.Id, PlanJudgmentType.Join)">
+                                                    <i class="bi bi-people me-1"></i> Join
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Footer -->
+            <div class="judgment-panel-footer p-3 border-top bg-light d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary btn-sm" @onclick="Close">Close</button>
+            </div>
+        </div>
+    </div>
+}

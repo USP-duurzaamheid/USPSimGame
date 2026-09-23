@@ -1,0 +1,84 @@
+@page "/game"
+@using USPSimGame.Components.Game
+@using USPSimGame.Data.Enums
+@rendermode InteractiveServer
+
+<PageTitle>Game - @(PlayerSessionState.CurrentGameSession?.Name ?? "Simulation")</PageTitle>
+
+@if (!PlayerSessionState.IsConnected)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Checking session...</span>
+        </div>
+        <p class="text-muted mt-2">Verifying game connection...</p>
+    </div>
+}
+else
+{
+    <GameOverlay />
+
+    <!-- Bottom-Left Stacked Controls Container (Plans on top, Map on bottom) -->
+    <div class="position-fixed bottom-0 start-0 m-3 z-3 d-flex flex-column gap-2 pointer-events-none" style="width: 360px; max-width: calc(100vw - 32px);">
+        <div class="pointer-events-auto">
+            <!-- Development Plans Panel (Top, expands upwards) -->
+            <PlansControlPanel @ref="plansControlPanel"
+                               GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                               CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
+                               GameState="@(PlayerSessionState.CurrentGameSession?.State ?? GameState.Setup)"
+                               IsAdmin="@PlayerSessionState.IsAdmin"
+                               StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                               ActivePlan="@ActivePlan"
+                               IsCollapsed="@isPlansPanelCollapsed"
+                               OnToggleCollapse="HandlePlansPanelToggle"
+                               OnOpenNewPlan="OpenNewPlanPanel"
+                               OnPlanSelected="HandlePlanSelectedAsync" />
+        </div>
+
+        <div class="pointer-events-auto">
+            <!-- Map Layers & Legend Panel (Bottom) -->
+            <MapControlPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                             IsCollapsed="@isMapPanelCollapsed"
+                             OnToggleCollapse="HandleMapPanelToggle" />
+        </div>
+    </div>
+
+    <!-- Team Area Definition Panel (Bottom Right during Setup State for Players) -->
+    @if (!PlayerSessionState.IsAdmin && PlayerSessionState.CurrentGameSession?.State == GameState.Setup && !ShowPlanAddEditPanel && ActivePlan == null && PlayerSessionState.CurrentTeam != null)
+    {
+        <TeamAreaPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                       Team="@PlayerSessionState.CurrentTeam"
+                       CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)" />
+    }
+
+    <!-- Plan Add & Edit Panel (Bottom Right) -->
+    @if (!PlayerSessionState.IsAdmin && ShowPlanAddEditPanel)
+    {
+        <PlanAddEditPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                          TeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
+                          CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)"
+                          StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                          PlanToEdit="@PlanToEdit"
+                          OnSaved="HandlePlanSavedAsync"
+                          OnCancel="ClosePlanAddEditPanelAsync" />
+    }
+
+    <!-- Plan View Panel (Bottom Right) -->
+    @if (ActivePlan != null)
+    {
+        <PlanViewPanel Plan="@ActivePlan"
+                       StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                       CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
+                       CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)"
+                       IsAdmin="@PlayerSessionState.IsAdmin"
+                       SessionTeams="@SessionTeams"
+                       OnEditPlan="HandleEditPlanAsync"
+                       OnClose="ClosePlanViewAsync" />
+    }
+
+    <!-- Map Geometry Properties Floating Panel -->
+    <MapFeaturePropertiesPanel @ref="propertiesPanel" />
+
+    <!-- OpenLayers Base Map -->
+    <GameBaseMap InitialCenter="@InitialCenter" InitialZoom="@InitialZoom" />
+}

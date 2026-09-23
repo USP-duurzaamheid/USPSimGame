@@ -1,0 +1,98 @@
+@namespace USPSimGame.Components.Creator
+@using USPSimGame.Data.Entities
+
+@if (Layer != null)
+{
+    bool isSeeded = Layer.Id <= 6;
+
+    <div class="card border-0 shadow-sm rounded-4 h-100 layer-card">
+        <div class="card-body p-4 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle p-3 d-flex align-items-center justify-content-center text-white" style="background-color: @(string.IsNullOrEmpty(Layer.DefaultColor) ? "#3b82f6" : Layer.DefaultColor); width: 48px; height: 48px;">
+                        <i class="bi @(string.IsNullOrEmpty(Layer.Icon) ? "bi-layers-fill" : Layer.Icon) h5 mb-0"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-secondary-subtle text-secondary fw-semibold mb-1 me-1">
+                            <i class="bi bi-tag-fill me-1"></i>@Layer.Category
+                        </span>
+                        <span class="badge bg-warning-subtle text-dark fw-semibold mb-1">
+                            <i class="bi bi-vector-pen me-1"></i>@Layer.GeometryType
+                        </span>
+                        <h4 class="card-title fw-bold text-dark mb-0">@Layer.Name</h4>
+                        <code class="text-muted small">@Layer.Key</code>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column align-items-end gap-1">
+                    @if (Layer.IsEnabledByDefault)
+                    {
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">
+                            <i class="bi bi-check-circle-fill me-1"></i>Default Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-1 rounded-pill">
+                            Optional
+                        </span>
+                    }
+                    @if (isSeeded)
+                    {
+                        <span class="badge bg-light text-muted border px-2 py-1 small">
+                            <i class="bi bi-lock-fill me-1"></i>Built-in Seed
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <p class="card-text text-muted mb-3 flex-grow-1">
+                @Layer.Description
+            </p>
+
+            <div class="tags-section bg-light p-3 rounded-3 mb-3 border">
+                <div class="mb-2">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1 tag-label-micro">
+                        <i class="bi bi-translate me-1 text-primary"></i>Translator Tags
+                    </small>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace">
+                        @(string.IsNullOrEmpty(Layer.TranslatorTags) ? "none" : Layer.TranslatorTags)
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1 tag-label-micro">
+                        <i class="bi bi-cpu me-1 text-success"></i>Simulator Tags
+                    </small>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace">
+                        @(string.IsNullOrEmpty(Layer.SimulatorTags) ? "none" : Layer.SimulatorTags)
+                    </span>
+                </div>
+                <div class="mt-2 pt-2 border-top">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1 tag-label-micro">
+                        <i class="bi bi-cash-stack me-1 text-warning"></i>Default Costing Parameters
+                    </small>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle">
+                            ⚡ Investment: Base @Layer.BaseInvestmentPoints + @Layer.InvestmentPointsPerUnit pts/unit
+                        </span>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                            📉 Expense: Base @Layer.BaseMonthlyExpensePoints + @Layer.MonthlyExpensePointsPerUnit pts/mo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end align-items-center gap-2 pt-2 border-top">
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" @onclick="HandleEditAsync">
+                    <i class="bi bi-pencil me-1"></i>Edit
+                </button>
+                @if (!isSeeded)
+                {
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" @onclick="HandleDeleteAsync">
+                        <i class="bi bi-trash me-1"></i>Delete
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}

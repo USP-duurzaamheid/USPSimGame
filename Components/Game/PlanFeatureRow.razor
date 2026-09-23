@@ -1,0 +1,57 @@
+@namespace USPSimGame.Components.Game
+@using USPSimGame.Data.Entities
+@inject USPSimGame.Services.Costing.ICostCalculationService CostCalculationService
+
+<div class="p-2 rounded-3 border draft-feature-row transition-all @(OnSelect.HasDelegate ? "cursor-pointer" : "") @(IsActive ? "border-success bg-success-subtle" : "bg-white hover-bg-light")"
+     @onclick="HandleSelectAsync"
+     title="@(OnSelect.HasDelegate ? "Click to switch and continue drawing on this layer" : "")">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle p-1 d-flex align-items-center justify-content-center text-white shadow-sm" style="background-color: @(Definition?.DefaultColor ?? "#3b82f6"); width: 28px; height: 28px;">
+                <i class="bi @(Definition?.Icon ?? "bi-layers-fill") micro-text"></i>
+            </div>
+            <div>
+                <span class="fw-semibold text-dark small">@(Definition?.Name ?? "Layer")</span>
+                <span class="badge bg-warning-subtle text-dark border border-warning-subtle micro-text me-1">@(Definition?.GeometryType)</span>
+                @if (HasGeometry)
+                {
+                    @if (IsDemolition)
+                    {
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle micro-text me-1"><i class="bi bi-trash me-1"></i>Demolition</span>
+                    }
+                    <span class="badge bg-light text-dark border micro-text ms-1" title="Upfront investment deduction">
+                        <i class="bi bi-bank text-danger me-1"></i> -@CalculatedInvestmentPoints pts
+                    </span>
+                    @if (CalculatedMonthlyExpensePoints < 0)
+                    {
+                        <span class="badge bg-success-subtle text-success border border-success-subtle micro-text ms-1 fw-bold" title="Monthly expense savings (budget relief)">
+                            <i class="bi bi-arrow-repeat text-success me-1"></i> +@Math.Abs(CalculatedMonthlyExpensePoints) pts/mo
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-light text-dark border micro-text ms-1" title="Monthly expense cost">
+                            <i class="bi bi-arrow-repeat text-danger me-1"></i> -@CalculatedMonthlyExpensePoints pts/mo
+                        </span>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            @if (IsActive)
+            {
+                <span class="badge @(IsDemolition ? "bg-danger" : "bg-success") text-white micro-text">Active</span>
+            }
+            @if (ShowRemoveButton && OnRemove.HasDelegate)
+            {
+                <button type="button" class="btn btn-sm btn-outline-danger p-0 px-2 action-btn-small"
+                        @onclick:stopPropagation="true"
+                        @onclick="HandleRemoveAsync"
+                        title="Remove this development option from the plan">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            }
+        </div>
+    </div>
+</div>
