@@ -17,9 +17,6 @@ public partial class LoginCard : ComponentBase
     [Parameter]
     public EventCallback<User> OnLoginSuccess { get; set; }
 
-    [Parameter]
-    public EventCallback OnShowRegister { get; set; }
-
     protected string Username { get; set; } = string.Empty;
     protected string Password { get; set; } = string.Empty;
     protected string? ErrorMessage { get; set; }

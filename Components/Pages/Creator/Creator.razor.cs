@@ -14,8 +14,6 @@ public partial class Creator : ComponentBase, IDisposable
     [Inject]
     public CreatorAuthState AuthState { get; set; } = default!;
 
-    protected bool ShowRegister { get; set; }
-
     protected override void OnInitialized()
     {
         AuthState.OnStateChanged += StateHasChanged;
@@ -28,7 +26,6 @@ public partial class Creator : ComponentBase, IDisposable
 
     protected void HandleLogout()
     {
-        ShowRegister = false;
         AuthState.LogOut();
     }
 
