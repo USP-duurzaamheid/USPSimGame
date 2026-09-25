@@ -6,7 +6,14 @@
 @if (!AuthState.IsAuthenticated)
 {
     <div class="container py-4">
-        <LoginCard OnLoginSuccess="HandleLoginSuccess" />
+        @if (ShowRegister)
+        {
+            <RegisterCard OnRegisterSuccess="HandleLoginSuccess" OnShowLogin="() => ShowRegister = false" />
+        }
+        else
+        {
+            <LoginCard OnLoginSuccess="HandleLoginSuccess" OnShowRegister="() => ShowRegister = true" />
+        }
     </div>
 }
 else

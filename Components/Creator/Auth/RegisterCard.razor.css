@@ -1,0 +1,22 @@
+.login-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 440px;
+    border: none;
+    border-radius: var(--app-radius-lg);
+    box-shadow: var(--app-shadow-lg);
+    overflow: hidden;
+    background-color: var(--app-bg-card);
+}
+
+.card-header {
+    border-bottom: none;
+    background-color: var(--app-primary) !important;
+}
