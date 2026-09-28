@@ -10,8 +10,11 @@ using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
 using USPSimGame.Services.Costing;
 using USPSimGame.Services.Layers;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -30,6 +33,17 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
+
+
+// Add Identity Services (authentication)
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = true;
+});
+
+
 
 // Register Application Services
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasherService>();
@@ -159,8 +173,14 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
     return Results.Content(geoJson, "application/json");
 });
 
+
 app.MapStaticAssets();
+
+app.UseAuthentication();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+
 
 app.Run();
