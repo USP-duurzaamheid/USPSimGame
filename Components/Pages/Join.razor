@@ -1,70 +1,52 @@
 @page "/join"
+@layout PlayerLayout
 @rendermode InteractiveServer
 
 <PageTitle>Common Ground - Join</PageTitle>
 
-<HeadContent>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;700&family=Inter:wght@500;600;800&display=swap" />
-</HeadContent>
-
-<div class="join-page">
-    <header class="join-brand">
-        <div class="join-brand-logo">
-            <i class="bi bi-globe2" aria-hidden="true"></i>
+<div class="join-main">
+    <form class="join-card" @onsubmit="HandleJoin">
+        <div class="join-card-header">
+            <h1 class="join-card-title">PIN</h1>
+            <p class="join-card-description">Join an active multiplayer simulation by entering the PIN from your host.</p>
         </div>
-        <div class="join-brand-text">
-            <span class="join-brand-title">Common Ground</span>
-            <span class="join-brand-subtitle">Multiplayer Energy Simulation</span>
+
+        <div class="join-pin @(ErrorMessage != null ? "join-pin--error" : null)">
+            <div class="join-pin-slots">
+                @for (var i = 0; i < PinLength; i++)
+                {
+                    var index = i;
+                    var isActive = IsFocused && index == ActiveSlotIndex;
+                    <div class="join-pin-slot @(isActive ? "join-pin-slot--active" : null)">
+                        @if (index < Pin.Length)
+                        {
+                            @Pin[index]
+                        }
+                        else if (isActive)
+                        {
+                            <span class="join-pin-caret"></span>
+                        }
+                    </div>
+                }
+                <input @ref="pinInput"
+                       class="join-pin-input"
+                       type="text"
+                       inputmode="numeric"
+                       pattern="[0-9]*"
+                       autocomplete="one-time-code"
+                       maxlength="@PinLength"
+                       aria-label="4-digit game code"
+                       value="@Pin"
+                       @oninput="HandlePinInputAsync"
+                       @onfocus="() => IsFocused = true"
+                       @onblur="() => IsFocused = false" />
+            </div>
+            <span class="join-pin-caption">@(ErrorMessage ?? "4-digit game code")</span>
         </div>
-    </header>
 
-    <main class="join-main">
-        <form class="join-card" @onsubmit="HandleJoinAsync">
-            <div class="join-card-header">
-                <h1 class="join-card-title">PIN</h1>
-                <p class="join-card-description">Join an active multiplayer simulation by entering the PIN from your host.</p>
-            </div>
-
-            <div class="join-pin @(ErrorMessage != null ? "join-pin--error" : null)">
-                <div class="join-pin-slots">
-                    @for (var i = 0; i < PinLength; i++)
-                    {
-                        var index = i;
-                        var isActive = IsFocused && index == ActiveSlotIndex;
-                        <div class="join-pin-slot @(isActive ? "join-pin-slot--active" : null)">
-                            @if (index < Pin.Length)
-                            {
-                                @Pin[index]
-                            }
-                            else if (isActive)
-                            {
-                                <span class="join-pin-caret"></span>
-                            }
-                        </div>
-                    }
-                    <input @ref="pinInput"
-                           class="join-pin-input"
-                           type="text"
-                           inputmode="numeric"
-                           pattern="[0-9]*"
-                           autocomplete="one-time-code"
-                           maxlength="@PinLength"
-                           aria-label="4-digit game code"
-                           value="@Pin"
-                           disabled="@IsJoining"
-                           @oninput="HandlePinInputAsync"
-                           @onfocus="() => IsFocused = true"
-                           @onblur="() => IsFocused = false" />
-                </div>
-                <span class="join-pin-caption">@(ErrorMessage ?? SuccessMessage ?? "4-digit game code")</span>
-            </div>
-
-            <button type="submit" class="join-button" disabled="@(!IsPinComplete || IsJoining)">
-                <span>@(IsJoining ? "JOINING..." : "JOIN")</span>
-                <i class="bi bi-arrow-right" aria-hidden="true"></i>
-            </button>
-        </form>
-    </main>
-
-    <footer class="join-footer">Common Ground • v@(Version)</footer>
+        <button type="submit" class="join-button" disabled="@(!IsPinComplete)">
+            <span>JOIN</span>
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </button>
+    </form>
 </div>
