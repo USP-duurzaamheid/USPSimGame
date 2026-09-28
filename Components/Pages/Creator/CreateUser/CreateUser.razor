@@ -1,0 +1,54 @@
+@page "/create-user"
+@rendermode InteractiveServer
+@inject ILogger<Program> logger;
+
+<PageTitle>Create User</PageTitle>
+
+<p>Sample create user form</p>
+
+
+<EditForm Model="MyDog" OnSubmit="LogicFunction" FormName="Onnodig">
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="MyDog!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+
+
+@if(IsSend)
+    {
+        <div>Form has been sent, waiting for result</div>
+    }
+
+</EditForm>
+
+@code {
+
+    private ChipDog? MyDog { get; set; }
+
+    private bool IsSend { get; set; }
+
+    protected override void OnInitialized() => MyDog ??= new(); // 
+
+    private void LogicFunction()
+    {
+      logger.LogInformation($"Id = {MyDog?.Id} is null: {MyDog?.Id is null}");
+      if (MyDog?.Id is not null) IsSend = true;
+      
+    }
+
+    public class ChipDog
+    {
+      public string? Id { get; set; }
+    }
+}
+
+@* 
+Gebruikte referentie:
+
+https://learn.microsoft.com/en-us/aspnet/core/blazor/forms/?view=aspnetcore-10.0
+ *@
