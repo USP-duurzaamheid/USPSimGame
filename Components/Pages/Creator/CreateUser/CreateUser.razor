@@ -7,13 +7,22 @@
 <p>Sample create user form</p>
 
 
-<EditForm Model="MyDog" OnSubmit="LogicFunction" FormName="Onnodig">
+<EditForm Model="User" OnSubmit="AddUser" FormName="Onnodig">
     <div>
         <label>
             Identifier:
-            <InputText @bind-Value="MyDog!.Id" />
+            <InputText @bind-Value="User!.UserName" />
+
         </label>
+
+        <label>
+            Identifier:
+            <InputText @bind-Value="User!.Email" />
+
+        </label>
+
     </div>
+
     <div>
         <button type="submit">Submit</button>
     </div>

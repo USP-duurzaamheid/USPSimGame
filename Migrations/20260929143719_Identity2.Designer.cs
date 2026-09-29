@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using USPSimGame.Data;
@@ -11,9 +12,11 @@ using USPSimGame.Data;
 namespace USPSimGame.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260929143719_Identity2")]
+    partial class Identity2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -954,8 +957,8 @@ namespace USPSimGame.Migrations
                         {
                             Id = 1,
                             Email = "harald.warmelink@hu.nl",
-                            PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==",
-                            Username = "admin"
+                            PasswordHash = "AQAAAAIAAYagAAAAEKstQTVmO/0bmR5/P2B+mTIYP9Ju76yHdGFRYt7uq9Im2XkmV3pwZpvDAMTmlgzY3w==",
+                            Username = "Admin"
                         });
                 });
 

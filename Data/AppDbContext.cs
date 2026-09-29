@@ -10,7 +10,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
     }
 
-    public DbSet<User> Users => Set<User>();
+    public DbSet<User> LegacyUser => Set<User>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<GameSession> GameSessions => Set<GameSession>();
     public DbSet<PlayerSession> PlayerSessions => Set<PlayerSession>();
@@ -30,7 +30,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "Admin", Email = "harald.warmelink@hu.nl", PasswordHash = "AQAAAAIAAYagAAAAEKstQTVmO/0bmR5/P2B+mTIYP9Ju76yHdGFRYt7uq9Im2XkmV3pwZpvDAMTmlgzY3w==" }
+            new User { Id = 1, Username = "admin", Email = "harald.warmelink@hu.nl", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==" }
         );
 
         modelBuilder.Entity<Team>()

@@ -11,8 +11,11 @@ using USPSimGame.Services.Plans;
 using USPSimGame.Services.Costing;
 using USPSimGame.Services.Layers;
 using Microsoft.AspNetCore.Identity;
+using USPSimGame.Data.Entities;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 
 
@@ -43,7 +46,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
 });
 
+builder.Services.AddAuthentication(); // Identity works a bit different between ASp.NET Core and Web API's / SPA.
+// Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
 
+//Good article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0
 
 // Register Application Services
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasherService>();

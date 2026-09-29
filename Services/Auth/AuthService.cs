@@ -29,7 +29,7 @@ public class AuthService : IAuthService
         string cleanPassword = password.Trim();
 
         await using var db = await _dbContextFactory.CreateDbContextAsync();
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == cleanUsername.ToLower());
+        var user = await db.LegacyUser.FirstOrDefaultAsync(u => u.Username.ToLower() == cleanUsername.ToLower());
 
         if (user == null)
         {
