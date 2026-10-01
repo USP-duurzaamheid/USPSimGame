@@ -12,6 +12,7 @@ using USPSimGame.Services.Costing;
 using USPSimGame.Services.Layers;
 using Microsoft.AspNetCore.Identity;
 using USPSimGame.Data.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,16 +38,22 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
+// Setup UserManager and connect layer 1 & 2
+builder.Services
+    .AddIdentityCore<ApplicationUser>()
+    .AddEntityFrameworkStores<AppDbContext>(); // Is dit niet teveel aan het registeren? Het lost wel mijn probleem op
 
-// Add Identity Services (authentication)
-builder.Services.Configure<IdentityOptions>(options =>
+// Add Identity Services
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
+    options.LoginPath = "/creator";
+
+
 });
 
-builder.Services.AddAuthentication(); // Identity works a bit different between ASp.NET Core and Web API's / SPA.
+
+
+
 // Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
 
 //Good article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0
@@ -183,6 +190,7 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
 app.MapStaticAssets();
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

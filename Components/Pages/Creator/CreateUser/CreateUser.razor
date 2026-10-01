@@ -7,17 +7,23 @@
 <p>Sample create user form</p>
 
 
-<EditForm Model="User" OnSubmit="AddUser" FormName="Onnodig">
+<EditForm Model="Dto" OnSubmit="AddUser" FormName="Onnodig">
     <div>
         <label>
-            Identifier:
-            <InputText @bind-Value="User!.UserName" />
+            Username:
+            <InputText @bind-Value="Dto!.UserName"/>
 
         </label>
 
         <label>
-            Identifier:
-            <InputText @bind-Value="User!.Email" />
+            Password:
+            <InputText @bind-Value="Dto!.Password" />
+
+        </label>
+
+        <label>
+            Email:
+            <InputText @bind-Value="Dto!.Email" />
 
         </label>
 
@@ -28,9 +34,13 @@
     </div>
 
 
-@if(IsSend)
+@if(SubmitMessage.Count() > 0)
     {
-        <div>Form has been sent, waiting for result</div>
+       @foreach (string message in SubmitMessage)
+        {
+            <p>@message</p>
+        }
+
     }
 
 </EditForm>
@@ -38,6 +48,8 @@
 
 
 @* 
+
+
 Gebruikte referentie:
 
 https://learn.microsoft.com/en-us/aspnet/core/blazor/forms/?view=aspnetcore-10.0
