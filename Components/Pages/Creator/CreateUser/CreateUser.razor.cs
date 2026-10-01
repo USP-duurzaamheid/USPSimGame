@@ -44,7 +44,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
       }
       else
       {
-        SubmitMessage = [.. resu.Errors.Select(err => err.Description)];
+        SubmitMessage = resu.Errors.Select(err => err.Description).ToList();
       }
 
 
