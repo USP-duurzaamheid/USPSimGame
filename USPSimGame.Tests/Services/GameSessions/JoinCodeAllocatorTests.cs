@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using USPSimGame.Exceptions;
 using USPSimGame.Services.GameSessions;
 
 namespace USPSimGame.Tests.Services.GameSessions;
@@ -32,14 +33,15 @@ public class JoinCodeAllocatorTests
         var attempts = 0;
 
         //Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsAsync<JoinCodeAllocationException>(
             () => allocator.AllocateAsync(code =>
             {
                 attempts++;
                 return Task.FromResult(false);
             }));
-        
+
         Assert.Equal(JoinCodeAllocator.MaxAttempts, attempts);
+        Assert.Equal(JoinCodeAllocator.MaxAttempts, exception.Attempts);
     }
 
     [Fact]

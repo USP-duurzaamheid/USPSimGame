@@ -1,3 +1,5 @@
+using USPSimGame.Exceptions;
+
 namespace USPSimGame.Services.GameSessions;
 public class JoinCodeAllocator
 {
@@ -13,7 +15,6 @@ public class JoinCodeAllocator
             var code = _generator.Generate();
             if (await tryReserve(code)) return code;
         }
-        throw new InvalidOperationException(
-            $"Could not allocate a unique join code after {MaxAttempts} attempts.");
+        throw new JoinCodeAllocationException(MaxAttempts);
     }
 }

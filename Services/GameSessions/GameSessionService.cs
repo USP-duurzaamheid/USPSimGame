@@ -65,9 +65,23 @@ public class GameSessionService : IGameSessionService
 
         // Slow part only runs after the code is secured and the row exists
         try { await _mapLayerService.PreFetchAndSaveSessionLayersAsync(session.Id, session.CenterLatLong); }
-        catch (Exception ex) { _logger.LogError(ex, "session.Id"); }
+        catch (Exception ex) { _logger.LogError(ex, "GameSessionService: Error with pre-fetching map layers for session {Id}", session.Id); }
 
         return session;
+    }
+
+    public async Task<GameSession?> GetByJoinCodeAsync(string joinCode)
+    {
+        var code = joinCode?.Trim();
+        if (string.IsNullOrEmpty(code))
+        {
+            return null;
+        }
+
+        await using var db = await _dbContextFactory.CreateDbContextAsync();
+        return await db.GameSessions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.JoinCode == code);
     }
 
     private static bool IsJoinCodeCollision(DbUpdateException ex) =>

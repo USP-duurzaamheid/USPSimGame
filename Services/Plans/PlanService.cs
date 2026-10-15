@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using USPSimGame.Data;
 using USPSimGame.Data.Entities;
+using USPSimGame.Exceptions;
 
 namespace USPSimGame.Services.Plans;
 
@@ -155,7 +156,7 @@ public class PlanService : IPlanService
 
         if (plan == null)
         {
-            throw new InvalidOperationException($"Plan #{planId} not found.");
+            throw new NotFoundException(nameof(Plan), planId);
         }
 
         plan.Name = name;

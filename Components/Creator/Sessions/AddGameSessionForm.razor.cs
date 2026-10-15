@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using USPSimGame.Data.Entities;
+using USPSimGame.Exceptions;
 using USPSimGame.Services;
 using USPSimGame.Services.Auth;
 using USPSimGame.Services.PlayerSessions;
@@ -44,6 +45,10 @@ public partial class AddGameSessionForm : ComponentBase
         {
             var created = await GameSessionService.CreateGameSessionAsync(NewSession);
             await OnSessionAdded.InvokeAsync(created);
+        }
+        catch (JoinCodeAllocationException)
+        {
+            ErrorMessage = "Could not generate a game code. Please try again.";
         }
         catch (Exception ex)
         {
