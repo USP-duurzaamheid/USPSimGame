@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using USPSimGame.Data;
+using USPSimGame.Exceptions;
 using USPSimGame.Services.Auth;
 using USPSimGame.Data.Entities;
 
@@ -87,7 +88,7 @@ public class TeamService : ITeamService
         var existing = await db.Teams.FindAsync(team.Id);
         if (existing == null)
         {
-            throw new KeyNotFoundException($"Team with ID {team.Id} was not found.");
+            throw new NotFoundException(nameof(Team), team.Id);
         }
 
         existing.Name = team.Name;

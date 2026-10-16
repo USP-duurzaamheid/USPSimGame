@@ -4,8 +4,8 @@ namespace USPSimGame.Components.Pages;
 
 public partial class Join : ComponentBase
 {
-    protected const int PinLength = 4;
-    private const string MockPin = "1234";
+    protected const int PinLength = 6;
+    private const string MockPin = "123456";
 
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;

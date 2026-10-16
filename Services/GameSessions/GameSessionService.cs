@@ -3,6 +3,7 @@ using USPSimGame.Data;
 using USPSimGame.Data.Entities;
 using USPSimGame.Data.Enums;
 using USPSimGame.Services.Layers;
+using Npgsql;
 
 namespace USPSimGame.Services.GameSessions;
 
@@ -13,16 +14,20 @@ public class GameSessionService : IGameSessionService
     private readonly IGameSessionNotifierService _notifier;
     private readonly ILogger<GameSessionService> _logger;
 
+    private readonly JoinCodeAllocator _joinCodeAllocator;
+
     public GameSessionService(
         IDbContextFactory<AppDbContext> dbContextFactory,
         IMapLayerService mapLayerService,
         IGameSessionNotifierService notifier,
-        ILogger<GameSessionService> logger)
+        ILogger<GameSessionService> logger,
+        JoinCodeAllocator joinCodeAllocator)
     {
         _dbContextFactory = dbContextFactory;
         _mapLayerService = mapLayerService;
         _notifier = notifier;
         _logger = logger;
+        _joinCodeAllocator = joinCodeAllocator;
     }
 
     public async Task<List<GameSession>> GetGameSessionsAsync()
@@ -38,25 +43,50 @@ public class GameSessionService : IGameSessionService
 
     public async Task<GameSession> CreateGameSessionAsync(GameSession session)
     {
-        await using var db = await _dbContextFactory.CreateDbContextAsync();
         session.CreatedAt = DateTime.UtcNow;
         session.State = GameState.Setup;
-        db.GameSessions.Add(session);
-        await db.SaveChangesAsync();
 
-        _logger.LogInformation("GameSessionService: Created GameSession '{Name}' (Id: {Id}). Triggering MapLayer pre-fetch...", session.Name, session.Id);
+        await _joinCodeAllocator.AllocateAsync(async code =>
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            session.Id = 0;
+            session.JoinCode = code;
+            db.GameSessions.Add(session);
+            try
+            {
+                await db.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException ex) when (IsJoinCodeCollision(ex))
+            {
+                return false;
+            }
+        });
 
-        try
-        {
-            await _mapLayerService.PreFetchAndSaveSessionLayersAsync(session.Id, session.CenterLatLong);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "GameSessionService: Error pre-fetching map layers for session {Id}", session.Id);
-        }
+        // Slow part only runs after the code is secured and the row exists
+        try { await _mapLayerService.PreFetchAndSaveSessionLayersAsync(session.Id, session.CenterLatLong); }
+        catch (Exception ex) { _logger.LogError(ex, "GameSessionService: Error with pre-fetching map layers for session {Id}", session.Id); }
 
         return session;
     }
+
+    public async Task<GameSession?> GetByJoinCodeAsync(string joinCode)
+    {
+        var code = joinCode?.Trim();
+        if (string.IsNullOrEmpty(code))
+        {
+            return null;
+        }
+
+        await using var db = await _dbContextFactory.CreateDbContextAsync();
+        return await db.GameSessions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.JoinCode == code);
+    }
+
+    private static bool IsJoinCodeCollision(DbUpdateException ex) =>
+        ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pg
+        && pg.ConstraintName == "IX_GameSessions_JoinCode";
 
     public async Task<bool> DeleteGameSessionAsync(int sessionId)
     {

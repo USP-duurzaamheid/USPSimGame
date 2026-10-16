@@ -236,6 +236,11 @@ namespace USPSimGame.Migrations
                     b.Property<int>("CurrentMonth")
                         .HasColumnType("integer");
 
+                    b.Property<string>("JoinCode")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
+
                     b.Property<int>("MonthDurationSeconds")
                         .HasColumnType("integer");
 
@@ -260,6 +265,9 @@ namespace USPSimGame.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JoinCode")
+                        .IsUnique();
 
                     b.ToTable("GameSessions");
                 });

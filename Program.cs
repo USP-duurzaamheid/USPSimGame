@@ -56,6 +56,8 @@ builder.Services.AddSingleton<IPasswordHasher, PasswordHasherService>();
 builder.Services.AddSingleton<IGameSessionNotifierService, GameSessionNotifierService>();
 builder.Services.AddSingleton<ITeamNotifierService, TeamNotifierService>();
 builder.Services.AddSingleton<IPlanNotifierService, PlanNotifierService>();
+builder.Services.AddSingleton<IJoinCodeGenerator, JoinCodeGenerator>();
+builder.Services.AddSingleton<JoinCodeAllocator>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGameSessionService, GameSessionService>();

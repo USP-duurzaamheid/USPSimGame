@@ -16,6 +16,8 @@ public class GameSession
     public int? RemainingSecondsOnPause { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+    public string JoinCode { get; set; } = string.Empty;
+
     public ICollection<GameSessionMapLayer> MapLayers { get; set; } = new List<GameSessionMapLayer>();
     public ICollection<Team> Teams { get; set; } = new List<Team>();
     public ICollection<GameSessionPlannableLayer> PlannableLayers { get; set; } = new List<GameSessionPlannableLayer>();

@@ -43,6 +43,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .Property(s => s.State)
             .HasConversion<string>();
 
+        modelBuilder.Entity<GameSession>()
+            .Property(s => s.JoinCode)
+            .HasMaxLength(6);
+
+        modelBuilder.Entity<GameSession>()
+            .HasIndex(s => s.JoinCode)
+            .IsUnique();
+
         modelBuilder.Entity<MapLayerDefinition>()
             .Property(l => l.LayerType)
             .HasConversion<string>();
