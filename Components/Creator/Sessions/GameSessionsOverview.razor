@@ -58,6 +58,7 @@
                         <tr>
                             <th>#</th>
                             <th>Name</th>
+                            <th>Join Code</th>
                             <th>Center (Long, Lat)</th>
                             <th>Map Layers</th>
                             <th>Teams</th>
@@ -72,6 +73,7 @@
                             <tr>
                                 <td><span class="badge bg-secondary">@session.Id</span></td>
                                 <td><strong class="text-dark">@session.Name</strong></td>
+                                <td><code>@session.JoinCode</code></td>
                                 <td><code>@session.CenterLatLong</code></td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 text-nowrap" @onclick="() => OpenSessionLayersModal(session)" title="Configure layers and simulator tags">
