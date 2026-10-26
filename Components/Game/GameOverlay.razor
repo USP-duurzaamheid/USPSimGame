@@ -1,81 +1,93 @@
 @namespace USPSimGame.Components.Game
 @using USPSimGame.Data.Enums
+@using USPSimGame.Components.Game.Hud
+@using USPSimGame.Components.Game.Preview
 
-<!-- Top-Left Overlay: Session, Player, Team Info & Disconnect -->
-<div class="game-info-overlay lefthandside position-absolute top-0 start-0 m-3 z-3 bg-white p-3 rounded shadow-sm border">
-    <div class="d-flex align-items-center gap-3">
-        <div>
-            <h5 class="mb-0 text-dark fw-bold">@PlayerSessionState.CurrentGameSession?.Name</h5>
-            <small class="text-muted">
-                @if (PlayerSessionState.IsAdmin)
-                {
-                    <span><strong class="text-danger">@PlayerSessionState.CurrentAdminUser?.Username</strong> | </span>
-                    <span class="badge bg-danger"><i class="bi bi-shield-lock-fill me-1"></i>Game Admin</span>
-                }
-                else
-                {
-                    <span><strong class="text-primary">@PlayerSessionState.CurrentPlayerSession?.UserName</strong> | </span>
-                    <span>Team: <span class="badge" style="background-color: @(PlayerSessionState.CurrentTeam?.Color ?? "#3b82f6");">@(PlayerSessionState.CurrentTeam?.Name ?? "Team")</span></span>
-                }
-            </small>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary ms-auto" @onclick="Disconnect">
-            <i class="bi bi-box-arrow-left me-1"></i>Leave Game
-        </button>
-    </div>
-</div>
-
-<!-- Top-Middle Team Budget Widget -->
-@if (PlayerSessionState.CurrentTeam != null)
-{
-    <!-- div class="position-fixed top-0 end-0 m-3 z-3 pointer-events-none" -->
-        <TeamBudgetWidget TeamId="@PlayerSessionState.CurrentTeam.Id" />
-    <!-- /div -->
+@{
+    var session = PlayerSessionState.CurrentGameSession;
+    var team = PlayerSessionState.CurrentTeam;
 }
 
-<!-- Top-Right Overlay: Current Month & Year Display & Game State -->
-<div class="game-date-overlay righthandside position-absolute top-0 end-0 m-3 z-3 bg-white p-3 rounded shadow-sm border">
-    <div class="d-flex align-items-center gap-3">
-        <button type="button" class="btn btn-sm btn-outline-primary rounded-circle" style="width: 2.5rem; height: 2.5rem;" @onclick="ToggleKpiChartModal" title="View KPI & Investment Points charts">
-            <i class="bi bi-bar-chart-line-fill"></i>
-        </button>
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-calendar-event-fill text-primary fs-4"></i>
-            <div class="text-start">
-                <span class="d-block text-uppercase text-muted fw-bold extra-small">Current Date</span>
-                <span class="fw-bold text-dark fs-5 mb-0 leading-tight">@FormattedGameDate</span>
-            </div>
-        </div>
-        @if (PlayerSessionState.CurrentGameSession != null)
+<!-- Game top bar: team, team values, game state, date and exit -->
+<header class="game-topbar" aria-label="Spelstatus">
+    <div class="game-topbar-logo" title="Common Ground">
+        <i class="bi bi-globe2" aria-hidden="true"></i>
+    </div>
+
+    <div class="game-topbar-stats">
+        @if (PlayerSessionState.IsAdmin)
         {
-            <div class="border-start ps-3 text-center">
+            <div class="game-topbar-item">
+                <span class="game-topbar-admin-badge" aria-hidden="true"><i class="bi bi-shield-lock-fill"></i></span>
+                <span class="game-topbar-text">@PlayerSessionState.CurrentAdminUser?.Username</span>
+                <span class="game-topbar-role">Game Admin</span>
+            </div>
+        }
+        else if (team != null)
+        {
+            <div class="game-topbar-item" title="@PlayerSessionState.CurrentPlayerSession?.UserName speelt voor @TeamLabel(team.Name)">
+                <TeamBadge Name="@team.Name" Color="@team.Color" />
+                <span class="game-topbar-text game-topbar-team-name">@TeamLabel(team.Name)</span>
+            </div>
+            <div class="game-topbar-item">
+                <HudStat Icon="bi-star" Label="Duurzaamheidspunten"
+                         Value="@GamePreviewData.SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
+            </div>
+            <div class="game-topbar-item">
+                <TeamBudgetWidget TeamId="@team.Id" />
+            </div>
+            <div class="game-topbar-item">
+                <HudStat Icon="bi-lightning-charge-fill" IconStyle="HudIconStyle.Accent" Label="Duurzame elektriciteit"
+                         Value="@GamePreviewData.RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
+            </div>
+            <div class="game-topbar-item">
+                <HudStat Icon="bi-emoji-angry-fill" IconStyle="HudIconStyle.Plain" Label="Boetes" Caption="Boete"
+                         Value="@GamePreviewData.FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
+            </div>
+        }
+    </div>
+
+    <div class="game-topbar-end">
+        <div class="game-topbar-item">
+            <button type="button" class="game-topbar-icon-button" @onclick="ToggleKpiChartModal" title="Overzicht: KPI-grafieken">
+                <i class="bi bi-bar-chart-line" aria-hidden="true"></i>
+                <span class="visually-hidden">Overzicht</span>
+            </button>
+        </div>
+
+        @if (session != null)
+        {
+            <div class="game-topbar-item">
                 @if (PlayerSessionState.IsAdmin)
                 {
-                    <button type="button" class="btn p-0 border-0 align-baseline cursor-pointer" @onclick="ToggleStateControlPanel" title="Click to control game session state">
-                        <span class="badge @PlayerSessionState.CurrentGameSession.State.GetGameStateBadgeClass() fs-6 shadow-sm">
-                            @PlayerSessionState.CurrentGameSession.State <i class="bi bi-sliders ms-1"></i>
-                        </span>
+                    <button type="button" class="game-topbar-state game-topbar-state--button" @onclick="ToggleStateControlPanel" title="Spelstatus en timer beheren">
+                        @session.State.ToString().ToUpperInvariant()
+                        <i class="bi bi-sliders" aria-hidden="true"></i>
                     </button>
                 }
                 else
                 {
-                    <span class="badge @PlayerSessionState.CurrentGameSession.State.GetGameStateBadgeClass() fs-6">
-                        @PlayerSessionState.CurrentGameSession.State
-                    </span>
+                    <span class="game-topbar-state">@session.State.ToString().ToUpperInvariant()</span>
                 }
 
-                @if ((PlayerSessionState.CurrentGameSession.State == GameState.Play || PlayerSessionState.CurrentGameSession.State == GameState.Pause) && !string.IsNullOrEmpty(RemainingTimeFormatted))
+                @if ((session.State == GameState.Play || session.State == GameState.Pause) && !string.IsNullOrEmpty(RemainingTimeFormatted))
                 {
-                    <div class="mt-1">
-                        <span class="badge bg-dark text-white font-monospace px-2 py-1 small shadow-sm" title="@(PlayerSessionState.CurrentGameSession.State == GameState.Pause ? "Timer paused" : "Time remaining in month")">
-                            <i class="bi bi-stopwatch me-1 text-warning"></i>@RemainingTimeFormatted
-                        </span>
-                    </div>
+                    <span class="game-topbar-timer" title="@(session.State == GameState.Pause ? "Timer gepauzeerd" : "Resterende tijd deze maand")">
+                        <i class="bi bi-stopwatch" aria-hidden="true"></i>@RemainingTimeFormatted
+                    </span>
                 }
             </div>
+            <div class="game-topbar-item">
+                <span class="game-topbar-text" title="Huidige speldatum">01 @FormattedGameDate</span>
+            </div>
         }
+
+        <button type="button" class="game-topbar-exit" @onclick="Disconnect">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            <span>EXIT</span>
+        </button>
     </div>
-</div>
+</header>
 
 <!-- Admin Center Modal: Game State Controls -->
 @if (ShowStateControlPanel && PlayerSessionState.CurrentGameSession != null)
@@ -161,4 +173,9 @@
                    ScopeTeamId="@(PlayerSessionState.IsAdmin ? (int?)null : PlayerSessionState.CurrentTeam?.Id)"
                    StartYear="@PlayerSessionState.CurrentGameSession.StartYear"
                    OnClose="ToggleKpiChartModal" />
+}
+
+@code {
+    private static string TeamLabel(string teamName) =>
+        teamName.StartsWith("Team ", StringComparison.OrdinalIgnoreCase) ? teamName : $"Team {teamName}";
 }

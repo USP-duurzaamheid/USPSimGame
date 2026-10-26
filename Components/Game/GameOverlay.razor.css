@@ -1,20 +1,253 @@
-.game-info-overlay,
-.game-date-overlay {
-    border-radius: var(--app-radius-md) !important;
-    border: 1px solid var(--app-border-color) !important;
-    background-color: var(--app-bg-card) !important;
-    box-shadow: var(--app-shadow-md) !important;
+/* --- Game top bar --- */
+.game-topbar {
+    --hud-font-size: 18px;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 72px;
+    padding: 0 12px 0 9px;
+    border-radius: var(--game-radius-lg);
+    background-color: var(--game-surface);
+    box-shadow: var(--game-shadow);
+    color: var(--game-text-dark);
+    font-family: "Inter", var(--app-font-family);
 }
 
-.lefthandside {
-    width: 400px;
+.game-topbar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: var(--game-radius-md);
+    background-color: var(--game-green);
+    filter: drop-shadow(0 10px 12px rgba(92, 184, 141, 0.2));
+    font-size: 26px;
+    line-height: 1;
+    color: #fff;
 }
 
+.game-topbar-stats {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.game-topbar-stats::-webkit-scrollbar {
+    display: none;
+}
+
+.game-topbar-end {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.game-topbar-item {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+    height: 40px;
+    padding: 0 clamp(12px, 1.7vw, 30px);
+}
+
+.game-topbar-item + .game-topbar-item {
+    border-left: 1px solid var(--game-divider);
+}
+
+.game-topbar-text {
+    font-size: var(--hud-font-size);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.game-topbar-admin-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--game-danger);
+    font-size: 14px;
+    color: #fff;
+}
+
+.game-topbar-role {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: rgba(229, 72, 77, 0.12);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--game-danger);
+    white-space: nowrap;
+}
+
+.game-topbar-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: var(--hud-font-size);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--game-text-dark);
+}
+
+.game-topbar-state--button {
+    padding: 8px 10px;
+    margin: -8px -10px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.game-topbar-state--button .bi {
+    font-size: 15px;
+    color: var(--game-text-muted);
+}
+
+.game-topbar-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border-radius: 10px;
+    background-color: #eef4f1;
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--game-text-muted);
+}
+
+.game-topbar-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 12px;
+    background-color: #eef4f1;
+    font-size: 18px;
+    color: var(--game-text-dark);
+    cursor: pointer;
+}
+
+.game-topbar-state--button:hover,
+.game-topbar-icon-button:hover {
+    background-color: rgba(92, 184, 141, 0.16);
+}
+
+.game-topbar-exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    height: 48px;
+    margin-left: 8px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--game-radius-md);
+    background-color: var(--game-green);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.game-topbar-exit:hover {
+    background-color: var(--game-green-dark);
+}
+
+.game-topbar-state--button:focus-visible,
+.game-topbar-icon-button:focus-visible,
+.game-topbar-exit:focus-visible {
+    outline: 2px solid var(--game-green);
+    outline-offset: 2px;
+}
+
+@media (max-width: 1280px) {
+    .game-topbar {
+        --hud-font-size: 16px;
+    }
+}
+
+/* Laptop widths: show only the team badge (name stays in the tooltip) and an icon-only exit button */
+@media (max-width: 1180px) {
+    .game-topbar-item {
+        padding: 0 12px;
+    }
+
+    /* Visually hidden, still read by screen readers */
+    .game-topbar-team-name,
+    .game-topbar-exit span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .game-topbar-exit {
+        padding: 0 14px;
+    }
+}
+
+/* Phones and small tablets: values move to a second, horizontally scrollable row */
+@media (max-width: 768px) {
+    .game-topbar {
+        --hud-font-size: 14px;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        flex-wrap: wrap;
+        row-gap: 4px;
+        height: auto;
+        padding: 6px;
+    }
+
+    .game-topbar-logo {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+
+    .game-topbar-stats {
+        order: 3;
+        flex-basis: 100%;
+        height: 44px;
+    }
+
+    .game-topbar-item {
+        padding: 0 8px;
+    }
+
+    .game-topbar-exit {
+        height: 44px;
+        margin-left: 4px;
+    }
+}
+
+/* --- Admin state control panel --- */
 .extra-small {
     font-size: 0.7rem;
     letter-spacing: 0.5px;
-}
-
-.leading-tight {
-    line-height: 1.1;
 }

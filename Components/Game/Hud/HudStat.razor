@@ -1,0 +1,36 @@
+@namespace USPSimGame.Components.Game.Hud
+
+@if (OnClick.HasDelegate)
+{
+    <button type="button" class="hud-stat hud-stat--button @ToneClass" title="@Tooltip" @onclick="OnClick">
+        @StatContent
+    </button>
+}
+else
+{
+    <div class="hud-stat @ToneClass" title="@Tooltip">
+        @StatContent
+    </div>
+}
+
+@code {
+    private RenderFragment StatContent => __builder =>
+    {
+        <span class="hud-stat-icon hud-stat-icon--@IconStyle.ToString().ToLowerInvariant()" aria-hidden="true">
+            <i class="bi @Icon"></i>
+        </span>
+        @if (!string.IsNullOrEmpty(Caption))
+        {
+            <span class="hud-stat-caption">@Caption</span>
+        }
+        else
+        {
+            <span class="visually-hidden">@Label:</span>
+        }
+        <span class="hud-stat-value">@Value</span>
+        @if (!string.IsNullOrEmpty(Unit))
+        {
+            <span class="hud-stat-unit">@Unit</span>
+        }
+    };
+}

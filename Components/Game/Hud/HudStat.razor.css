@@ -1,0 +1,73 @@
+.hud-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: var(--hud-font-size, 18px);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--game-text-dark);
+    white-space: nowrap;
+}
+
+.hud-stat--button {
+    padding: 6px 10px;
+    margin: -6px -10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.hud-stat--button:hover,
+.hud-stat--button:focus-visible {
+    background-color: rgba(92, 184, 141, 0.12);
+}
+
+.hud-stat--button:focus-visible {
+    outline: 2px solid var(--game-green);
+    outline-offset: 2px;
+}
+
+.hud-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+.hud-stat-icon--dark {
+    background-color: var(--game-icon-dark);
+    color: #fff;
+}
+
+.hud-stat-icon--accent {
+    background-color: var(--game-yellow);
+    color: var(--game-text-dark);
+}
+
+.hud-stat-icon--plain {
+    font-size: 26px;
+    color: #000;
+}
+
+.hud-stat-unit {
+    margin-left: -6px;
+}
+
+.hud-stat-caption {
+    margin-right: 12px;
+}
+
+.hud-stat--warning {
+    color: var(--game-danger);
+}
+
+.hud-stat--warning .hud-stat-icon--dark {
+    background-color: var(--game-danger);
+}
