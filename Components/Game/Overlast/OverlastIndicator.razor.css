@@ -1,0 +1,273 @@
+.overlast-indicator {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.overlast-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+}
+
+.overlast-panel {
+    position: absolute;
+    top: calc(100% + 26px);
+    left: 50%;
+    z-index: 5;
+    width: 340px;
+    padding: 20px;
+    border-radius: var(--game-radius-lg);
+    background-color: var(--game-surface);
+    box-shadow: var(--game-shadow);
+    color: var(--game-text-dark);
+    transform: translateX(-50%);
+    animation: overlast-panel-in 0.18s ease-out;
+}
+
+.overlast-panel:focus {
+    outline: none;
+}
+
+@keyframes overlast-panel-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -6px);
+    }
+}
+
+.overlast-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.overlast-panel-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: normal;
+    color: var(--game-text-dark);
+}
+
+.overlast-panel-subtitle {
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--game-text-muted);
+}
+
+.overlast-panel-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 10px;
+    background-color: #eef4f1;
+    color: var(--game-text-dark);
+    cursor: pointer;
+}
+
+.overlast-panel-close:hover {
+    background-color: rgba(92, 184, 141, 0.16);
+}
+
+/* --- Score --- */
+.overlast-score {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.overlast-score-value {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.overlast-score-unit {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--game-text-muted);
+}
+
+.overlast-score-level {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.overlast-score--low .overlast-score-level {
+    background-color: rgba(92, 184, 141, 0.16);
+    color: var(--game-green-dark);
+}
+
+.overlast-score--medium .overlast-score-level {
+    background-color: rgba(245, 158, 11, 0.16);
+    color: #b45309;
+}
+
+.overlast-score--high .overlast-score-level {
+    background-color: rgba(229, 72, 77, 0.14);
+    color: var(--game-danger);
+}
+
+.overlast-score--high .overlast-score-value {
+    color: var(--game-danger);
+}
+
+/* --- Meter --- */
+.overlast-meter {
+    position: relative;
+    height: 10px;
+    margin-bottom: 30px;
+    border-radius: 999px;
+    background-color: #eef4f1;
+}
+
+.overlast-meter-fill {
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.4s ease;
+}
+
+.overlast-meter-fill--low {
+    background-color: var(--game-green);
+}
+
+.overlast-meter-fill--medium {
+    background-color: #f59e0b;
+}
+
+.overlast-meter-fill--high {
+    background-color: var(--game-danger);
+}
+
+.overlast-meter-limit {
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    width: 2px;
+    background-color: var(--game-text-dark);
+    transform: translateX(-1px);
+}
+
+.overlast-meter-limit span {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--game-text-muted);
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+/* --- Sources --- */
+.overlast-section-title {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--game-text-muted);
+}
+
+.overlast-sources {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0 0 14px;
+    padding: 0;
+    list-style: none;
+}
+
+.overlast-source {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background-color: #f5f8f6;
+}
+
+.overlast-source--none {
+    opacity: 0.6;
+}
+
+.overlast-source-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--game-icon-dark);
+    font-size: 14px;
+    color: #fff;
+}
+
+.overlast-source-name {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.overlast-source-name small {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--game-text-muted);
+}
+
+.overlast-source-total {
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.overlast-hint {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--game-text-muted);
+}
+
+.overlast-preview-note {
+    margin: 10px 0 0;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--game-text-muted);
+}
+
+/* On smaller screens the top bar values scroll, so pin the panel below the bar instead */
+@media (max-width: 1023px) {
+    .overlast-panel {
+        position: fixed;
+        top: 96px;
+    }
+}
+
+@media (max-width: 768px) {
+    .overlast-panel {
+        position: fixed;
+        top: 124px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        transform: none;
+        animation: none;
+    }
+}
