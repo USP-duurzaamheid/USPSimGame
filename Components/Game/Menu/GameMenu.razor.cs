@@ -44,8 +44,22 @@ public partial class GameMenu : ComponentBase
 
     protected bool ShowOverview { get; private set; }
 
+    private readonly List<DilemmaViewModel> receivedDilemmas = [];
+
+    /// <summary>Dilemma shown in the new-dilemma pop-up, if any.</summary>
+    protected DilemmaViewModel? IncomingDilemma { get; private set; }
+
+    /// <summary>Code of the most recently received dilemma, marked as "Nieuw" in the Doelen list.</summary>
+    protected string? NewDilemmaCode { get; private set; }
+
+    /// <summary>The dilemmas from the parent plus the ones received during this game.</summary>
+    protected IReadOnlyList<DilemmaViewModel> AllDilemmas =>
+        receivedDilemmas
+            .Concat(Dilemmas.Where(d => receivedDilemmas.All(r => r.Code != d.Code)))
+            .ToList();
+
     /// <summary>Open dilemmas whose deadline is this month or already missed.</summary>
-    protected int AttentionCount => Dilemmas.Count(d =>
+    protected int AttentionCount => AllDilemmas.Count(d =>
         d.Status != DilemmaStatus.Completed &&
         (d.IsMissed(CurrentMonth) || d.MonthsLeft(CurrentMonth) == 0));
 
@@ -66,11 +80,25 @@ public partial class GameMenu : ComponentBase
         StateHasChanged();
     }
 
-    /// <summary>Opens the Doelen panel, e.g. after a new dilemma was received.</summary>
-    public void OpenDilemmas()
+    /// <summary>
+    /// Adds a new dilemma to Doelen and shows the new-dilemma pop-up.
+    /// Call this when the team receives a dilemma during the game.
+    /// </summary>
+    public void ReceiveDilemma(DilemmaViewModel dilemma)
     {
-        ActiveSlot = MenuSlot.Dilemmas;
+        receivedDilemmas.RemoveAll(d => d.Code == dilemma.Code);
+        receivedDilemmas.Insert(0, dilemma);
+        NewDilemmaCode = dilemma.Code;
+        IncomingDilemma = dilemma;
         StateHasChanged();
+    }
+
+    protected void CloseIncomingDilemma() => IncomingDilemma = null;
+
+    protected void ViewIncomingDilemma()
+    {
+        IncomingDilemma = null;
+        ActiveSlot = MenuSlot.Dilemmas;
     }
 
     protected void OpenOverview() => ShowOverview = true;

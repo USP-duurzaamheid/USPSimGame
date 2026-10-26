@@ -35,22 +35,27 @@ public static class GamePreviewData
     public const int OverlastLimit = 30;
 
     /// <summary>
-    /// Example dilemmas based on the MVP challenge list in "Game Journey".
+    /// Example dilemma that "arrives" a few seconds after the game screen opens,
+    /// to show the new-dilemma pop-up (the first guided challenge from "Game Journey").
+    /// </summary>
+    public static DilemmaViewModel GetIncomingDilemma(int currentMonth) => new()
+    {
+        Code = "I-01",
+        Title = "Plaats één zonnepaneel",
+        Assignment = "Plaats een zonnepaneel op een toegestane plek in het gebied van je organisatie. Het bouwen duurt 1 maand.",
+        Category = DilemmaCategory.Guided,
+        DeadlineMonth = currentMonth + 2,
+        RewardPoints = 10,
+        FineCredits = 5
+    };
+
+    /// <summary>
+    /// Example dilemmas the team already has, based on the MVP challenge list in "Game Journey".
     /// Deadlines are relative to the current game month so the example stays meaningful
     /// in every session. Rewards and fines are placeholders until the challenge catalogue is final.
     /// </summary>
     public static IReadOnlyList<DilemmaViewModel> GetDilemmas(int currentMonth) =>
     [
-        new()
-        {
-            Code = "I-01",
-            Title = "Plaats één zonnepaneel",
-            Assignment = "Plaats een zonnepaneel op een toegestane plek in het gebied van je organisatie. Het bouwen duurt 1 maand.",
-            Category = DilemmaCategory.Guided,
-            DeadlineMonth = currentMonth + 2,
-            RewardPoints = 10,
-            FineCredits = 5
-        },
         new()
         {
             Code = "I-02",
