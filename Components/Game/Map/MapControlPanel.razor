@@ -4,9 +4,9 @@
 @using USPSimGame.Services.Layers
 
 <div class="map-control-panel-container z-3">
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden map-control-card d-flex flex-column-reverse">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden map-control-card d-flex flex-column">
         <!-- Panel Header -->
-        <div class="card-header bg-white border-top p-3 d-flex align-items-center justify-content-between">
+        <div class="card-header bg-white border-bottom p-3 d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
                 <span class="p-2 rounded-3 bg-primary-subtle text-primary">
                     <i class="bi bi-layers-half h5 mb-0"></i>
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <button class="btn btn-sm btn-light rounded-circle shadow-sm" @onclick="ToggleCollapse" title="@(IsCollapsed ? "Expand panel" : "Collapse panel")">
-                <i class="bi @(IsCollapsed ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                <i class="bi @(IsCollapsed ? "bi-chevron-down" : "bi-chevron-up")"></i>
             </button>
         </div>
 
