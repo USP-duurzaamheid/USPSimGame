@@ -5,7 +5,7 @@
     top: 12px;
     left: 12px;
     right: 12px;
-    z-index: 3;
+    z-index: 4; /* above the other game panels (z-index 3), so its dropdowns are never covered */
     display: flex;
     align-items: center;
     gap: 8px;
@@ -38,7 +38,6 @@
     align-items: center;
     flex: 1 1 auto;
     min-width: 0;
-    overflow-x: auto;
     scrollbar-width: none;
 }
 
@@ -59,7 +58,7 @@
     flex-shrink: 0;
     gap: 12px;
     height: 40px;
-    padding: 0 clamp(12px, 1.7vw, 30px);
+    padding: 0 clamp(10px, 1.3vw, 28px);
 }
 
 .game-topbar-item + .game-topbar-item {
@@ -71,6 +70,12 @@
     font-weight: 500;
     line-height: 1;
     white-space: nowrap;
+}
+
+.game-topbar-team-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .game-topbar-admin-badge {
@@ -183,16 +188,20 @@
     outline-offset: 2px;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1366px) {
     .game-topbar {
         --hud-font-size: 16px;
     }
 }
 
 /* Laptop widths: show only the team badge (name stays in the tooltip) and an icon-only exit button */
-@media (max-width: 1180px) {
+@media (max-width: 1320px) {
+    .game-topbar {
+        --hud-font-size: 15px;
+    }
+
     .game-topbar-item {
-        padding: 0 12px;
+        padding: 0 10px;
     }
 
     /* Visually hidden, still read by screen readers */
@@ -208,6 +217,13 @@
 
     .game-topbar-exit {
         padding: 0 14px;
+    }
+}
+
+/* Tablets: the values scroll horizontally when they do not fit */
+@media (max-width: 1023px) {
+    .game-topbar-stats {
+        overflow-x: auto;
     }
 }
 
@@ -247,6 +263,10 @@
 }
 
 /* --- Admin state control panel --- */
+.game-state-modal-backdrop {
+    z-index: 5;
+}
+
 .extra-small {
     font-size: 0.7rem;
     letter-spacing: 0.5px;

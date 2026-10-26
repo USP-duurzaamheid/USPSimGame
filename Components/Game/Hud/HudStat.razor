@@ -27,7 +27,8 @@ else
         {
             <span class="visually-hidden">@Label:</span>
         }
-        <span class="hud-stat-value">@Value</span>
+        @* Keyed on the value so a changed value is re-created and its highlight animation plays again *@
+        <span class="hud-stat-value" @key="Value">@Value</span>
         @if (!string.IsNullOrEmpty(Unit))
         {
             <span class="hud-stat-unit">@Unit</span>
