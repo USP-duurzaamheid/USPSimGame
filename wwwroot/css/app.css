@@ -42,6 +42,20 @@
     --bs-body-color: var(--app-text-main);
     --bs-primary: var(--app-primary);
     --bs-border-color: var(--app-border-color);
+
+    /* --- Game UI (HUD, panels) - matches the player screens in PlayerLayout --- */
+    --game-green: #5cb88d;
+    --game-green-dark: #439a71;
+    --game-text-dark: #182c25;
+    --game-text-muted: #60756f;
+    --game-surface: #ffffff;
+    --game-divider: #e3ebe7;
+    --game-icon-dark: #343a46;
+    --game-yellow: #ffd60a;
+    --game-danger: #e5484d;
+    --game-radius-lg: 24px;
+    --game-radius-md: 16px;
+    --game-shadow: 0 12px 32px rgba(13, 33, 26, 0.12);
 }
 
 /* --- Global Base Elements --- */
@@ -119,4 +133,17 @@ a:hover, .btn-link:hover {
 
 .blazor-error-boundary::after {
     content: "An error has occurred.";
+}
+
+/* --- Map controls: keep the OpenLayers zoom buttons below the game top bar --- */
+.ol-viewport .ol-zoom {
+    top: 96px;
+    left: 12px;
+}
+
+@media (max-width: 768px) {
+    .ol-viewport .ol-zoom {
+        top: 124px;
+        left: 8px;
+    }
 }
