@@ -1,6 +1,8 @@
 @page "/game"
 @using USPSimGame.Components.Game
 @using USPSimGame.Data.Enums
+@using USPSimGame.Components.Game.Menu
+@using USPSimGame.Components.Game.Preview
 @rendermode InteractiveServer
 
 <PageTitle>Game - @(PlayerSessionState.CurrentGameSession?.Name ?? "Simulation")</PageTitle>
@@ -18,10 +20,18 @@ else
 {
     <GameOverlay />
 
-    <!-- Bottom-Left Stacked Controls Container (Plans on top, Map on bottom) -->
-    <div class="position-fixed bottom-0 start-0 m-3 z-3 d-flex flex-column gap-2 pointer-events-none" style="width: 360px; max-width: calc(100vw - 32px);">
-        <div class="pointer-events-auto">
-            <!-- Development Plans Panel (Top, expands upwards) -->
+    <!-- Bottom-Left Game Menu: Overzicht (KPI charts), Doelen (dilemmas), BUILDINGS (development plans) -->
+    <GameMenu @ref="gameMenu"
+              GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+              ScopeTeamId="@(PlayerSessionState.IsAdmin ? null : PlayerSessionState.CurrentTeam?.Id)"
+              StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+              CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+              ShowDilemmas="@(!PlayerSessionState.IsAdmin)"
+              Dilemmas="@GamePreviewData.GetDilemmas(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+              IsPreview="true"
+              BuildingsEnabled="@(PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)">
+        <Buildings>
+            <!-- Development Plans Panel -->
             <PlansControlPanel @ref="plansControlPanel"
                                GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
                                CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
@@ -29,18 +39,18 @@ else
                                IsAdmin="@PlayerSessionState.IsAdmin"
                                StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
                                ActivePlan="@ActivePlan"
-                               IsCollapsed="@isPlansPanelCollapsed"
-                               OnToggleCollapse="HandlePlansPanelToggle"
+                               IsCollapsed="false"
+                               OnToggleCollapse="CloseMenuPanelWhenCollapsed"
                                OnOpenNewPlan="OpenNewPlanPanel"
                                OnPlanSelected="HandlePlanSelectedAsync" />
-        </div>
+        </Buildings>
+    </GameMenu>
 
-        <div class="pointer-events-auto">
-            <!-- Map Layers & Legend Panel (Bottom) -->
-            <MapControlPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
-                             IsCollapsed="@isMapPanelCollapsed"
-                             OnToggleCollapse="HandleMapPanelToggle" />
-        </div>
+    <!-- Top-Right: Map Layers & Legend Panel (below the top bar) -->
+    <div class="game-map-layers">
+        <MapControlPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                         IsCollapsed="@isMapPanelCollapsed"
+                         OnToggleCollapse="HandleMapPanelToggle" />
     </div>
 
     <!-- Team Area Definition Panel (Bottom Right during Setup State for Players) -->
@@ -81,4 +91,16 @@ else
 
     <!-- OpenLayers Base Map -->
     <GameBaseMap InitialCenter="@InitialCenter" InitialZoom="@InitialZoom" />
+}
+
+@code {
+    private GameMenu? gameMenu;
+
+    private void CloseMenuPanelWhenCollapsed(bool isCollapsed)
+    {
+        if (isCollapsed)
+        {
+            gameMenu?.CloseSlot();
+        }
+    }
 }

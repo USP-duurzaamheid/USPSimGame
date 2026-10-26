@@ -1,0 +1,30 @@
+@namespace USPSimGame.Components.Game.Dilemmas
+
+<article class="dilemma-card @(IsMissed ? "dilemma-card--missed" : IsUrgent ? "dilemma-card--urgent" : null)">
+    <div class="dilemma-card-tags">
+        <span class="dilemma-code">@Dilemma.Code</span>
+        <span class="dilemma-tag">@CategoryLabel</span>
+        @if (Dilemma.IsCollaborative)
+        {
+            <span class="dilemma-tag dilemma-tag--together">
+                <i class="bi bi-people-fill" aria-hidden="true"></i> Samen
+            </span>
+        }
+    </div>
+
+    <h3 class="dilemma-title">@Dilemma.Title</h3>
+    <p class="dilemma-assignment">@Dilemma.Assignment</p>
+
+    <div class="dilemma-meta">
+        <span class="dilemma-deadline" title="Deadline t/m @DeadlineLabel">
+            <i class="bi @(IsMissed ? "bi-exclamation-octagon-fill" : "bi-hourglass-split")" aria-hidden="true"></i>
+            @TimeLeftLabel
+        </span>
+        <span class="dilemma-reward" title="Beloning bij succes">
+            <i class="bi bi-star-fill" aria-hidden="true"></i> +@Dilemma.RewardPoints pts
+        </span>
+        <span class="dilemma-fine" title="Boete als de deadline wordt gemist">
+            <i class="bi bi-coin" aria-hidden="true"></i> -@Dilemma.FineCredits CC
+        </span>
+    </div>
+</article>
