@@ -35,8 +35,8 @@
 @if (ActiveSlot == MenuSlot.Dilemmas)
 {
     <div class="game-menu-slot">
-        <ActiveDilemmasPanel Dilemmas="Dilemmas" CurrentMonth="CurrentMonth" StartYear="StartYear"
-                             IsPreview="IsPreview" OnClose="CloseSlot" />
+        <ActiveDilemmasPanel Dilemmas="AllDilemmas" CurrentMonth="CurrentMonth" StartYear="StartYear"
+                             NewDilemmaCode="@NewDilemmaCode" IsPreview="IsPreview" OnClose="CloseSlot" />
     </div>
 }
 else if (ActiveSlot == MenuSlot.Buildings && Buildings != null)
@@ -49,4 +49,10 @@ else if (ActiveSlot == MenuSlot.Buildings && Buildings != null)
 @if (ShowOverview)
 {
     <KpiChartModal GameSessionId="GameSessionId" ScopeTeamId="ScopeTeamId" StartYear="StartYear" OnClose="CloseOverview" />
+}
+
+@if (IncomingDilemma != null)
+{
+    <DilemmaPopup Dilemma="IncomingDilemma" CurrentMonth="CurrentMonth" StartYear="StartYear"
+                  OnClose="CloseIncomingDilemma" OnViewGoals="ViewIncomingDilemma" />
 }

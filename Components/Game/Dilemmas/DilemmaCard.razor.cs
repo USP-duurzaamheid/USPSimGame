@@ -16,6 +16,9 @@ public partial class DilemmaCard : ComponentBase
 
     [Parameter] public int StartYear { get; set; } = 2026;
 
+    /// <summary>Marks a dilemma that was just received.</summary>
+    [Parameter] public bool IsNew { get; set; }
+
     protected bool IsMissed => Dilemma.IsMissed(CurrentMonth);
 
     protected bool IsUrgent => !IsMissed && Dilemma.MonthsLeft(CurrentMonth) == 0;

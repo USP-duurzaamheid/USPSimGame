@@ -46,6 +46,11 @@ else
         </Buildings>
     </GameMenu>
 
+    <!-- Example data: delivers one dilemma shortly after the game opens, until the backend sends real dilemmas -->
+    <DilemmaPreviewFeed Dilemma="@GamePreviewData.GetIncomingDilemma(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+                        Enabled="@(!PlayerSessionState.IsAdmin && PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)"
+                        OnReceived="ReceiveDilemma" />
+
     <!-- Top-Right: Map Layers & Legend Panel (below the top bar) -->
     <div class="game-map-layers">
         <MapControlPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
@@ -95,6 +100,9 @@ else
 
 @code {
     private GameMenu? gameMenu;
+
+    private void ReceiveDilemma(USPSimGame.Components.Game.Dilemmas.DilemmaViewModel dilemma) =>
+        gameMenu?.ReceiveDilemma(dilemma);
 
     private void CloseMenuPanelWhenCollapsed(bool isCollapsed)
     {

@@ -49,6 +49,11 @@
     color: var(--game-text-muted);
 }
 
+.dilemma-tag--new {
+    background-color: var(--game-green);
+    color: #fff;
+}
+
 .dilemma-tag--together {
     background-color: rgba(20, 107, 226, 0.1);
     color: #1559b8;

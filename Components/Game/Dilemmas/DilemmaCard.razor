@@ -3,6 +3,10 @@
 <article class="dilemma-card @(IsMissed ? "dilemma-card--missed" : IsUrgent ? "dilemma-card--urgent" : null)">
     <div class="dilemma-card-tags">
         <span class="dilemma-code">@Dilemma.Code</span>
+        @if (IsNew)
+        {
+            <span class="dilemma-tag dilemma-tag--new">Nieuw</span>
+        }
         <span class="dilemma-tag">@CategoryLabel</span>
         @if (Dilemma.IsCollaborative)
         {

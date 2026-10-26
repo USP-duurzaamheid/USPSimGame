@@ -28,7 +28,7 @@
             <div class="dilemmas-list">
                 @foreach (var dilemma in RegularDilemmas)
                 {
-                    <DilemmaCard @key="dilemma.Code" Dilemma="dilemma" CurrentMonth="CurrentMonth" StartYear="StartYear" />
+                    <DilemmaCard @key="dilemma.Code" Dilemma="dilemma" CurrentMonth="CurrentMonth" StartYear="StartYear" IsNew="@(dilemma.Code == NewDilemmaCode)" />
                 }
             </div>
         }
@@ -41,7 +41,7 @@
             <div class="dilemmas-list">
                 @foreach (var dilemma in LongTermDilemmas)
                 {
-                    <DilemmaCard @key="dilemma.Code" Dilemma="dilemma" CurrentMonth="CurrentMonth" StartYear="StartYear" />
+                    <DilemmaCard @key="dilemma.Code" Dilemma="dilemma" CurrentMonth="CurrentMonth" StartYear="StartYear" IsNew="@(dilemma.Code == NewDilemmaCode)" />
                 }
             </div>
         }
