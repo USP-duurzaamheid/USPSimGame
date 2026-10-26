@@ -1,0 +1,49 @@
+@namespace USPSimGame.Components.Game.Preview
+@using USPSimGame.Components.Game.Dilemmas
+@implements IDisposable
+
+@* Non-visual: delivers one example dilemma a few seconds after the game screen opens.
+   Remove this component once the backend sends real dilemmas to GameMenu.ReceiveDilemma. *@
+
+@code {
+    /// <summary>The example dilemma to deliver.</summary>
+    [Parameter, EditorRequired] public DilemmaViewModel Dilemma { get; set; } = default!;
+
+    /// <summary>Only deliver while this is true (e.g. not during the setup phase).</summary>
+    [Parameter] public bool Enabled { get; set; } = true;
+
+    [Parameter] public int DelaySeconds { get; set; } = 4;
+
+    [Parameter] public EventCallback<DilemmaViewModel> OnReceived { get; set; }
+
+    private readonly CancellationTokenSource cancellation = new();
+    private bool scheduled;
+
+    protected override void OnParametersSet()
+    {
+        if (Enabled && !scheduled)
+        {
+            scheduled = true;
+            _ = DeliverAfterDelayAsync();
+        }
+    }
+
+    private async Task DeliverAfterDelayAsync()
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(DelaySeconds), cancellation.Token);
+            await InvokeAsync(() => OnReceived.InvokeAsync(Dilemma));
+        }
+        catch (TaskCanceledException)
+        {
+            // The game screen was closed before the dilemma arrived.
+        }
+    }
+
+    public void Dispose()
+    {
+        cancellation.Cancel();
+        cancellation.Dispose();
+    }
+}
