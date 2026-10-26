@@ -35,13 +35,13 @@
                        pattern="[0-9]*"
                        autocomplete="one-time-code"
                        maxlength="@PinLength"
-                       aria-label="4-digit game code"
+                       aria-label="@($"{PinLength}-digit game code")"
                        value="@Pin"
                        @oninput="HandlePinInputAsync"
                        @onfocus="() => IsFocused = true"
                        @onblur="() => IsFocused = false" />
             </div>
-            <span class="join-pin-caption">@(ErrorMessage ?? "4-digit game code")</span>
+            <span class="join-pin-caption">@(ErrorMessage ?? $"{PinLength}-digit game code")</span>
         </div>
 
         <button type="submit" class="join-button" disabled="@(!IsPinComplete)">
