@@ -1,0 +1,54 @@
+@namespace USPSimGame.Components.Game.Dilemmas
+
+<section @ref="panel" class="dilemmas-panel" role="dialog" aria-labelledby="dilemmas-panel-title" tabindex="-1" @onkeydown="HandleKeyDown">
+    <header class="dilemmas-panel-header">
+        <span class="dilemmas-panel-icon" aria-hidden="true"><i class="bi bi-bullseye"></i></span>
+        <div class="dilemmas-panel-heading">
+            <h2 id="dilemmas-panel-title" class="dilemmas-panel-title">Doelen</h2>
+            <p class="dilemmas-panel-subtitle">Opdrachten van de gemeente</p>
+        </div>
+        <button type="button" class="dilemmas-panel-close" @onclick="OnClose" aria-label="Sluiten">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+    </header>
+
+    <div class="dilemmas-panel-body">
+        <h3 class="dilemmas-section-title">
+            Actief <span class="dilemmas-section-count">@RegularDilemmas.Count</span>
+        </h3>
+        @if (RegularDilemmas.Count == 0)
+        {
+            <p class="dilemmas-empty">
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Geen actieve opdrachten. Nieuwe dilemma's verschijnen vanzelf tijdens het spel.
+            </p>
+        }
+        else
+        {
+            <div class="dilemmas-list">
+                @foreach (var dilemma in RegularDilemmas)
+                {
+                    <DilemmaCard @key="dilemma.Code" Dilemma="dilemma" CurrentMonth="CurrentMonth" StartYear="StartYear" />
+                }
+            </div>
+        }
+
+        @if (LongTermDilemmas.Count > 0)
+        {
+            <h3 class="dilemmas-section-title">
+                Lange termijn <span class="dilemmas-section-count">@LongTermDilemmas.Count</span>
+            </h3>
+            <div class="dilemmas-list">
+                @foreach (var dilemma in LongTermDilemmas)
+                {
+                    <DilemmaCard @key="dilemma.Code" Dilemma="dilemma" CurrentMonth="CurrentMonth" StartYear="StartYear" />
+                }
+            </div>
+        }
+
+        @if (IsPreview)
+        {
+            <p class="dilemmas-preview-note">Voorbeelddata: wordt vervangen door de echte dilemma's uit het spel.</p>
+        }
+    </div>
+</section>

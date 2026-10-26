@@ -52,13 +52,6 @@
     </div>
 
     <div class="game-topbar-end">
-        <div class="game-topbar-item">
-            <button type="button" class="game-topbar-icon-button" @onclick="ToggleKpiChartModal" title="Overzicht: KPI-grafieken">
-                <i class="bi bi-bar-chart-line" aria-hidden="true"></i>
-                <span class="visually-hidden">Overzicht</span>
-            </button>
-        </div>
-
         @if (session != null)
         {
             <div class="game-topbar-item">
@@ -168,15 +161,6 @@
             </div>
         </div>
     </div>
-}
-
-<!-- KPI & Investment Points Chart Modal -->
-@if (ShowKpiChartModal && PlayerSessionState.CurrentGameSession != null)
-{
-    <KpiChartModal GameSessionId="@PlayerSessionState.CurrentGameSession.Id"
-                   ScopeTeamId="@(PlayerSessionState.IsAdmin ? (int?)null : PlayerSessionState.CurrentTeam?.Id)"
-                   StartYear="@PlayerSessionState.CurrentGameSession.StartYear"
-                   OnClose="ToggleKpiChartModal" />
 }
 
 @code {

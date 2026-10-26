@@ -139,22 +139,7 @@
     color: var(--game-text-muted);
 }
 
-.game-topbar-icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 12px;
-    background-color: #eef4f1;
-    font-size: 18px;
-    color: var(--game-text-dark);
-    cursor: pointer;
-}
-
-.game-topbar-state--button:hover,
-.game-topbar-icon-button:hover {
+.game-topbar-state--button:hover {
     background-color: rgba(92, 184, 141, 0.16);
 }
 
@@ -182,7 +167,6 @@
 }
 
 .game-topbar-state--button:focus-visible,
-.game-topbar-icon-button:focus-visible,
 .game-topbar-exit:focus-visible {
     outline: 2px solid var(--game-green);
     outline-offset: 2px;
