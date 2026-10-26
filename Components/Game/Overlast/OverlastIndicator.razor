@@ -1,0 +1,69 @@
+@namespace USPSimGame.Components.Game.Overlast
+@using USPSimGame.Components.Game.Hud
+
+<div class="overlast-indicator">
+    <HudStat Icon="bi-emoji-angry-fill"
+             IconStyle="HudIconStyle.Plain"
+             Label="Overlastpunten"
+             Value="@Total.ToString()"
+             IsWarning="@(Level == OverlastLevel.High)"
+             IsPreview="@IsPreview"
+             Title="Overlast van je campus, klik voor details"
+             OnClick="TogglePanel" />
+
+    @if (IsOpen)
+    {
+        <div class="overlast-backdrop" @onclick="ClosePanel"></div>
+
+        <section @ref="panel" class="overlast-panel" role="dialog" aria-label="Overlast van je campus" tabindex="-1" @onkeydown="HandleKeyDown">
+            <header class="overlast-panel-header">
+                <div>
+                    <h2 class="overlast-panel-title">Overlast</h2>
+                    <p class="overlast-panel-subtitle">Geluid en hinder door je installaties</p>
+                </div>
+                <button type="button" class="overlast-panel-close" @onclick="ClosePanel" aria-label="Sluiten">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <div class="overlast-score overlast-score--@LevelClass">
+                <span class="overlast-score-value">@Total</span>
+                <span class="overlast-score-unit">overlastpunten</span>
+                <span class="overlast-score-level">@LevelLabel</span>
+            </div>
+
+            <div class="overlast-meter" role="meter" aria-label="Overlastmeter"
+                 aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@Total">
+                <div class="overlast-meter-fill overlast-meter-fill--@LevelClass" style="width: @FillPercent"></div>
+                <div class="overlast-meter-limit" style="left: @LimitPercent">
+                    <span>grens @Limit</span>
+                </div>
+            </div>
+
+            <h3 class="overlast-section-title">Waar komt het vandaan?</h3>
+            <ul class="overlast-sources">
+                @foreach (var source in OrderedSources)
+                {
+                    <li class="overlast-source @(source.Count == 0 ? "overlast-source--none" : null)">
+                        <span class="overlast-source-icon" aria-hidden="true"><i class="bi @source.Icon"></i></span>
+                        <span class="overlast-source-name">
+                            @source.Name
+                            <small>@source.Count × @source.PointsPerUnit @(source.PointsPerUnit == 1 ? "punt" : "punten")</small>
+                        </span>
+                        <span class="overlast-source-total">+@source.TotalPoints</span>
+                    </li>
+                }
+            </ul>
+
+            <p class="overlast-hint">
+                <i class="bi bi-lightbulb" aria-hidden="true"></i>
+                Elke installatie die je plaatst telt mee. Kies je voor installaties met veel punten per stuk, dan loopt je overlast snel op.
+            </p>
+
+            @if (IsPreview)
+            {
+                <p class="overlast-preview-note">Voorbeelddata: wordt vervangen door de echte waarden uit het spel.</p>
+            }
+        </section>
+    }
+</div>

@@ -1,6 +1,7 @@
 @namespace USPSimGame.Components.Game
 @using USPSimGame.Data.Enums
 @using USPSimGame.Components.Game.Hud
+@using USPSimGame.Components.Game.Overlast
 @using USPSimGame.Components.Game.Preview
 
 @{
@@ -39,6 +40,9 @@
             <div class="game-topbar-item">
                 <HudStat Icon="bi-lightning-charge-fill" IconStyle="HudIconStyle.Accent" Label="Duurzame elektriciteit"
                          Value="@GamePreviewData.RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
+            </div>
+            <div class="game-topbar-item">
+                <OverlastIndicator Sources="@GamePreviewData.OverlastSources" Limit="@GamePreviewData.OverlastLimit" IsPreview="true" />
             </div>
             <div class="game-topbar-item">
                 <HudStat Icon="bi-emoji-angry-fill" IconStyle="HudIconStyle.Plain" Label="Boetes" Caption="Boete"
@@ -92,7 +96,7 @@
 <!-- Admin Center Modal: Game State Controls -->
 @if (ShowStateControlPanel && PlayerSessionState.CurrentGameSession != null)
 {
-    <div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 z-3 d-flex align-items-center justify-content-center">
+    <div class="game-state-modal-backdrop position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center">
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="width: 440px; max-width: calc(100vw - 32px);">
             <div class="card-header bg-transparent border-bottom p-3 d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
