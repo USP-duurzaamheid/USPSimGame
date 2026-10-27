@@ -1,0 +1,34 @@
+@page "/login-user"
+
+@* 
+Let op, we moeten een statische webpagina gebruiken voor het gebruik van een login form.
+Blazor heeft normaliter altijd een websocket aanstaan met interactive server en alles wordt daar naartoe gehardwired
+We kunnen alleen geen authenticatie cookies zetten via de websocket, dus dit is normale practise.
+Leuk voor Gijs: .NET 11 voegt pas voor het eerst basis client-side validation toe, .NET 11 is 8 september 2026 uitgekomen :)
+Veel plezier!
+ *@
+
+<PageTitle>Login</PageTitle>
+
+<EditForm EditContext="editContext" method="post" OnSubmit="SignIn" FormName="login">
+        <DataAnnotationsValidator />
+    <div>
+        <div class="form-floating mb-3">
+    <InputText @bind-Value="Dto!.UserName" id="Input.UserName" class="form-control" autocomplete="username webauthn" aria-required="true" placeholder="Username" />
+    <label for="Input.UserName" class="form-label">Username</label>
+    <ValidationMessage For="() => Dto.UserName" class="text-danger" />
+</div>
+
+       <div class="form-floating mb-3">
+    <InputText type="password" @bind-Value="Dto!.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+    <label for="Input.Password" class="form-label">Password</label>
+    <ValidationMessage For="() => Dto.Password" class="text-danger" />
+</div>
+
+    </div>
+
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+      </EditForm>
+

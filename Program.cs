@@ -10,9 +10,9 @@ using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
 using USPSimGame.Services.Costing;
 using USPSimGame.Services.Layers;
+using USPSimGame.Data.Seeding;
 using Microsoft.AspNetCore.Identity;
 using USPSimGame.Data.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +26,7 @@ builder.Services.AddRazorComponents()
     .AddHubOptions(options =>
     {
         options.MaximumReceiveMessageSize = 50 * 1024 * 1024; // 50 MB
+
     });
 
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => options.DetailedErrors = true);
@@ -38,15 +39,26 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
+
 // Setup UserManager and connect layer 1 & 2
 builder.Services
-    .AddIdentityCore<ApplicationUser>()
-    .AddEntityFrameworkStores<AppDbContext>(); // Is dit niet teveel aan het registeren? Het lost wel mijn probleem op
+.AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddSignInManager();
+
+// builder.Services.AddIdentity<ApplicationUser, IdentityRole>();
 
 // Add Identity Services
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie(IdentityConstants.ApplicationScheme, options =>
 {
-    options.LoginPath = "/creator";
+    options.LoginPath = "/create-user";
+    options.Cookie.HttpOnly = true;
+    options.AccessDeniedPath = "/Error";
 
 
 });
@@ -59,7 +71,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 //Good article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0
 
 // Register Application Services
+builder.Services.Configure<PasswordHasherOptions>(options => options.IterationCount = 600000);
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasherService>();
+// Sets 
+
 builder.Services.AddSingleton<IGameSessionNotifierService, GameSessionNotifierService>();
 builder.Services.AddSingleton<ITeamNotifierService, TeamNotifierService>();
 builder.Services.AddSingleton<IPlanNotifierService, PlanNotifierService>();
@@ -106,7 +121,9 @@ var app = builder.Build();
 // Automatically apply EF Core database migrations at application startup with retry loop
 using (var scope = app.Services.CreateScope())
 {
+
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     int maxRetries = 10;
     for (int retry = 1; retry <= maxRetries; retry++)
@@ -116,6 +133,8 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Applying EF Core database migrations (attempt {Attempt}/{MaxRetries})...", retry, maxRetries);
             await dbContext.Database.MigrateAsync();
             logger.LogInformation("EF Core database migrations applied successfully.");
+            await Seeder.AsyncRoles(roleManager);
+
             break;
         }
         catch (Exception ex)
@@ -156,7 +175,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
-app.UseAntiforgery();
 
 // Minimal API Endpoint to stream pre-cached layer GeoJSON payloads directly to browser
 app.MapGet("/api/layers/{sessionId:int}/{layerKey}", async (int sessionId, string layerKey, AppDbContext db) =>
@@ -171,7 +189,7 @@ app.MapGet("/api/layers/{sessionId:int}/{layerKey}", async (int sessionId, strin
     }
 
     return Results.Content(layer.CachedDataContent, "application/json");
-});
+}); // Stedin stuff
 
 app.MapGet("/api/teams/session/{sessionId:int}", async (int sessionId, ITeamService teamService) =>
 {
@@ -187,10 +205,14 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
 });
 
 
+
 app.MapStaticAssets();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+app.UseAntiforgery(); // Anti forgery cookie needs to be set later in the middleware pipeline then both auth pipelines
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

@@ -1,3 +1,0 @@
-
-namespace USPSimGame.Services.CreateUser;
-
