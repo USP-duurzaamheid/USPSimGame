@@ -14,5 +14,14 @@ namespace USPSimGame.Data.Entities;
 ///</summary>
 public class ApplicationUser : IdentityUser
 {
+  public ApplicationUser() { }
+
+  // Zoek uit hoe je direct een variabel kan doorsturen ipv aanmaken en in de code passen
+  public ApplicationUser(string email, string username) // Second overload type to make CreateUser code easier to read.
+  {
+    Email = email;
+    this.UserName = username; // This hoeft niet maar kan je wel schrijven 
+  }
+
 
 }

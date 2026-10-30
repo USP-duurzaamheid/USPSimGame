@@ -1,0 +1,10 @@
+@using Microsoft.AspNetCore.Authorization
+@page "/secured"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Creator")]
+
+
+<h1>Je kan hier alleen zijn als je bent ingelogd</h1>
+
+
+
