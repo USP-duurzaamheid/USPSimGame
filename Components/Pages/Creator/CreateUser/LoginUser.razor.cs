@@ -24,7 +24,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
       if (editContext!.Validate())
       {
-        var resu = await _signInManager.PasswordSignInAsync(Dto.UserName, Dto.Password, isPersistent: false, false);
+        var resu = await _signInManager.PasswordSignInAsync(Dto!.UserName, Dto.Password, isPersistent: false, false);
         if (resu.Succeeded) _navigationManager.NavigateTo("/secured");
       }
 
