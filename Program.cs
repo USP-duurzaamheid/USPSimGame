@@ -13,6 +13,9 @@ using USPSimGame.Services.Layers;
 using USPSimGame.Data.Seeding;
 using Microsoft.AspNetCore.Identity;
 using USPSimGame.Data.Entities;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,14 +59,13 @@ builder.Services
 // Add Identity Services
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie(IdentityConstants.ApplicationScheme, options =>
 {
-    options.LoginPath = "/create-user";
+    options.LoginPath = "/login-user";
     options.Cookie.HttpOnly = true;
     options.AccessDeniedPath = "/Error";
 
 
 });
-
-
+builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
 
 
 // Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
@@ -204,6 +206,13 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
     return Results.Content(geoJson, "application/json");
 });
 
+app.MapPost("/user-logout", async (HttpContext context) =>
+{
+    // A null check on context.User in unnecessary because it's needed to authorisze the request, this doesn't get executed if there is no context.
+    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return Results.Redirect("/");
+
+}).RequireAuthorization();
 
 
 app.MapStaticAssets();

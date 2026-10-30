@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
+
 
 namespace USPSimGame.Data.Seeding;
 
@@ -12,7 +10,7 @@ public class Seeder
   public static async Task AsyncRoles(RoleManager<IdentityRole> roleManager)
   {
 
-    string[] roles = { "Creator", "Player", "TestRole" };
+    string[] roles = { "Creator", "Player" };
 
     foreach (string role in roles)
     {

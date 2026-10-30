@@ -21,21 +21,11 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     public async Task SignIn()
     {
-      Console.WriteLine(editContext!.Validate());
-      Console.WriteLine(Dto!.Password);
-      Console.WriteLine(Dto.UserName);
 
-      if (editContext.Validate())
+      if (editContext!.Validate())
       {
-
-
         var resu = await _signInManager.PasswordSignInAsync(Dto.UserName, Dto.Password, isPersistent: false, false);
-        Console.WriteLine(resu.Succeeded);
-        Console.WriteLine(resu.IsNotAllowed);
-
-
-
-        _navigationManager.NavigateTo("/secured");
+        if (resu.Succeeded) _navigationManager.NavigateTo("/secured");
       }
 
     }

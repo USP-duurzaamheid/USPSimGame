@@ -43,7 +43,6 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
       if (string.IsNullOrEmpty(Dto!.Email) || string.IsNullOrEmpty(Dto.Password) || string.IsNullOrEmpty(Dto.UserName))
       {
-        Console.WriteLine("Something is wrong");
         SubmitMessage.Add("Please enter something in the fields");
         return;
       }
