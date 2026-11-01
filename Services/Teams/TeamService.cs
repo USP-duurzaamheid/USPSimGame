@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using USPSimGame.Data;
 using USPSimGame.Exceptions;
-using USPSimGame.Services.Auth;
 using USPSimGame.Data.Entities;
 
 namespace USPSimGame.Services.Teams;
@@ -9,14 +8,12 @@ namespace USPSimGame.Services.Teams;
 public class TeamService : ITeamService
 {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-    private readonly IPasswordHasher _passwordHasher;
     private readonly ITeamNotifierService _teamNotifier;
     private readonly ILogger<TeamService> _logger;
 
-    public TeamService(IDbContextFactory<AppDbContext> dbContextFactory, IPasswordHasher passwordHasher, ITeamNotifierService teamNotifier, ILogger<TeamService> logger)
+    public TeamService(IDbContextFactory<AppDbContext> dbContextFactory, ITeamNotifierService teamNotifier, ILogger<TeamService> logger)
     {
         _dbContextFactory = dbContextFactory;
-        _passwordHasher = passwordHasher;
         _teamNotifier = teamNotifier;
         _logger = logger;
     }
@@ -68,10 +65,9 @@ public class TeamService : ITeamService
         return team;
     }
 
-    public async Task<Team> CreateTeamAsync(Team team, string plainPassword)
+    public async Task<Team> CreateTeamAsync(Team team)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
-        team.PasswordHash = _passwordHasher.HashPassword(plainPassword);
         if (string.IsNullOrWhiteSpace(team.Color))
         {
             team.Color = "#3b82f6";
@@ -82,7 +78,7 @@ public class TeamService : ITeamService
         return team;
     }
 
-    public async Task<Team> UpdateTeamAsync(Team team, string? newPlainPassword)
+    public async Task<Team> UpdateTeamAsync(Team team)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         var existing = await db.Teams.FindAsync(team.Id);
@@ -94,11 +90,6 @@ public class TeamService : ITeamService
         existing.Name = team.Name;
         existing.Color = string.IsNullOrWhiteSpace(team.Color) ? "#3b82f6" : team.Color;
         existing.AnnualBudgetAllowance = team.AnnualBudgetAllowance;
-
-        if (!string.IsNullOrEmpty(newPlainPassword))
-        {
-            existing.PasswordHash = _passwordHasher.HashPassword(newPlainPassword);
-        }
 
         await db.SaveChangesAsync();
         return existing;
@@ -268,11 +259,6 @@ public class TeamService : ITeamService
                     return (false, null, $"Item #{index} ('{nameProp.GetString()}') is missing a valid 'Color' hex string.");
                 }
 
-                if (!element.TryGetProperty("PasswordHash", out var passHashProp) || string.IsNullOrWhiteSpace(passHashProp.GetString()))
-                {
-                    return (false, null, $"Item #{index} ('{nameProp.GetString()}') is missing a valid 'PasswordHash' property.");
-                }
-
                 string? areaDefString = null;
                 if (element.TryGetProperty("AreaDefinition", out var areaDefProp))
                 {
@@ -308,7 +294,6 @@ public class TeamService : ITeamService
                 {
                     Name = nameProp.GetString()!.Trim(),
                     Color = colorProp.GetString()!.Trim(),
-                    PasswordHash = passHashProp.GetString()!.Trim(),
                     AreaDefinition = areaDefString,
                     AnnualBudgetAllowance = annualBudgetAllowance
                 };
@@ -363,7 +348,6 @@ public class TeamService : ITeamService
         {
             Name = t.Name,
             Color = t.Color,
-            PasswordHash = t.PasswordHash,
             AreaDefinition = t.AreaDefinition,
             AnnualBudgetAllowance = t.AnnualBudgetAllowance
         }).ToList();

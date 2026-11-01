@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using USPSimGame.Components;
@@ -58,6 +59,11 @@ builder.Services.AddSingleton<ITeamNotifierService, TeamNotifierService>();
 builder.Services.AddSingleton<IPlanNotifierService, PlanNotifierService>();
 builder.Services.AddSingleton<IJoinCodeGenerator, JoinCodeGenerator>();
 builder.Services.AddSingleton<JoinCodeAllocator>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IJoinAttemptLimiter, JoinAttemptLimiter>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ClientConnectionInfo>();
+builder.Services.AddScoped<CircuitHandler, ClientConnectionCircuitHandler>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGameSessionService, GameSessionService>();

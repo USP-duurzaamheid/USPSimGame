@@ -6,8 +6,8 @@ public interface ITeamService
 {
     Task<List<Team>> GetTeamsByGameSessionAsync(int gameSessionId);
     Task<Team?> GetTeamByIdAsync(int id);
-    Task<Team> CreateTeamAsync(Team team, string plainPassword);
-    Task<Team> UpdateTeamAsync(Team team, string? newPlainPassword);
+    Task<Team> CreateTeamAsync(Team team);
+    Task<Team> UpdateTeamAsync(Team team);
     Task<bool> DeleteTeamAsync(int id);
 
     Task<(bool Success, string? ErrorMessage)> TryLockTeamAreaAsync(int teamId, int playerSessionId);

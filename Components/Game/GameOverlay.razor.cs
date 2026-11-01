@@ -155,8 +155,9 @@ public partial class GameOverlay : ComponentBase, IDisposable
 
     protected void Disconnect()
     {
+        var returnPath = PlayerSessionState.IsAdmin ? "/creator" : "/";
         PlayerSessionState.ClearSession();
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo(returnPath);
     }
 
     public void Dispose()
