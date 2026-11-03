@@ -3,3 +3,21 @@
     filter: contrast(94%) brightness(102%) saturate(75%);
     transition: filter 0.3s ease;
 }
+
+/* Map layers & legend panel: top-right, below the game top bar */
+.game-map-layers {
+    position: fixed;
+    top: 96px;
+    right: 12px;
+    z-index: 3;
+    width: 360px;
+    max-width: calc(100vw - 24px);
+}
+
+@media (max-width: 768px) {
+    .game-map-layers {
+        top: 124px;
+        right: 8px;
+        max-width: calc(100vw - 72px);
+    }
+}

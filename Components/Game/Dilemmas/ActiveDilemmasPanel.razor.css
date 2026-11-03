@@ -1,0 +1,132 @@
+.dilemmas-panel {
+    display: flex;
+    flex-direction: column;
+    width: 380px;
+    max-width: 100%;
+    min-height: 0;
+    border-radius: var(--game-radius-lg);
+    background-color: #f7faf8;
+    box-shadow: var(--game-shadow);
+    color: var(--game-text-dark);
+    overflow: hidden;
+    animation: dilemmas-panel-in 0.2s ease-out;
+}
+
+.dilemmas-panel:focus {
+    outline: none;
+}
+
+@keyframes dilemmas-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+.dilemmas-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px 14px;
+    border-bottom: 1px solid var(--game-divider);
+    background-color: var(--game-surface);
+}
+
+.dilemmas-panel-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background-color: var(--game-green);
+    font-size: 20px;
+    color: #fff;
+}
+
+.dilemmas-panel-heading {
+    flex: 1;
+}
+
+.dilemmas-panel-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: normal;
+    color: var(--game-text-dark);
+}
+
+.dilemmas-panel-subtitle {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--game-text-muted);
+}
+
+.dilemmas-panel-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 10px;
+    background-color: #eef4f1;
+    color: var(--game-text-dark);
+    cursor: pointer;
+}
+
+.dilemmas-panel-close:hover {
+    background-color: rgba(92, 184, 141, 0.16);
+}
+
+.dilemmas-panel-body {
+    min-height: 0;
+    padding: 4px 14px 14px;
+    overflow-y: auto;
+}
+
+.dilemmas-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--game-text-muted);
+}
+
+.dilemmas-section-count {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background-color: #e3ebe7;
+    font-size: 11px;
+    color: var(--game-text-dark);
+}
+
+.dilemmas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dilemmas-empty {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 12px;
+    border-radius: var(--game-radius-md);
+    background-color: var(--game-surface);
+    font-size: 13px;
+    color: var(--game-text-muted);
+}
+
+.dilemmas-preview-note {
+    margin: 12px 2px 0;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--game-text-muted);
+}

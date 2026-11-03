@@ -6,6 +6,9 @@ using USPSimGame.Components.Game;
 using USPSimGame.Components.Game.Map;
 using USPSimGame.Components.Game.Plans;
 using USPSimGame.Data.Entities;
+using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
+using USPSimGame.Data.Preview;
 using USPSimGame.Services;
 using USPSimGame.Services.Auth;
 using USPSimGame.Services.PlayerSessions;
@@ -48,9 +51,14 @@ public partial class Game : ComponentBase, IDisposable
     [Inject]
     public ILogger<Game> Logger { get; set; } = default!;
 
+    private static readonly TimeSpan PreviewDilemmaDelay = TimeSpan.FromSeconds(4);
+
+    protected GameMenu? gameMenu;
     protected PlansControlPanel? plansControlPanel;
     protected MapFeaturePropertiesPanel? propertiesPanel;
     private DotNetObjectReference<Game>? _dotNetRef;
+    private readonly CancellationTokenSource _previewDilemmaCts = new();
+    private bool _previewDilemmaScheduled;
 
     protected bool ShowPlanAddEditPanel { get; set; } = false;
     protected Plan? PlanToEdit { get; set; }
@@ -58,24 +66,78 @@ public partial class Game : ComponentBase, IDisposable
     protected string? LockErrorMessage { get; set; }
     protected List<Team> SessionTeams { get; set; } = new();
 
-    protected bool isPlansPanelCollapsed { get; set; } = true;
-    protected bool isMapPanelCollapsed { get; set; } = true;
+    protected List<DilemmaModel> Dilemmas { get; set; } = new();
+    protected DilemmaModel? IncomingDilemma { get; set; }
+    protected string? NewDilemmaCode { get; set; }
 
-    protected void HandlePlansPanelToggle(bool newCollapsed)
-    {
-        isPlansPanelCollapsed = newCollapsed;
-        if (!isPlansPanelCollapsed)
-        {
-            isMapPanelCollapsed = true;
-        }
-    }
+    protected bool isMapPanelCollapsed { get; set; } = true;
 
     protected void HandleMapPanelToggle(bool newCollapsed)
     {
         isMapPanelCollapsed = newCollapsed;
-        if (!isMapPanelCollapsed)
+    }
+
+    protected void CloseMenuPanelWhenCollapsed(bool isCollapsed)
+    {
+        if (isCollapsed)
         {
-            isPlansPanelCollapsed = true;
+            gameMenu?.CloseSlot();
+        }
+    }
+
+    /// <summary>
+    /// Adds a new dilemma to the team's dilemmas and shows the new-dilemma pop-up.
+    /// Call this when the team receives a dilemma during the game.
+    /// </summary>
+    protected void ReceiveDilemma(DilemmaModel dilemma)
+    {
+        Dilemmas.RemoveAll(d => d.Code == dilemma.Code);
+        Dilemmas.Insert(0, dilemma);
+        NewDilemmaCode = dilemma.Code;
+        IncomingDilemma = dilemma;
+    }
+
+    protected void CloseIncomingDilemma()
+    {
+        IncomingDilemma = null;
+    }
+
+    protected void ViewIncomingDilemma()
+    {
+        IncomingDilemma = null;
+        gameMenu?.OpenDilemmas();
+    }
+
+    /// <summary>
+    /// Example data: delivers one dilemma shortly after a player opens the game (not during
+    /// setup), until the backend sends real dilemmas to <see cref="ReceiveDilemma"/>.
+    /// </summary>
+    private void SchedulePreviewDilemma()
+    {
+        var session = PlayerSessionState.CurrentGameSession;
+        if (_previewDilemmaScheduled || session == null || PlayerSessionState.IsAdmin || session.State == GameState.Setup)
+        {
+            return;
+        }
+
+        _previewDilemmaScheduled = true;
+        _ = DeliverPreviewDilemmaAsync();
+    }
+
+    private async Task DeliverPreviewDilemmaAsync()
+    {
+        try
+        {
+            await Task.Delay(PreviewDilemmaDelay, _previewDilemmaCts.Token);
+            await InvokeAsync(() =>
+            {
+                ReceiveDilemma(GamePreviewData.GetIncomingDilemma(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0));
+                StateHasChanged();
+            });
+        }
+        catch (TaskCanceledException)
+        {
+            // The game screen was closed before the dilemma arrived.
         }
     }
 
@@ -95,6 +157,7 @@ public partial class Game : ComponentBase, IDisposable
         }
 
         InitialZoom = session?.Zoom ?? 15;
+        Dilemmas = GamePreviewData.GetDilemmas(session?.CurrentMonth ?? 0);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -115,6 +178,8 @@ public partial class Game : ComponentBase, IDisposable
 
             if (session != null)
             {
+                SchedulePreviewDilemma();
+
                 try
                 {
                     Logger.LogInformation("Game.razor: Loading session map layers for Session #{Id}...", session.Id);
@@ -181,6 +246,7 @@ public partial class Game : ComponentBase, IDisposable
             PlayerSessionState.CurrentGameSession.MonthDurationSeconds = updatedSession.MonthDurationSeconds;
             PlayerSessionState.CurrentGameSession.TargetMonthEndUtc = updatedSession.TargetMonthEndUtc;
             PlayerSessionState.CurrentGameSession.RemainingSecondsOnPause = updatedSession.RemainingSecondsOnPause;
+            SchedulePreviewDilemma();
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -326,5 +392,7 @@ public partial class Game : ComponentBase, IDisposable
         TeamNotifier.OnTeamAreaChanged -= HandleTeamAreaChangedAsync;
         Notifier.OnGameSessionStateChanged -= HandleGameSessionStateChangedAsync;
         _dotNetRef?.Dispose();
+        _previewDilemmaCts.Cancel();
+        _previewDilemmaCts.Dispose();
     }
 }

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
+using USPSimGame.Data.Preview;
 using USPSimGame.Services;
 using USPSimGame.Services.Auth;
 using USPSimGame.Services.PlayerSessions;
@@ -24,11 +26,19 @@ public partial class GameOverlay : ComponentBase, IDisposable
     public NavigationManager Navigation { get; set; } = default!;
 
     protected bool ShowStateControlPanel { get; set; } = false;
-    protected bool ShowKpiChartModal { get; set; } = false;
     protected int DurationMinutes { get; set; } = 2;
     protected int DurationSeconds { get; set; } = 0;
 
     private System.Threading.Timer? _clientTimer;
+
+    // Example values until the backend provides them (see GamePreviewData).
+    protected int SustainabilityPoints => GamePreviewData.SustainabilityPoints;
+    protected int RenewableElectricityPercent => GamePreviewData.RenewableElectricityPercent;
+    protected int FineCount => GamePreviewData.FineCount;
+    protected OverlastInfo Overlast => GamePreviewData.Overlast;
+
+    protected static string TeamLabel(string teamName) =>
+        teamName.StartsWith("Team ", StringComparison.OrdinalIgnoreCase) ? teamName : $"Team {teamName}";
 
     public string RemainingTimeFormatted
     {
@@ -117,11 +127,6 @@ public partial class GameOverlay : ComponentBase, IDisposable
             InitDurationInputs();
             ShowStateControlPanel = !ShowStateControlPanel;
         }
-    }
-
-    protected void ToggleKpiChartModal()
-    {
-        ShowKpiChartModal = !ShowKpiChartModal;
     }
 
     protected async Task ApplyDurationAsync()
