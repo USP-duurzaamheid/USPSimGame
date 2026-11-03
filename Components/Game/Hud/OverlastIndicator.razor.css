@@ -4,6 +4,28 @@
     align-items: center;
 }
 
+.overlast-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    margin: -6px -10px;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.overlast-button:hover,
+.overlast-button:focus-visible {
+    background-color: rgba(92, 184, 141, 0.12);
+}
+
+.overlast-button:focus-visible {
+    outline: 2px solid var(--game-green);
+    outline-offset: 2px;
+}
+
 .overlast-backdrop {
     position: fixed;
     inset: 0;

@@ -2,32 +2,11 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    padding: 0;
-    border: 0;
-    background: none;
     font-size: var(--hud-font-size, 18px);
     font-weight: 500;
     line-height: 1;
     color: var(--game-text-dark);
     white-space: nowrap;
-}
-
-.hud-stat--button {
-    padding: 6px 10px;
-    margin: -6px -10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-}
-
-.hud-stat--button:hover,
-.hud-stat--button:focus-visible {
-    background-color: rgba(92, 184, 141, 0.12);
-}
-
-.hud-stat--button:focus-visible {
-    outline: 2px solid var(--game-green);
-    outline-offset: 2px;
 }
 
 .hud-stat-icon {

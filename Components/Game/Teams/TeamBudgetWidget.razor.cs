@@ -22,6 +22,19 @@ public partial class TeamBudgetWidget : ComponentBase, IDisposable
     protected double CurrentBalance { get; set; } = 100;
     protected double MonthlyExpenseBurden { get; set; } = 0;
 
+    protected string CreditsTooltip
+    {
+        get
+        {
+            var tooltip = $"Campus Credits: {CurrentBalance:N0} CC beschikbaar";
+            if (MonthlyExpenseBurden > 0)
+            {
+                tooltip += $" · vaste lasten -{MonthlyExpenseBurden:N1} CC per maand";
+            }
+            return CurrentBalance < 0 ? $"{tooltip} · let op: je saldo is negatief!" : tooltip;
+        }
+    }
+
     private int _loadedTeamId = -1;
 
     protected override void OnInitialized()

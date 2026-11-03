@@ -1,15 +1,10 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
 
-namespace USPSimGame.Components.Game.Overlast;
-
-public enum OverlastLevel
-{
-    Low,
-    Medium,
-    High
-}
+namespace USPSimGame.Components.Game.Hud;
 
 /// <summary>
 /// Overlast value in the game top bar. Clicking it opens a meter with the total,
@@ -17,11 +12,7 @@ public enum OverlastLevel
 /// </summary>
 public partial class OverlastIndicator : ComponentBase
 {
-    /// <summary>Installations that cause overlast. The total is the sum of all sources.</summary>
-    [Parameter, EditorRequired] public IReadOnlyList<OverlastSource> Sources { get; set; } = [];
-
-    /// <summary>Maximum overlast before it counts as too high (e.g. challenge M-02 uses 30).</summary>
-    [Parameter] public int Limit { get; set; } = 30;
+    [Parameter, EditorRequired] public OverlastInfo Overlast { get; set; } = default!;
 
     /// <summary>Marks the values as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
@@ -31,19 +22,12 @@ public partial class OverlastIndicator : ComponentBase
 
     protected bool IsOpen { get; private set; }
 
-    protected int Total => Sources.Sum(s => s.TotalPoints);
-
     protected IEnumerable<OverlastSource> OrderedSources =>
-        Sources.OrderByDescending(s => s.TotalPoints).ThenByDescending(s => s.PointsPerUnit);
+        Overlast.Sources.OrderByDescending(s => s.TotalPoints).ThenByDescending(s => s.PointsPerUnit);
 
-    protected OverlastLevel Level =>
-        Total > Limit ? OverlastLevel.High
-        : Total > Limit / 2 ? OverlastLevel.Medium
-        : OverlastLevel.Low;
+    protected string LevelClass => Overlast.Level.ToString().ToLowerInvariant();
 
-    protected string LevelClass => Level.ToString().ToLowerInvariant();
-
-    protected string LevelLabel => Level switch
+    protected string LevelLabel => Overlast.Level switch
     {
         OverlastLevel.High => "Boven de grens",
         OverlastLevel.Medium => "Gemiddeld",
@@ -51,10 +35,10 @@ public partial class OverlastIndicator : ComponentBase
     };
 
     /// <summary>The meter shows twice the limit, or more when the total is even higher.</summary>
-    protected int MeterMax => Math.Max(Math.Max(Limit * 2, Total), 1);
+    protected int MeterMax => Math.Max(Math.Max(Overlast.Limit * 2, Overlast.TotalPoints), 1);
 
-    protected string FillPercent => ToPercent(Total);
-    protected string LimitPercent => ToPercent(Limit);
+    protected string FillPercent => ToPercent(Overlast.TotalPoints);
+    protected string LimitPercent => ToPercent(Overlast.Limit);
 
     protected void TogglePanel()
     {

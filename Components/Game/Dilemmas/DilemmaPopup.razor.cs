@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using USPSimGame.Data.Models;
 using USPSimGame.Utils;
 
 namespace USPSimGame.Components.Game.Dilemmas;
@@ -10,7 +11,7 @@ namespace USPSimGame.Components.Game.Dilemmas;
 /// </summary>
 public partial class DilemmaPopup : ComponentBase
 {
-    [Parameter, EditorRequired] public DilemmaViewModel Dilemma { get; set; } = default!;
+    [Parameter, EditorRequired] public DilemmaModel Dilemma { get; set; } = default!;
 
     /// <summary>Current game month of the session (0 = first month).</summary>
     [Parameter] public int CurrentMonth { get; set; }

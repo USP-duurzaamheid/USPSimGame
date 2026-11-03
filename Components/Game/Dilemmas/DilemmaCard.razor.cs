@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
 using USPSimGame.Utils;
 
 namespace USPSimGame.Components.Game.Dilemmas;
@@ -9,7 +11,7 @@ namespace USPSimGame.Components.Game.Dilemmas;
 /// </summary>
 public partial class DilemmaCard : ComponentBase
 {
-    [Parameter, EditorRequired] public DilemmaViewModel Dilemma { get; set; } = default!;
+    [Parameter, EditorRequired] public DilemmaModel Dilemma { get; set; } = default!;
 
     /// <summary>Current game month of the session (0 = first month).</summary>
     [Parameter] public int CurrentMonth { get; set; }
@@ -21,7 +23,7 @@ public partial class DilemmaCard : ComponentBase
 
     protected bool IsMissed => Dilemma.IsMissed(CurrentMonth);
 
-    protected bool IsUrgent => !IsMissed && Dilemma.MonthsLeft(CurrentMonth) == 0;
+    protected bool IsUrgent => Dilemma.IsDueThisMonth(CurrentMonth);
 
     protected string DeadlineLabel => CommonGameUtils.FormatMonthYear(Dilemma.DeadlineMonth, StartYear);
 

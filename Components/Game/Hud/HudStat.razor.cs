@@ -14,7 +14,6 @@ public enum HudIconStyle
 
 /// <summary>
 /// One value in the game top bar: an icon followed by a value and optional unit.
-/// Renders as a button when <see cref="OnClick"/> is set.
 /// </summary>
 public partial class HudStat : ComponentBase
 {
@@ -36,10 +35,6 @@ public partial class HudStat : ComponentBase
 
     /// <summary>Marks the value as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
-
-    [Parameter] public EventCallback OnClick { get; set; }
-
-    protected string ToneClass => IsWarning ? "hud-stat--warning" : string.Empty;
 
     protected string Tooltip
     {

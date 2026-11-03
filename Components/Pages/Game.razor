@@ -1,8 +1,6 @@
 @page "/game"
 @using USPSimGame.Components.Game
 @using USPSimGame.Data.Enums
-@using USPSimGame.Components.Game.Menu
-@using USPSimGame.Components.Game.Preview
 @rendermode InteractiveServer
 
 <PageTitle>Game - @(PlayerSessionState.CurrentGameSession?.Name ?? "Simulation")</PageTitle>
@@ -27,7 +25,8 @@ else
               StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
               CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
               ShowDilemmas="@(!PlayerSessionState.IsAdmin)"
-              Dilemmas="@GamePreviewData.GetDilemmas(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+              Dilemmas="@Dilemmas"
+              NewDilemmaCode="@NewDilemmaCode"
               IsPreview="true"
               BuildingsEnabled="@(PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)">
         <Buildings>
@@ -45,11 +44,6 @@ else
                                OnPlanSelected="HandlePlanSelectedAsync" />
         </Buildings>
     </GameMenu>
-
-    <!-- Example data: delivers one dilemma shortly after the game opens, until the backend sends real dilemmas -->
-    <DilemmaPreviewFeed Dilemma="@GamePreviewData.GetIncomingDilemma(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
-                        Enabled="@(!PlayerSessionState.IsAdmin && PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)"
-                        OnReceived="ReceiveDilemma" />
 
     <!-- Top-Right: Map Layers & Legend Panel (below the top bar) -->
     <div class="game-map-layers">
@@ -91,24 +85,19 @@ else
                        OnClose="ClosePlanViewAsync" />
     }
 
+    <!-- New Dilemma Pop-up -->
+    @if (IncomingDilemma != null)
+    {
+        <DilemmaPopup Dilemma="@IncomingDilemma"
+                      CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+                      StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                      OnClose="CloseIncomingDilemma"
+                      OnViewGoals="ViewIncomingDilemma" />
+    }
+
     <!-- Map Geometry Properties Floating Panel -->
     <MapFeaturePropertiesPanel @ref="propertiesPanel" />
 
     <!-- OpenLayers Base Map -->
     <GameBaseMap InitialCenter="@InitialCenter" InitialZoom="@InitialZoom" />
-}
-
-@code {
-    private GameMenu? gameMenu;
-
-    private void ReceiveDilemma(USPSimGame.Components.Game.Dilemmas.DilemmaViewModel dilemma) =>
-        gameMenu?.ReceiveDilemma(dilemma);
-
-    private void CloseMenuPanelWhenCollapsed(bool isCollapsed)
-    {
-        if (isCollapsed)
-        {
-            gameMenu?.CloseSlot();
-        }
-    }
 }

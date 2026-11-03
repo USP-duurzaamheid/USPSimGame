@@ -1,11 +1,10 @@
-using USPSimGame.Components.Game.Dilemmas;
-using USPSimGame.Components.Game.Overlast;
+using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
 
-namespace USPSimGame.Components.Game.Preview;
+namespace USPSimGame.Data.Preview;
 
 /// <summary>
 /// Example values for parts of the game UI that the backend does not provide yet.
-/// Every value shown from here is marked as "voorbeeldwaarde" in its tooltip.
 /// Replace a value with real data as soon as the matching backend story is done,
 /// and remove it from this class.
 /// </summary>
@@ -24,21 +23,22 @@ public static class GamePreviewData
     /// Installations causing overlast for the team. Points per unit follow the
     /// "Game Journey" MVP balancing values (solar +1, wind +18, diesel +12).
     /// </summary>
-    public static readonly IReadOnlyList<OverlastSource> OverlastSources =
-    [
-        new("Zonnepaneel", "bi-sun", 1, 1),
-        new("Dieselgenerator", "bi-fuel-pump", 1, 12),
-        new("Windturbine", "bi-wind", 0, 18),
-    ];
-
-    /// <summary>Overlast limit used by challenges such as M-02 ("overlast at or below 30").</summary>
-    public const int OverlastLimit = 30;
+    public static readonly OverlastInfo Overlast = new()
+    {
+        Limit = 30,
+        Sources = new()
+        {
+            new() { Name = "Zonnepaneel", Icon = "bi-sun", Count = 1, PointsPerUnit = 1 },
+            new() { Name = "Dieselgenerator", Icon = "bi-fuel-pump", Count = 1, PointsPerUnit = 12 },
+            new() { Name = "Windturbine", Icon = "bi-wind", Count = 0, PointsPerUnit = 18 }
+        }
+    };
 
     /// <summary>
-    /// Example dilemma that "arrives" a few seconds after the game screen opens,
-    /// to show the new-dilemma pop-up (the first guided challenge from "Game Journey").
+    /// Example dilemma that "arrives" shortly after the game screen opens, to show the
+    /// new-dilemma pop-up (the first guided challenge from "Game Journey").
     /// </summary>
-    public static DilemmaViewModel GetIncomingDilemma(int currentMonth) => new()
+    public static DilemmaModel GetIncomingDilemma(int currentMonth) => new()
     {
         Code = "I-01",
         Title = "Plaats één zonnepaneel",
@@ -54,8 +54,8 @@ public static class GamePreviewData
     /// Deadlines are relative to the current game month so the example stays meaningful
     /// in every session. Rewards and fines are placeholders until the challenge catalogue is final.
     /// </summary>
-    public static IReadOnlyList<DilemmaViewModel> GetDilemmas(int currentMonth) =>
-    [
+    public static List<DilemmaModel> GetDilemmas(int currentMonth) => new()
+    {
         new()
         {
             Code = "I-02",
@@ -109,5 +109,5 @@ public static class GamePreviewData
             RewardPoints = 50,
             FineCredits = 25
         }
-    ];
+    };
 }

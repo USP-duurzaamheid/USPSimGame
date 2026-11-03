@@ -1,5 +1,4 @@
 @namespace USPSimGame.Components.Game.Teams
-@using USPSimGame.Components.Game.Hud
 
 <HudStat Icon="bi-coin"
          Label="Campus Credits"
@@ -7,18 +6,3 @@
          Unit="CC"
          IsWarning="@(CurrentBalance < 0)"
          Title="@CreditsTooltip" />
-
-@code {
-    private string CreditsTooltip
-    {
-        get
-        {
-            var tooltip = $"Campus Credits: {CurrentBalance:N0} CC beschikbaar";
-            if (MonthlyExpenseBurden > 0)
-            {
-                tooltip += $" · vaste lasten -{MonthlyExpenseBurden:N1} CC per maand";
-            }
-            return CurrentBalance < 0 ? $"{tooltip} · let op: je saldo is negatief!" : tooltip;
-        }
-    }
-}

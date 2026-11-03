@@ -1,8 +1,5 @@
 @namespace USPSimGame.Components.Game
 @using USPSimGame.Data.Enums
-@using USPSimGame.Components.Game.Hud
-@using USPSimGame.Components.Game.Overlast
-@using USPSimGame.Components.Game.Preview
 
 @{
     var session = PlayerSessionState.CurrentGameSession;
@@ -32,21 +29,21 @@
             </div>
             <div class="game-topbar-item">
                 <HudStat Icon="bi-star" Label="Duurzaamheidspunten"
-                         Value="@GamePreviewData.SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
+                         Value="@SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
             </div>
             <div class="game-topbar-item">
                 <TeamBudgetWidget TeamId="@team.Id" />
             </div>
             <div class="game-topbar-item">
                 <HudStat Icon="bi-lightning-charge-fill" IconStyle="HudIconStyle.Accent" Label="Duurzame elektriciteit"
-                         Value="@GamePreviewData.RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
+                         Value="@RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
             </div>
             <div class="game-topbar-item">
-                <OverlastIndicator Sources="@GamePreviewData.OverlastSources" Limit="@GamePreviewData.OverlastLimit" IsPreview="true" />
+                <OverlastIndicator Overlast="@Overlast" IsPreview="true" />
             </div>
             <div class="game-topbar-item">
                 <HudStat Icon="bi-emoji-angry-fill" IconStyle="HudIconStyle.Plain" Label="Boetes" Caption="Boete"
-                         Value="@GamePreviewData.FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
+                         Value="@FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
             </div>
         }
     </div>
@@ -161,9 +158,4 @@
             </div>
         </div>
     </div>
-}
-
-@code {
-    private static string TeamLabel(string teamName) =>
-        teamName.StartsWith("Team ", StringComparison.OrdinalIgnoreCase) ? teamName : $"Team {teamName}";
 }

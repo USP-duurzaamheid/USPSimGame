@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using USPSimGame.Components.Game.Dilemmas;
+using USPSimGame.Data.Models;
 
-namespace USPSimGame.Components.Game.Menu;
+namespace USPSimGame.Components.Game;
 
 public enum MenuSlot
 {
@@ -30,7 +30,10 @@ public partial class GameMenu : ComponentBase
     /// <summary>Dilemmas are team assignments, so the Doelen button is hidden for admins.</summary>
     [Parameter] public bool ShowDilemmas { get; set; } = true;
 
-    [Parameter] public IReadOnlyList<DilemmaViewModel> Dilemmas { get; set; } = [];
+    [Parameter] public IReadOnlyList<DilemmaModel> Dilemmas { get; set; } = [];
+
+    /// <summary>Code of a just received dilemma, marked as "Nieuw" in the Doelen list.</summary>
+    [Parameter] public string? NewDilemmaCode { get; set; }
 
     /// <summary>Marks the dilemmas as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
@@ -44,24 +47,8 @@ public partial class GameMenu : ComponentBase
 
     protected bool ShowOverview { get; private set; }
 
-    private readonly List<DilemmaViewModel> receivedDilemmas = [];
-
-    /// <summary>Dilemma shown in the new-dilemma pop-up, if any.</summary>
-    protected DilemmaViewModel? IncomingDilemma { get; private set; }
-
-    /// <summary>Code of the most recently received dilemma, marked as "Nieuw" in the Doelen list.</summary>
-    protected string? NewDilemmaCode { get; private set; }
-
-    /// <summary>The dilemmas from the parent plus the ones received during this game.</summary>
-    protected IReadOnlyList<DilemmaViewModel> AllDilemmas =>
-        receivedDilemmas
-            .Concat(Dilemmas.Where(d => receivedDilemmas.All(r => r.Code != d.Code)))
-            .ToList();
-
     /// <summary>Open dilemmas whose deadline is this month or already missed.</summary>
-    protected int AttentionCount => AllDilemmas.Count(d =>
-        d.Status != DilemmaStatus.Completed &&
-        (d.IsMissed(CurrentMonth) || d.MonthsLeft(CurrentMonth) == 0));
+    protected int AttentionCount => Dilemmas.Count(d => d.NeedsAttention(CurrentMonth));
 
     protected override void OnParametersSet()
     {
@@ -80,25 +67,11 @@ public partial class GameMenu : ComponentBase
         StateHasChanged();
     }
 
-    /// <summary>
-    /// Adds a new dilemma to Doelen and shows the new-dilemma pop-up.
-    /// Call this when the team receives a dilemma during the game.
-    /// </summary>
-    public void ReceiveDilemma(DilemmaViewModel dilemma)
+    /// <summary>Opens the Doelen panel, e.g. after a new dilemma was received.</summary>
+    public void OpenDilemmas()
     {
-        receivedDilemmas.RemoveAll(d => d.Code == dilemma.Code);
-        receivedDilemmas.Insert(0, dilemma);
-        NewDilemmaCode = dilemma.Code;
-        IncomingDilemma = dilemma;
-        StateHasChanged();
-    }
-
-    protected void CloseIncomingDilemma() => IncomingDilemma = null;
-
-    protected void ViewIncomingDilemma()
-    {
-        IncomingDilemma = null;
         ActiveSlot = MenuSlot.Dilemmas;
+        StateHasChanged();
     }
 
     protected void OpenOverview() => ShowOverview = true;

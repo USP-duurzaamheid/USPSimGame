@@ -1,6 +1,4 @@
-@namespace USPSimGame.Components.Game.Menu
-@using USPSimGame.Components.Game.Dilemmas
-@using USPSimGame.Components.Game.Simulation
+@namespace USPSimGame.Components.Game
 
 <nav class="game-menu" aria-label="Spelmenu">
     <button type="button" class="game-menu-button" @onclick="OpenOverview">
@@ -35,7 +33,7 @@
 @if (ActiveSlot == MenuSlot.Dilemmas)
 {
     <div class="game-menu-slot">
-        <ActiveDilemmasPanel Dilemmas="AllDilemmas" CurrentMonth="CurrentMonth" StartYear="StartYear"
+        <ActiveDilemmasPanel Dilemmas="Dilemmas" CurrentMonth="CurrentMonth" StartYear="StartYear"
                              NewDilemmaCode="@NewDilemmaCode" IsPreview="IsPreview" OnClose="CloseSlot" />
     </div>
 }
@@ -49,10 +47,4 @@ else if (ActiveSlot == MenuSlot.Buildings && Buildings != null)
 @if (ShowOverview)
 {
     <KpiChartModal GameSessionId="GameSessionId" ScopeTeamId="ScopeTeamId" StartYear="StartYear" OnClose="CloseOverview" />
-}
-
-@if (IncomingDilemma != null)
-{
-    <DilemmaPopup Dilemma="IncomingDilemma" CurrentMonth="CurrentMonth" StartYear="StartYear"
-                  OnClose="CloseIncomingDilemma" OnViewGoals="ViewIncomingDilemma" />
 }

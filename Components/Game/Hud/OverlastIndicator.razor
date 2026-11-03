@@ -1,15 +1,15 @@
-@namespace USPSimGame.Components.Game.Overlast
-@using USPSimGame.Components.Game.Hud
+@namespace USPSimGame.Components.Game.Hud
 
 <div class="overlast-indicator">
-    <HudStat Icon="bi-emoji-angry-fill"
-             IconStyle="HudIconStyle.Plain"
-             Label="Overlastpunten"
-             Value="@Total.ToString()"
-             IsWarning="@(Level == OverlastLevel.High)"
-             IsPreview="@IsPreview"
-             Title="Overlast van je campus, klik voor details"
-             OnClick="TogglePanel" />
+    <button type="button" class="overlast-button" aria-expanded="@(IsOpen ? "true" : "false")" @onclick="TogglePanel">
+        <HudStat Icon="bi-emoji-angry-fill"
+                 IconStyle="HudIconStyle.Plain"
+                 Label="Overlastpunten"
+                 Value="@Overlast.TotalPoints.ToString()"
+                 IsWarning="@(Overlast.Level == OverlastLevel.High)"
+                 IsPreview="@IsPreview"
+                 Title="Overlast van je campus, klik voor details" />
+    </button>
 
     @if (IsOpen)
     {
@@ -27,16 +27,16 @@
             </header>
 
             <div class="overlast-score overlast-score--@LevelClass">
-                <span class="overlast-score-value">@Total</span>
+                <span class="overlast-score-value">@Overlast.TotalPoints</span>
                 <span class="overlast-score-unit">overlastpunten</span>
                 <span class="overlast-score-level">@LevelLabel</span>
             </div>
 
             <div class="overlast-meter" role="meter" aria-label="Overlastmeter"
-                 aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@Total">
+                 aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@Overlast.TotalPoints">
                 <div class="overlast-meter-fill overlast-meter-fill--@LevelClass" style="width: @FillPercent"></div>
                 <div class="overlast-meter-limit" style="left: @LimitPercent">
-                    <span>grens @Limit</span>
+                    <span>grens @Overlast.Limit</span>
                 </div>
             </div>
 

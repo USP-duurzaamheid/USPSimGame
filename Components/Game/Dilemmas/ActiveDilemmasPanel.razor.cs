@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
 
 namespace USPSimGame.Components.Game.Dilemmas;
 
@@ -10,7 +12,7 @@ namespace USPSimGame.Components.Game.Dilemmas;
 /// </summary>
 public partial class ActiveDilemmasPanel : ComponentBase
 {
-    [Parameter, EditorRequired] public IReadOnlyList<DilemmaViewModel> Dilemmas { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<DilemmaModel> Dilemmas { get; set; } = [];
 
     /// <summary>Current game month of the session (0 = first month).</summary>
     [Parameter] public int CurrentMonth { get; set; }
@@ -27,15 +29,15 @@ public partial class ActiveDilemmasPanel : ComponentBase
 
     private ElementReference panel;
 
-    protected List<DilemmaViewModel> RegularDilemmas => OpenDilemmas
+    protected List<DilemmaModel> RegularDilemmas => OpenDilemmas
         .Where(d => d.Category != DilemmaCategory.LongTerm)
         .ToList();
 
-    protected List<DilemmaViewModel> LongTermDilemmas => OpenDilemmas
+    protected List<DilemmaModel> LongTermDilemmas => OpenDilemmas
         .Where(d => d.Category == DilemmaCategory.LongTerm)
         .ToList();
 
-    private IEnumerable<DilemmaViewModel> OpenDilemmas => Dilemmas
+    private IEnumerable<DilemmaModel> OpenDilemmas => Dilemmas
         .Where(d => d.Status != DilemmaStatus.Completed)
         .OrderByDescending(d => d.IsMissed(CurrentMonth))
         .ThenBy(d => d.DeadlineMonth);
