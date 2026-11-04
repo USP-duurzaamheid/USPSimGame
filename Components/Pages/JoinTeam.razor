@@ -1,0 +1,108 @@
+@page "/join/team/{Code}"
+@layout PlayerLayout
+@rendermode InteractiveServer
+
+<PageTitle>Common Ground - Select Team</PageTitle>
+
+<div class="session-area">
+    <div class="session-heading">
+        <div class="session-heading-icon">
+            <i class="bi bi-controller" aria-hidden="true"></i>
+        </div>
+        <div class="session-heading-text">
+            <h1 class="session-heading-title">Select Game Session</h1>
+            <p class="session-heading-subtitle">Choose an active session to enter the game world.</p>
+        </div>
+    </div>
+
+    <div class="session-card">
+        <div class="session-card-accent"></div>
+        <div class="session-card-body">
+            <div class="session-title-row">
+                <div class="session-title-stack">
+                    <span class="session-eyebrow">Game Session</span>
+                    <span class="session-name">@Session?.Name</span>
+                </div>
+                <span class="session-status">
+                    <span class="session-status-dot"></span>
+                    @Session?.State
+                </span>
+            </div>
+
+            <hr class="session-divider" />
+
+            <div class="session-meta">
+                <div class="session-meta-item">
+                    <span class="session-meta-icon"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
+                    <div class="session-meta-labels">
+                        <span class="session-meta-label">Location</span>
+                        <span class="session-meta-value">Utrecht, Netherlands</span>
+                    </div>
+                </div>
+                <div class="session-meta-item">
+                    <span class="session-meta-icon"><i class="bi bi-calendar4" aria-hidden="true"></i></span>
+                    <div class="session-meta-labels">
+                        <span class="session-meta-label">Game started</span>
+                        <span class="session-meta-value">January 2026</span>
+                    </div>
+                </div>
+                <div class="session-meta-item">
+                    <span class="session-meta-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+                    <div class="session-meta-labels">
+                        <span class="session-meta-label">Current date</span>
+                        <span class="session-meta-value">December 2026</span>
+                    </div>
+                </div>
+                <div class="session-meta-item">
+                    <span class="session-meta-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+                    <div class="session-meta-labels">
+                        <span class="session-meta-label">Teams</span>
+                        <span class="session-meta-value">@Teams.Count @(Teams.Count == 1 ? "team" : "teams")</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="session-divider" />
+
+            <div class="session-teams">
+                <div class="session-teams-header">
+                    <span class="session-teams-title">Teams in session</span>
+                    <span class="session-teams-count">@Teams.Count</span>
+                </div>
+                <div class="session-teams-list">
+                    @if (Session != null && Teams.Count == 0)
+                    {
+                        <p class="session-teams-empty">This session has no teams yet. Ask your host to add teams, then refresh this page.</p>
+                    }
+                    @foreach (var team in Teams)
+                    {
+                        var teamId = team.Id;
+                        var isSelected = teamId == SelectedTeamId;
+                        <button type="button"
+                                class="team-row @(isSelected ? "team-row--selected" : null)"
+                                aria-pressed="@(isSelected ? "true" : "false")"
+                                @onclick="() => SelectedTeamId = teamId">
+                            <span class="team-row-left">
+                                <span class="team-badge">@GetInitials(team.Name)</span>
+                                <span class="team-name">@team.Name</span>
+                            </span>
+                            <span class="team-connection"></span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <input type="text" class="session-player-name" maxlength="50" placeholder="Your name" aria-label="Your name" @bind="PlayerName" />
+
+            @if (ErrorMessage != null)
+            {
+                <p class="session-error" role="alert">@ErrorMessage</p>
+            }
+
+            <button type="button" class="session-enter-button" disabled="@(SelectedTeamId == null || IsJoining)" @onclick="EnterSessionAsync">
+                <span>Enter Session</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>

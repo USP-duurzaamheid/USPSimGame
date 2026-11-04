@@ -1,14 +1,24 @@
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using USPSimGame.Components;
 using USPSimGame.Data;
 using USPSimGame.Services;
+using USPSimGame.Services.Auth;
+using USPSimGame.Services.PlayerSessions;
+using USPSimGame.Services.GameSessions;
+using USPSimGame.Services.Teams;
+using USPSimGame.Services.Plans;
 using USPSimGame.Services.Costing;
 using USPSimGame.Services.Layers;
-using USPSimGame.Services.Plans;
-using USPSimGame.Services.Presets;
+using Microsoft.AspNetCore.Identity;
+using USPSimGame.Data.Entities;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -28,12 +38,33 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
+
+// Add Identity Services (authentication)
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = true;
+});
+
+builder.Services.AddAuthentication(); // Identity works a bit different between ASp.NET Core and Web API's / SPA.
+// Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
+
+//Good article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0
+
 // Register Application Services
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasherService>();
 builder.Services.AddSingleton<IGameSessionNotifierService, GameSessionNotifierService>();
 builder.Services.AddSingleton<ITeamNotifierService, TeamNotifierService>();
 builder.Services.AddSingleton<IPlanNotifierService, PlanNotifierService>();
-builder.Services.AddScoped<IPresetFileService, PresetFileService>();
+builder.Services.AddSingleton<IJoinCodeGenerator, JoinCodeGenerator>();
+builder.Services.AddSingleton<JoinCodeAllocator>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IJoinAttemptLimiter, JoinAttemptLimiter>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ClientConnectionInfo>();
+builder.Services.AddScoped<CircuitHandler, ClientConnectionCircuitHandler>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGameSessionService, GameSessionService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
@@ -156,8 +187,14 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
     return Results.Content(geoJson, "application/json");
 });
 
+
 app.MapStaticAssets();
+
+app.UseAuthentication();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+
 
 app.Run();

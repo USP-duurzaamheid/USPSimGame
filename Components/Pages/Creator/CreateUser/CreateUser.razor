@@ -1,0 +1,44 @@
+@page "/create-user"
+@rendermode InteractiveServer
+@inject ILogger<Program> logger;
+
+<PageTitle>Create User</PageTitle>
+
+<p>Sample create user form</p>
+
+
+<EditForm Model="User" OnSubmit="AddUser" FormName="Onnodig">
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="User!.UserName" />
+
+        </label>
+
+        <label>
+            Identifier:
+            <InputText @bind-Value="User!.Email" />
+
+        </label>
+
+    </div>
+
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+
+
+@if(IsSend)
+    {
+        <div>Form has been sent, waiting for result</div>
+    }
+
+</EditForm>
+
+
+
+@* 
+Gebruikte referentie:
+
+https://learn.microsoft.com/en-us/aspnet/core/blazor/forms/?view=aspnetcore-10.0
+ *@

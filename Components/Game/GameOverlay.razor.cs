@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using USPSimGame.Data.Enums;
 using USPSimGame.Services;
+using USPSimGame.Services.Auth;
+using USPSimGame.Services.PlayerSessions;
+using USPSimGame.Services.GameSessions;
+using USPSimGame.Services.Teams;
+using USPSimGame.Services.Plans;
 
 namespace USPSimGame.Components.Game;
 
@@ -150,8 +155,9 @@ public partial class GameOverlay : ComponentBase, IDisposable
 
     protected void Disconnect()
     {
+        var returnPath = PlayerSessionState.IsAdmin ? "/creator" : "/";
         PlayerSessionState.ClearSession();
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo(returnPath);
     }
 
     public void Dispose()

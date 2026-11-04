@@ -4,6 +4,8 @@ namespace USPSimGame.Data.Entities;
 
 public class GameSession
 {
+    public const int JoinCodeLength = 6;
+
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string CenterLatLong { get; set; } = string.Empty;
@@ -15,6 +17,8 @@ public class GameSession
     public DateTime? TargetMonthEndUtc { get; set; }
     public int? RemainingSecondsOnPause { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public string JoinCode { get; set; } = string.Empty;
 
     public ICollection<GameSessionMapLayer> MapLayers { get; set; } = new List<GameSessionMapLayer>();
     public ICollection<Team> Teams { get; set; } = new List<Team>();

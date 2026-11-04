@@ -1,0 +1,24 @@
+@inherits LayoutComponentBase
+@layout MainLayout
+
+<HeadContent>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;700&family=Inter:wght@400;500;600;700;800&display=swap" />
+</HeadContent>
+
+<div class="player-layout">
+    <header class="player-brand">
+        <div class="player-brand-logo">
+            <i class="bi bi-globe2" aria-hidden="true"></i>
+        </div>
+        <div class="player-brand-text">
+            <span class="player-brand-title">Common Ground</span>
+            <span class="player-brand-subtitle">Multiplayer Energy Simulation</span>
+        </div>
+    </header>
+
+    <main class="player-main">
+        @Body
+    </main>
+
+    <footer class="player-footer">Common Ground • v@(Version)</footer>
+</div>
