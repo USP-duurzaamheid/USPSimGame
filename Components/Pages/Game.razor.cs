@@ -52,14 +52,12 @@ public partial class Game : ComponentBase, IDisposable
     [Inject]
     public ILogger<Game> Logger { get; set; } = default!;
 
-    private static readonly TimeSpan PreviewDilemmaDelay = TimeSpan.FromSeconds(4);
-
     protected InsightBurgerMenu? insightBurgerMenu;
     protected PlansControlPanel? plansControlPanel;
     protected MapFeaturePropertiesPanel? propertiesPanel;
     private DotNetObjectReference<Game>? _dotNetRef;
-    private readonly CancellationTokenSource _previewDilemmaCts = new();
-    private bool _previewDilemmaScheduled;
+    private readonly CancellationTokenSource _previewEventsCts = new();
+    private bool _previewEventsScheduled;
 
     protected bool ShowPlanAddEditPanel { get; set; } = false;
     protected Plan? PlanToEdit { get; set; }
@@ -70,6 +68,8 @@ public partial class Game : ComponentBase, IDisposable
     protected List<DilemmaModel> Dilemmas { get; set; } = new();
     protected DilemmaModel? IncomingDilemma { get; set; }
     protected string? NewDilemmaCode { get; set; }
+    protected List<FineModel> Fines { get; set; } = new();
+    protected FineModel? LatestFine { get; set; }
 
     protected bool isMapPanelCollapsed { get; set; } = true;
 
@@ -110,35 +110,81 @@ public partial class Game : ComponentBase, IDisposable
     }
 
     /// <summary>
-    /// Example data: delivers one dilemma shortly after a player opens the game (not during
-    /// setup), until the backend sends real dilemmas to <see cref="ReceiveDilemma"/>.
+    /// Adds a new fine and shows the fine message.
+    /// Call this when the team receives a fine during the game.
     /// </summary>
-    private void SchedulePreviewDilemma()
+    protected void ReceiveFine(FineModel fine)
+    {
+        Fines.Insert(0, fine);
+        LatestFine = fine;
+    }
+
+    /// <summary>
+    /// Marks the active fine of a dilemma as stopped and shows the fine message.
+    /// Call this when a fine stops during the game.
+    /// </summary>
+    protected void StopFine(string dilemmaCode)
+    {
+        var fine = Fines.FirstOrDefault(f => f.DilemmaCode == dilemmaCode && f.IsActive);
+        if (fine != null)
+        {
+            fine.EndedMonth = PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0;
+            LatestFine = fine;
+        }
+    }
+
+    protected void CloseFineToast()
+    {
+        LatestFine = null;
+    }
+
+    /// <summary>
+    /// Example data: shortly after a player opens the game (not during setup), a dilemma
+    /// arrives, a fine starts and a fine stops. Remove this once the backend calls
+    /// <see cref="ReceiveDilemma"/>, <see cref="ReceiveFine"/> and <see cref="StopFine"/>.
+    /// </summary>
+    private void SchedulePreviewEvents()
     {
         var session = PlayerSessionState.CurrentGameSession;
-        if (_previewDilemmaScheduled || session == null || PlayerSessionState.IsAdmin || session.State == GameState.Setup)
+        if (_previewEventsScheduled || session == null || PlayerSessionState.IsAdmin || session.State == GameState.Setup)
         {
             return;
         }
 
-        _previewDilemmaScheduled = true;
-        _ = DeliverPreviewDilemmaAsync();
+        _previewEventsScheduled = true;
+        _ = RunPreviewEventsAsync();
     }
 
-    private async Task DeliverPreviewDilemmaAsync()
+    private async Task RunPreviewEventsAsync()
     {
         try
         {
-            await Task.Delay(PreviewDilemmaDelay, _previewDilemmaCts.Token);
+            int CurrentMonth() => PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0;
+
+            await Task.Delay(TimeSpan.FromSeconds(4), _previewEventsCts.Token);
             await InvokeAsync(() =>
             {
-                ReceiveDilemma(GamePreviewData.PreviewIncomingDilemma(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0));
+                ReceiveDilemma(GamePreviewData.PreviewIncomingDilemma(CurrentMonth()));
+                StateHasChanged();
+            });
+
+            await Task.Delay(TimeSpan.FromSeconds(8), _previewEventsCts.Token);
+            await InvokeAsync(() =>
+            {
+                ReceiveFine(GamePreviewData.PreviewIncomingFine(CurrentMonth()));
+                StateHasChanged();
+            });
+
+            await Task.Delay(TimeSpan.FromSeconds(20), _previewEventsCts.Token);
+            await InvokeAsync(() =>
+            {
+                StopFine(GamePreviewData.PreviewStoppingFineDilemmaCode);
                 StateHasChanged();
             });
         }
         catch (TaskCanceledException)
         {
-            // The game screen was closed before the dilemma arrived.
+            // The game screen was closed before the example events finished.
         }
     }
 
@@ -159,6 +205,7 @@ public partial class Game : ComponentBase, IDisposable
 
         InitialZoom = session?.Zoom ?? 15;
         Dilemmas = GamePreviewData.PreviewGetCurrentDilemmas(session?.CurrentMonth ?? 0);
+        Fines = GamePreviewData.PreviewGetCurrentFines(session?.CurrentMonth ?? 0);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -179,7 +226,7 @@ public partial class Game : ComponentBase, IDisposable
 
             if (session != null)
             {
-                SchedulePreviewDilemma();
+                SchedulePreviewEvents();
 
                 try
                 {
@@ -247,7 +294,7 @@ public partial class Game : ComponentBase, IDisposable
             PlayerSessionState.CurrentGameSession.MonthDurationSeconds = updatedSession.MonthDurationSeconds;
             PlayerSessionState.CurrentGameSession.TargetMonthEndUtc = updatedSession.TargetMonthEndUtc;
             PlayerSessionState.CurrentGameSession.RemainingSecondsOnPause = updatedSession.RemainingSecondsOnPause;
-            SchedulePreviewDilemma();
+            SchedulePreviewEvents();
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -393,7 +440,7 @@ public partial class Game : ComponentBase, IDisposable
         TeamNotifier.OnTeamAreaChanged -= HandleTeamAreaChangedAsync;
         Notifier.OnGameSessionStateChanged -= HandleGameSessionStateChangedAsync;
         _dotNetRef?.Dispose();
-        _previewDilemmaCts.Cancel();
-        _previewDilemmaCts.Dispose();
+        _previewEventsCts.Cancel();
+        _previewEventsCts.Dispose();
     }
 }

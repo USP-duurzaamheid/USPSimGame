@@ -1,0 +1,119 @@
+.stat-panel-anchor {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.stat-panel-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    margin: -6px -10px;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.stat-panel-button:hover,
+.stat-panel-button:focus-visible {
+    background-color: rgba(92, 184, 141, 0.12);
+}
+
+.stat-panel-button:focus-visible {
+    outline: 2px solid var(--game-green);
+    outline-offset: 2px;
+}
+
+.stat-panel-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+}
+
+.stat-panel {
+    position: absolute;
+    top: calc(100% + 26px);
+    left: 50%;
+    z-index: 5;
+    width: 340px;
+    padding: 20px;
+    border-radius: var(--game-radius-lg);
+    background-color: var(--game-surface);
+    box-shadow: var(--game-shadow);
+    color: var(--game-text-dark);
+    transform: translateX(-50%);
+    animation: stat-panel-in 0.18s ease-out;
+}
+
+.stat-panel:focus {
+    outline: none;
+}
+
+@keyframes stat-panel-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -6px);
+    }
+}
+
+.stat-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat-panel-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: normal;
+    color: var(--game-text-dark);
+}
+
+.stat-panel-subtitle {
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--game-text-muted);
+}
+
+.stat-panel-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 10px;
+    background-color: #eef4f1;
+    color: var(--game-text-dark);
+    cursor: pointer;
+}
+
+.stat-panel-close:hover {
+    background-color: rgba(92, 184, 141, 0.16);
+}
+
+/* On smaller screens the control bar values scroll, so pin the panel below the bar instead */
+@media (max-width: 1023px) {
+    .stat-panel {
+        position: fixed;
+        top: 96px;
+    }
+}
+
+@media (max-width: 768px) {
+    .stat-panel {
+        position: fixed;
+        top: 124px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        transform: none;
+        animation: none;
+    }
+}

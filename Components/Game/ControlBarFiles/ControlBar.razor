@@ -42,8 +42,7 @@
                 <StatDisruption NoisePollution="@NoisePollution" IsPreview="true" />
             </div>
             <div class="control-bar-item">
-                <Stat Icon="bi-emoji-angry-fill" IconStyle="StatIconStyle.Plain" Label="Boetes" Caption="Boete"
-                      Value="@FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
+                <StatFines Fines="@Fines" StartYear="@(session?.StartYear ?? 2026)" IsPreview="true" />
             </div>
         }
     </div>

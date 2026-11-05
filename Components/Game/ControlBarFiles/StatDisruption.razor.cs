@@ -1,6 +1,5 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using USPSimGame.Data.Enums;
 using USPSimGame.Data.Models;
 
@@ -16,11 +15,6 @@ public partial class StatDisruption : ComponentBase
 
     /// <summary>Marks the values as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
-
-    private ElementReference panel;
-    private bool focusPanel;
-
-    protected bool IsOpen { get; private set; }
 
     protected IEnumerable<NoisePollutionSource> OrderedSources =>
         NoisePollution.Sources.OrderByDescending(s => s.SectorNoisePollution).ThenByDescending(s => s.PointsPerUnit);
@@ -39,31 +33,6 @@ public partial class StatDisruption : ComponentBase
 
     protected string FillPercent => ToPercent(NoisePollution.OverallNoisePollution);
     protected string LimitPercent => ToPercent(NoisePollution.Limit);
-
-    protected void TogglePanel()
-    {
-        IsOpen = !IsOpen;
-        focusPanel = IsOpen;
-    }
-
-    protected void ClosePanel() => IsOpen = false;
-
-    protected void HandleKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Escape")
-        {
-            ClosePanel();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (focusPanel)
-        {
-            focusPanel = false;
-            await panel.FocusAsync();
-        }
-    }
 
     private string ToPercent(int value) =>
         (100.0 * value / MeterMax).ToString("0.#", CultureInfo.InvariantCulture) + "%";

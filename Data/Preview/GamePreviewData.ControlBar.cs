@@ -10,8 +10,5 @@ public static partial class GamePreviewData
 
         /// <summary>Share of renewable electricity production, in percent.</summary>
         public const int RenewableElectricityPercent = 48;
-
-        /// <summary>Number of Campus Credit fines received for missed deadlines.</summary>
-        public const int FineCount = 1;
     }
 }

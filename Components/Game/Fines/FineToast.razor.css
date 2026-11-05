@@ -1,0 +1,95 @@
+.fine-toast {
+    position: fixed;
+    top: 96px;
+    left: 50%;
+    z-index: 3; /* below panels the player opens from the control bar and menu (z-index 4) */
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 400px;
+    max-width: calc(100vw - 24px);
+    padding: 14px;
+    border-left: 5px solid var(--game-danger);
+    border-radius: var(--game-radius-md);
+    background-color: var(--game-surface);
+    box-shadow: var(--game-shadow);
+    color: var(--game-text-dark);
+    font-family: "Inter", var(--app-font-family);
+    transform: translateX(-50%);
+    animation: fine-toast-in 0.25s ease-out;
+}
+
+.fine-toast--stopped {
+    border-left-color: var(--game-green);
+}
+
+@keyframes fine-toast-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+}
+
+.fine-toast-icon {
+    flex-shrink: 0;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--game-danger);
+}
+
+.fine-toast--stopped .fine-toast-icon {
+    color: var(--game-green);
+}
+
+.fine-toast-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.fine-toast-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.fine-toast-dilemma {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.fine-toast-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--game-danger);
+}
+
+.fine-toast-reason {
+    font-size: 13px;
+    color: var(--game-text-muted);
+}
+
+.fine-toast-close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #eef4f1;
+    color: var(--game-text-dark);
+    cursor: pointer;
+}
+
+.fine-toast-close:hover {
+    background-color: rgba(92, 184, 141, 0.16);
+}
+
+@media (max-width: 768px) {
+    .fine-toast {
+        top: 124px;
+    }
+}

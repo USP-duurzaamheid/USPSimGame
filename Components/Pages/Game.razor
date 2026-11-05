@@ -16,7 +16,7 @@
 }
 else
 {
-    <ControlBar />
+    <ControlBar Fines="@Fines" />
 
     <!-- Bottom-Left Insight Burger Menu: Overzicht (KPI charts), Doelen (dilemmas), BUILDINGS (development plans) -->
     <InsightBurgerMenu @ref="insightBurgerMenu"
@@ -85,6 +85,12 @@ else
                        SessionTeams="@SessionTeams"
                        OnEditPlan="HandleEditPlanAsync"
                        OnClose="ClosePlanViewAsync" />
+    }
+
+    <!-- Fine Message -->
+    @if (LatestFine != null)
+    {
+        <FineToast Fine="@LatestFine" OnClose="CloseFineToast" />
     }
 
     <!-- New Dilemma Pop-up -->

@@ -25,6 +25,9 @@ public partial class ControlBar : ComponentBase, IDisposable
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;
 
+    [Parameter]
+    public IReadOnlyList<FineModel> Fines { get; set; } = [];
+
     protected bool ShowStateControlPanel { get; set; } = false;
     protected int DurationMinutes { get; set; } = 2;
     protected int DurationSeconds { get; set; } = 0;
@@ -34,7 +37,6 @@ public partial class ControlBar : ComponentBase, IDisposable
     // Example values until the backend provides them (see GamePreviewData).
     protected int SustainabilityPoints => GamePreviewData.PreviewControlBarConstants.SustainabilityPoints;
     protected int RenewableElectricityPercent => GamePreviewData.PreviewControlBarConstants.RenewableElectricityPercent;
-    protected int FineCount => GamePreviewData.PreviewControlBarConstants.FineCount;
     protected NoisePollutionInfo NoisePollution => GamePreviewData.PreviewNoisePollutionInfo;
 
     protected static string TeamLabel(string teamName) =>

@@ -1,69 +1,53 @@
 @namespace USPSimGame.Components.Game.ControlBarFiles
 
-<div class="disruption-indicator">
-    <button type="button" class="disruption-button" aria-expanded="@(IsOpen ? "true" : "false")" @onclick="TogglePanel">
+<StatPanel Title="Overlast" Subtitle="Geluid en hinder door je installaties">
+    <StatContent>
         <Stat Icon="bi-emoji-angry-fill"
-                 IconStyle="StatIconStyle.Plain"
-                 Label="Overlastpunten"
-                 Value="@NoisePollution.OverallNoisePollution.ToString()"
-                 IsWarning="@(NoisePollution.Level == NoisePollutionLevel.High)"
-                 IsPreview="@IsPreview"
-                 Title="Overlast van je campus, klik voor details" />
-    </button>
+              IconStyle="StatIconStyle.Plain"
+              Label="Overlastpunten"
+              Value="@NoisePollution.OverallNoisePollution.ToString()"
+              IsWarning="@(NoisePollution.Level == NoisePollutionLevel.High)"
+              IsPreview="@IsPreview"
+              Title="Overlast van je campus, klik voor details" />
+    </StatContent>
+    <ChildContent>
+        <div class="disruption-score disruption-score--@LevelClass">
+            <span class="disruption-score-value">@NoisePollution.OverallNoisePollution</span>
+            <span class="disruption-score-unit">overlastpunten</span>
+            <span class="disruption-score-level">@LevelLabel</span>
+        </div>
 
-    @if (IsOpen)
-    {
-        <div class="disruption-backdrop" @onclick="ClosePanel"></div>
-
-        <section @ref="panel" class="disruption-panel" role="dialog" aria-label="Overlast van je campus" tabindex="-1" @onkeydown="HandleKeyDown">
-            <header class="disruption-panel-header">
-                <div>
-                    <h2 class="disruption-panel-title">Overlast</h2>
-                    <p class="disruption-panel-subtitle">Geluid en hinder door je installaties</p>
-                </div>
-                <button type="button" class="disruption-panel-close" @onclick="ClosePanel" aria-label="Sluiten">
-                    <i class="bi bi-x-lg" aria-hidden="true"></i>
-                </button>
-            </header>
-
-            <div class="disruption-score disruption-score--@LevelClass">
-                <span class="disruption-score-value">@NoisePollution.OverallNoisePollution</span>
-                <span class="disruption-score-unit">overlastpunten</span>
-                <span class="disruption-score-level">@LevelLabel</span>
+        <div class="disruption-meter" role="meter" aria-label="Overlastmeter"
+             aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@NoisePollution.OverallNoisePollution">
+            <div class="disruption-meter-fill disruption-meter-fill--@LevelClass" style="width: @FillPercent"></div>
+            <div class="disruption-meter-limit" style="left: @LimitPercent">
+                <span>grens @NoisePollution.Limit</span>
             </div>
+        </div>
 
-            <div class="disruption-meter" role="meter" aria-label="Overlastmeter"
-                 aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@NoisePollution.OverallNoisePollution">
-                <div class="disruption-meter-fill disruption-meter-fill--@LevelClass" style="width: @FillPercent"></div>
-                <div class="disruption-meter-limit" style="left: @LimitPercent">
-                    <span>grens @NoisePollution.Limit</span>
-                </div>
-            </div>
-
-            <h3 class="disruption-section-title">Waar komt het vandaan?</h3>
-            <ul class="disruption-sources">
-                @foreach (var source in OrderedSources)
-                {
-                    <li class="disruption-source @(source.Count == 0 ? "disruption-source--none" : null)">
-                        <span class="disruption-source-icon" aria-hidden="true"><i class="bi @source.Icon"></i></span>
-                        <span class="disruption-source-name">
-                            @source.Name
-                            <small>@source.Count × @source.PointsPerUnit @(source.PointsPerUnit == 1 ? "punt" : "punten")</small>
-                        </span>
-                        <span class="disruption-source-total">+@source.SectorNoisePollution</span>
-                    </li>
-                }
-            </ul>
-
-            <p class="disruption-hint">
-                <i class="bi bi-lightbulb" aria-hidden="true"></i>
-                Elke installatie die je plaatst telt mee. Kies je voor installaties met veel punten per stuk, dan loopt je overlast snel op.
-            </p>
-
-            @if (IsPreview)
+        <h3 class="disruption-section-title">Waar komt het vandaan?</h3>
+        <ul class="disruption-sources">
+            @foreach (var source in OrderedSources)
             {
-                <p class="disruption-preview-note">Voorbeelddata: wordt vervangen door de echte waarden uit het spel.</p>
+                <li class="disruption-source @(source.Count == 0 ? "disruption-source--none" : null)">
+                    <span class="disruption-source-icon" aria-hidden="true"><i class="bi @source.Icon"></i></span>
+                    <span class="disruption-source-name">
+                        @source.Name
+                        <small>@source.Count × @source.PointsPerUnit @(source.PointsPerUnit == 1 ? "punt" : "punten")</small>
+                    </span>
+                    <span class="disruption-source-total">+@source.SectorNoisePollution</span>
+                </li>
             }
-        </section>
-    }
-</div>
+        </ul>
+
+        <p class="disruption-hint">
+            <i class="bi bi-lightbulb" aria-hidden="true"></i>
+            Elke installatie die je plaatst telt mee. Kies je voor installaties met veel punten per stuk, dan loopt je overlast snel op.
+        </p>
+
+        @if (IsPreview)
+        {
+            <p class="disruption-preview-note">Voorbeelddata: wordt vervangen door de echte waarden uit het spel.</p>
+        }
+    </ChildContent>
+</StatPanel>

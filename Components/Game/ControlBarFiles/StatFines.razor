@@ -1,0 +1,47 @@
+@namespace USPSimGame.Components.Game.ControlBarFiles
+
+<StatPanel Title="Boetes" Subtitle="@Subtitle">
+    <StatContent>
+        <Stat Icon="bi-emoji-angry-fill"
+              IconStyle="StatIconStyle.Plain"
+              Label="Boetes"
+              Caption="Boete"
+              Value="@ActiveCount.ToString()"
+              IsWarning="@(ActiveCount > 0)"
+              IsPreview="@IsPreview"
+              Title="Boetes voor gemiste deadlines, klik voor details" />
+    </StatContent>
+    <ChildContent>
+        @if (!Fines.Any())
+        {
+            <p class="fines-empty">
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Je hebt nog geen boetes gekregen.
+            </p>
+        }
+        else
+        {
+            <ul class="fines-list">
+                @foreach (var fine in OrderedFines)
+                {
+                    <li class="fine @(fine.IsActive ? "fine--active" : "fine--stopped")">
+                        <div class="fine-header">
+                            <span class="fine-code">@fine.DilemmaCode</span>
+                            <span class="fine-title">@fine.DilemmaTitle</span>
+                        </div>
+                        <p class="fine-reason">@fine.Reason</p>
+                        <div class="fine-footer">
+                            <span class="fine-amount">-@fine.AmountCredits CC per maand</span>
+                            <span class="fine-status">@GetStatusLabel(fine)</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+
+        @if (IsPreview)
+        {
+            <p class="fines-preview-note">Voorbeelddata: wordt vervangen door de echte boetes uit het spel.</p>
+        }
+    </ChildContent>
+</StatPanel>
