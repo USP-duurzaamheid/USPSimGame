@@ -2,29 +2,29 @@
 
 @if (IsOpen)
 {
-    <div class="plannable-layer-modal-backdrop animate-fade-in" @onclick="Close">
-        <div class="plannable-layer-modal-dialog shadow-lg rounded-4 overflow-hidden border" @onclick:stopPropagation="true">
+    <div class="plannable-layer-modal-backdrop" @onclick="Close">
+        <div class="plannable-layer-modal-dialog shadow-lg rounded-4 overflow-hidden border" role="dialog" aria-labelledby="build-menu-title" @onclick:stopPropagation="true">
             <!-- Header -->
-            <div class="modal-header-custom p-3 text-white d-flex align-items-center justify-content-between">
+            <div class="build-menu-header p-3 d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle p-2 bg-success text-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                    <div class="build-menu-icon rounded-circle p-2 bg-success text-white d-flex align-items-center justify-content-center">
                         <i class="bi bi-grid-3x3-gap-fill h5 mb-0"></i>
                     </div>
                     <div>
-                        <h5 class="fw-bold mb-0">Development Option Catalog</h5>
-                        <small class="text-black-50">Select a development layer option to draw on the map canvas</small>
+                        <h5 id="build-menu-title" class="fw-bold mb-0">Bouwmenu</h5>
+                        <small class="text-muted">Kies een installatie en plaats die op de kaart</small>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+                <button type="button" class="btn-close" aria-label="Sluiten" @onclick="Close"></button>
             </div>
 
-            <!-- Body: Grid of Plannable Layers -->
+            <!-- Body: Grid of Installations -->
             <div class="modal-body-custom p-4 bg-light overflow-y-auto" style="max-height: 70vh;">
                 @if (AvailableLayers == null || !AvailableLayers.Any())
                 {
                     <div class="text-center py-5 text-muted">
                         <i class="bi bi-layers-half display-4 d-block mb-2 text-secondary"></i>
-                        <p class="mb-0">No plannable development options available for this session.</p>
+                        <p class="mb-0">Er zijn geen installaties beschikbaar in deze sessie.</p>
                     </div>
                 }
                 else
@@ -39,7 +39,7 @@
                             bool isAlreadyIncluded = IncludedLayerIds.Contains(layer.Id);
 
                             <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden layer-option-card transition-all @(isSelected ? "ring-2 ring-success bg-success-subtle" : "bg-white")">
+                                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden layer-option-card @(isSelected ? "layer-option-card--selected bg-success-subtle" : "bg-white")">
                                     <div class="card-body p-3 d-flex flex-column justify-content-between">
                                         <div>
                                             <!-- Card Header & Badges -->
@@ -47,7 +47,7 @@
                                                 <div class="d-flex align-items-center gap-2">
                                                     <div class="rounded-circle p-2 d-flex align-items-center justify-content-center text-white shadow-sm"
                                                          style="background-color: @(def.DefaultColor ?? "#3b82f6"); width: 34px; height: 34px;">
-                                                        <i class="bi @(def.Icon ?? "bi-layers-fill") small"></i>
+                                                        <i class="bi @(def.Icon ?? "bi-question-diamond-fill") small"></i>
                                                     </div>
                                                     <div>
                                                         <h6 class="fw-bold text-dark mb-0 text-truncate" style="max-width: 160px;" title="@def.Name">@def.Name</h6>
@@ -64,36 +64,24 @@
 
                                             <!-- Description -->
                                             <p class="text-muted small mb-3 line-clamp-2" style="font-size: 0.82rem; min-height: 2.5rem;">
-                                                @(string.IsNullOrWhiteSpace(def.Description) ? "Plannable spatial development option for map integration." : def.Description)
+                                                @(string.IsNullOrWhiteSpace(def.Description) ? "Installatie die je op de kaart kunt plaatsen." : def.Description)
                                             </p>
 
-                                            <!-- Costing Breakdown Table -->
-                                            <div class="p-2 rounded-2 bg-light border mb-3 overflow-hidden">
-                                                <table class="table table-sm table-borderless micro-text mb-0 align-middle">
-                                                    <tbody>
-                                                        <tr class="border-bottom">
-                                                            <td class="fw-bold text-dark pe-2 align-top" style="width: 25%;">Investment</td>
-                                                            <td class="text-muted pe-1 py-0" style="width: 20%;">Base</td>
-                                                            <td class="fw-bold text-success py-0">@def.BaseInvestmentPoints CC</td>
-                                                        </tr>
-                                                        <tr class="border-bottom">
-                                                            <td></td>
-                                                            <td class="text-muted pe-1 py-0">Addition</td>
-                                                            <td class="fw-bold text-success py-0">@def.InvestmentPointsPerUnit @GetInvestmentUnitDisplay(def.GeometryType)</td>
-                                                        </tr>
-                                                        <tr class="border-bottom">
-                                                            <td class="fw-bold text-dark pe-2 align-top">Expense</td>
-                                                            <td class="text-muted pe-1 py-0">Base</td>
-                                                            <td class="fw-bold text-danger py-0">@def.BaseMonthlyExpensePoints CC / month</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td class="text-muted pe-1 py-0">Addition</td>
-                                                            <td class="fw-bold text-danger py-0">@def.MonthlyExpensePointsPerUnit @GetExpenseUnitDisplay(def.GeometryType)</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                            <!-- Costs & Build Time -->
+                                            <dl class="build-menu-facts">
+                                                <div class="build-menu-fact">
+                                                    <dt><i class="bi bi-coin" aria-hidden="true"></i> Kosten</dt>
+                                                    <dd>@GetCostDisplay(def)</dd>
+                                                </div>
+                                                <div class="build-menu-fact">
+                                                    <dt><i class="bi bi-hourglass-split" aria-hidden="true"></i> Bouwtijd</dt>
+                                                    <dd>@GetConstructionTimeDisplay(def)</dd>
+                                                </div>
+                                                <div class="build-menu-fact">
+                                                    <dt><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Vaste lasten</dt>
+                                                    <dd>@GetExpenseDisplay(def)</dd>
+                                                </div>
+                                            </dl>
 
                                             <!-- SimulatorTags Badges -->
                                             @if (!string.IsNullOrWhiteSpace(def.SimulatorTags))
@@ -114,11 +102,11 @@
                                                 @onclick="() => SelectLayer(layer.Id)">
                                             @if (isAlreadyIncluded)
                                             {
-                                                <span><i class="bi bi-check-circle-fill me-1"></i>Included (Select)</span>
+                                                <span><i class="bi bi-check-circle-fill me-1"></i>Toegevoegd, opnieuw selecteren</span>
                                             }
                                             else
                                             {
-                                                <span><i class="bi bi-plus-lg me-1"></i>Select & Start Drawing</span>
+                                                <span><i class="bi bi-plus-lg me-1"></i>Selecteren en plaatsen</span>
                                             }
                                         </button>
                                     </div>
@@ -132,7 +120,7 @@
             <!-- Footer -->
             <div class="modal-footer-custom p-3 bg-white border-top d-flex justify-content-end">
                 <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4" @onclick="Close">
-                    Close Catalog
+                    Sluiten
                 </button>
             </div>
         </div>
