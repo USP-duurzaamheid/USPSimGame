@@ -75,3 +75,15 @@
 .stat--warning .stat-icon--dark {
     background-color: var(--game-danger);
 }
+
+/* Narrow laptops: visually hidden to keep the control bar on one row, still read by screen readers */
+@media (max-width: 1100px) {
+    .stat-small-caption {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+}
