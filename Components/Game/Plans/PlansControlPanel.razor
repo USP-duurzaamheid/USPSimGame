@@ -68,7 +68,7 @@
                                      @onclick="() => ToggleStateGroup(group.State)">
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="bi @(isExpanded ? "bi-chevron-down" : "bi-chevron-right") small text-muted"></i>
-                                        <span class="fw-bold text-dark micro-text text-uppercase">@group.State</span>
+                                        <span class="fw-bold text-dark micro-text text-uppercase">@PlanStateLabels.Get(group.State)</span>
                                         <span class="badge bg-secondary-subtle text-secondary micro-text rounded-pill">@group.Plans.Count</span>
                                     </div>
                                 </div>
@@ -107,6 +107,9 @@
                                                         @FormatMonthYear(plan.StartMonth)
                                                     </small>
                                                 </div>
+
+                                                <!-- 4. Construction Progress -->
+                                                <PlanConstructionProgress Plan="@plan" CurrentMonth="@CurrentMonth" StartYear="@StartYear" />
                                             </div>
                                         }
                                     </div>

@@ -19,6 +19,7 @@ public partial class PlanViewPanel : ComponentBase, IDisposable
 
     [Parameter, EditorRequired] public Plan Plan { get; set; } = default!;
     [Parameter] public int StartYear { get; set; } = 2026;
+    [Parameter] public int CurrentMonth { get; set; }
     [Parameter] public int CurrentTeamId { get; set; }
     [Parameter] public int CurrentPlayerSessionId { get; set; }
     [Parameter] public bool IsAdmin { get; set; }

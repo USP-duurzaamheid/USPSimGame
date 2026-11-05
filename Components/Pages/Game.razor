@@ -37,6 +37,7 @@ else
                                GameState="@(PlayerSessionState.CurrentGameSession?.State ?? GameState.Setup)"
                                IsAdmin="@PlayerSessionState.IsAdmin"
                                StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                               CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
                                ActivePlan="@ActivePlan"
                                IsCollapsed="false"
                                OnToggleCollapse="CloseMenuPanelWhenCollapsed"
@@ -77,6 +78,7 @@ else
     {
         <PlanViewPanel Plan="@ActivePlan"
                        StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                       CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
                        CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
                        CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)"
                        IsAdmin="@PlayerSessionState.IsAdmin"
