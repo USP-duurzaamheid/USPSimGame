@@ -1,4 +1,4 @@
-.game-menu {
+.insight-burger-menu {
     position: fixed;
     left: 12px;
     bottom: 20px;
@@ -14,7 +14,7 @@
     font-family: "Inter", var(--app-font-family);
 }
 
-.game-menu-button {
+.insight-burger-menu-button {
     position: relative;
     display: flex;
     align-items: center;
@@ -33,30 +33,30 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.game-menu-button .bi {
+.insight-burger-menu-button .bi {
     font-size: 20px;
 }
 
-.game-menu-button:hover:not(:disabled) {
+.insight-burger-menu-button:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 10px 22px rgba(13, 33, 26, 0.16);
 }
 
-.game-menu-button:focus-visible {
+.insight-burger-menu-button:focus-visible {
     outline: 3px solid var(--game-green);
     outline-offset: 2px;
 }
 
-.game-menu-button--active {
+.insight-burger-menu-button--active {
     box-shadow: inset 0 0 0 3px var(--game-green), 0 8px 18px rgba(13, 33, 26, 0.12);
 }
 
-.game-menu-button:disabled {
+.insight-burger-menu-button:disabled {
     opacity: 0.55;
     cursor: not-allowed;
 }
 
-.game-menu-badge {
+.insight-burger-menu-badge {
     position: absolute;
     top: -6px;
     right: -6px;
@@ -75,7 +75,7 @@
 }
 
 /* Panel opened from the menu, shown to the right of it */
-.game-menu-slot {
+.insight-burger-menu-slot {
     position: fixed;
     left: 262px;
     bottom: 20px;
@@ -85,14 +85,14 @@
     max-height: calc(100vh - 116px);
 }
 
-.game-menu-slot--buildings {
+.insight-burger-menu-slot--buildings {
     width: 360px;
     max-width: calc(100vw - 274px);
 }
 
 /* Small screens: the menu becomes a row along the bottom edge, panels open above it */
 @media (max-width: 768px) {
-    .game-menu {
+    .insight-burger-menu {
         left: 8px;
         right: 8px;
         bottom: 8px;
@@ -103,7 +103,7 @@
         border-radius: 22px;
     }
 
-    .game-menu-button {
+    .insight-burger-menu-button {
         flex: 1;
         flex-direction: column;
         justify-content: center;
@@ -114,8 +114,8 @@
         font-size: 12px;
     }
 
-    .game-menu-slot,
-    .game-menu-slot--buildings {
+    .insight-burger-menu-slot,
+    .insight-burger-menu-slot--buildings {
         left: 8px;
         right: 8px;
         bottom: 104px;

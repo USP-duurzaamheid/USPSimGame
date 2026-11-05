@@ -4,7 +4,7 @@
     transition: filter 0.3s ease;
 }
 
-/* Map layers & legend panel: top-right, below the game top bar */
+/* Map layers & legend panel: top-right, below the control bar */
 .game-map-layers {
     position: fixed;
     top: 96px;

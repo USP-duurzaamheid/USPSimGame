@@ -1,4 +1,4 @@
-@namespace USPSimGame.Components.Game
+@namespace USPSimGame.Components.Game.ControlBarFiles
 @using USPSimGame.Data.Enums
 
 @{
@@ -6,77 +6,77 @@
     var team = PlayerSessionState.CurrentTeam;
 }
 
-<!-- Game top bar: team, team values, game state, date and exit -->
-<header class="game-topbar" aria-label="Spelstatus">
-    <div class="game-topbar-logo" title="Common Ground">
+<!-- Control bar: team, team values, game state, date and exit -->
+<header class="control-bar" aria-label="Spelstatus">
+    <div class="control-bar-logo" title="Common Ground">
         <i class="bi bi-globe2" aria-hidden="true"></i>
     </div>
 
-    <div class="game-topbar-stats">
+    <div class="control-bar-stats">
         @if (PlayerSessionState.IsAdmin)
         {
-            <div class="game-topbar-item">
-                <span class="game-topbar-admin-badge" aria-hidden="true"><i class="bi bi-shield-lock-fill"></i></span>
-                <span class="game-topbar-text">@PlayerSessionState.CurrentAdminUser?.Username</span>
-                <span class="game-topbar-role">Game Admin</span>
+            <div class="control-bar-item">
+                <span class="control-bar-admin-badge" aria-hidden="true"><i class="bi bi-shield-lock-fill"></i></span>
+                <span class="control-bar-text">@PlayerSessionState.CurrentAdminUser?.Username</span>
+                <span class="control-bar-role">Game Admin</span>
             </div>
         }
         else if (team != null)
         {
-            <div class="game-topbar-item" title="@PlayerSessionState.CurrentPlayerSession?.UserName speelt voor @TeamLabel(team.Name)">
+            <div class="control-bar-item" title="@PlayerSessionState.CurrentPlayerSession?.UserName speelt voor @TeamLabel(team.Name)">
                 <TeamBadge Name="@team.Name" Color="@team.Color" />
-                <span class="game-topbar-text game-topbar-team-name">@TeamLabel(team.Name)</span>
+                <span class="control-bar-text control-bar-team-name">@TeamLabel(team.Name)</span>
             </div>
-            <div class="game-topbar-item">
-                <HudStat Icon="bi-star" Label="Duurzaamheidspunten"
+            <div class="control-bar-item">
+                <Stat Icon="bi-star" Label="Duurzaamheidspunten"
                          Value="@SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
             </div>
-            <div class="game-topbar-item">
-                <TeamBudgetWidget TeamId="@team.Id" />
+            <div class="control-bar-item">
+                <StatTeamInfo TeamId="@team.Id" />
             </div>
-            <div class="game-topbar-item">
-                <HudStat Icon="bi-lightning-charge-fill" IconStyle="HudIconStyle.Accent" Label="Duurzame elektriciteit"
+            <div class="control-bar-item">
+                <Stat Icon="bi-lightning-charge-fill" IconStyle="StatIconStyle.Accent" Label="Duurzame elektriciteit"
                          Value="@RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
             </div>
-            <div class="game-topbar-item">
-                <OverlastIndicator Overlast="@Overlast" IsPreview="true" />
+            <div class="control-bar-item">
+                <StatDisruption NoisePollution="@NoisePollution" IsPreview="true" />
             </div>
-            <div class="game-topbar-item">
-                <HudStat Icon="bi-emoji-angry-fill" IconStyle="HudIconStyle.Plain" Label="Boetes" Caption="Boete"
+            <div class="control-bar-item">
+                <Stat Icon="bi-emoji-angry-fill" IconStyle="StatIconStyle.Plain" Label="Boetes" Caption="Boete"
                          Value="@FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
             </div>
         }
     </div>
 
-    <div class="game-topbar-end">
+    <div class="control-bar-end">
         @if (session != null)
         {
-            <div class="game-topbar-item">
+            <div class="control-bar-item">
                 @if (PlayerSessionState.IsAdmin)
                 {
-                    <button type="button" class="game-topbar-state game-topbar-state--button" @onclick="ToggleStateControlPanel" title="Spelstatus en timer beheren">
+                    <button type="button" class="control-bar-state control-bar-state--button" @onclick="ToggleStateControlPanel" title="Spelstatus en timer beheren">
                         @session.State.ToString().ToUpperInvariant()
                         <i class="bi bi-sliders" aria-hidden="true"></i>
                     </button>
                 }
                 else
                 {
-                    <span class="game-topbar-state">@session.State.ToString().ToUpperInvariant()</span>
+                    <span class="control-bar-state">@session.State.ToString().ToUpperInvariant()</span>
                 }
 
                 @if ((session.State == GameState.Play || session.State == GameState.Pause) && !string.IsNullOrEmpty(RemainingTimeFormatted))
                 {
-                    <span class="game-topbar-timer" title="@(session.State == GameState.Pause ? "Timer gepauzeerd" : "Resterende tijd deze maand")">
+                    <span class="control-bar-timer" title="@(session.State == GameState.Pause ? "Timer gepauzeerd" : "Resterende tijd deze maand")">
                         <i class="bi bi-stopwatch" aria-hidden="true"></i>@RemainingTimeFormatted
                     </span>
                 }
             </div>
-            <div class="game-topbar-item">
-                <span class="game-topbar-text" title="Huidige speldatum">01 @FormattedGameDate</span>
+            <div class="control-bar-item">
+                <span class="control-bar-text" title="Huidige speldatum">01 @FormattedGameDate</span>
             </div>
         }
 
-        <button type="button" class="game-topbar-exit" @onclick="Disconnect">
+        <button type="button" class="control-bar-exit" @onclick="Disconnect">
             <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
             <span>EXIT</span>
         </button>

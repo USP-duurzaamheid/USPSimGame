@@ -16,19 +16,19 @@
 }
 else
 {
-    <GameOverlay />
+    <ControlBar />
 
-    <!-- Bottom-Left Game Menu: Overzicht (KPI charts), Doelen (dilemmas), BUILDINGS (development plans) -->
-    <GameMenu @ref="gameMenu"
-              GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
-              ScopeTeamId="@(PlayerSessionState.IsAdmin ? null : PlayerSessionState.CurrentTeam?.Id)"
-              StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
-              CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
-              ShowDilemmas="@(!PlayerSessionState.IsAdmin)"
-              Dilemmas="@Dilemmas"
-              NewDilemmaCode="@NewDilemmaCode"
-              IsPreview="true"
-              BuildingsEnabled="@(PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)">
+    <!-- Bottom-Left Insight Burger Menu: Overzicht (KPI charts), Doelen (dilemmas), BUILDINGS (development plans) -->
+    <InsightBurgerMenu @ref="insightBurgerMenu"
+                       GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                       ScopeTeamId="@(PlayerSessionState.IsAdmin ? null : PlayerSessionState.CurrentTeam?.Id)"
+                       StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                       CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+                       ShowDilemmas="@(!PlayerSessionState.IsAdmin)"
+                       Dilemmas="@Dilemmas"
+                       NewDilemmaCode="@NewDilemmaCode"
+                       IsPreview="true"
+                       BuildingsEnabled="@(PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)">
         <Buildings>
             <!-- Development Plans Panel -->
             <PlansControlPanel @ref="plansControlPanel"
@@ -43,13 +43,13 @@ else
                                OnOpenNewPlan="OpenNewPlanPanel"
                                OnPlanSelected="HandlePlanSelectedAsync" />
         </Buildings>
-    </GameMenu>
+    </InsightBurgerMenu>
 
-    <!-- Top-Right: Map Layers & Legend Panel (below the top bar) -->
+    <!-- Top-Right: Map Layers & Legend Panel (below the control bar) -->
     <div class="game-map-layers">
-        <MapControlPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
-                         IsCollapsed="@isMapPanelCollapsed"
-                         OnToggleCollapse="HandleMapPanelToggle" />
+        <LayerControls GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                       IsCollapsed="@isMapPanelCollapsed"
+                       OnToggleCollapse="HandleMapPanelToggle" />
     </div>
 
     <!-- Team Area Definition Panel (Bottom Right during Setup State for Players) -->

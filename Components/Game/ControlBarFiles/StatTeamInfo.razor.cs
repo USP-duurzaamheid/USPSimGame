@@ -8,9 +8,9 @@ using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
 using USPSimGame.Services.Costing;
 
-namespace USPSimGame.Components.Game.Teams;
+namespace USPSimGame.Components.Game.ControlBarFiles;
 
-public partial class TeamBudgetWidget : ComponentBase, IDisposable
+public partial class StatTeamInfo : ComponentBase, IDisposable
 {
     [Inject] public ITeamService TeamService { get; set; } = default!;
     [Inject] public ITeamBudgetService TeamBudgetService { get; set; } = default!;
@@ -45,7 +45,7 @@ public partial class TeamBudgetWidget : ComponentBase, IDisposable
 
     protected override async Task OnParametersSetAsync()
     {
-        // Note: this component's parent (GameOverlay) re-renders every second to drive a
+        // Note: this component's parent (ControlBar) re-renders every second to drive a
         // countdown timer, which would otherwise re-trigger a DB reload here every second too.
         // Only reload when the TeamId parameter actually changes; ongoing balance updates are
         // driven exclusively by the notifier events below, which fire once per real change
@@ -89,7 +89,7 @@ public partial class TeamBudgetWidget : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[TeamBudgetWidget] Error loading budget status: {ex.Message}");
+            Console.WriteLine($"[StatTeamInfo] Error loading budget status: {ex.Message}");
         }
     }
 

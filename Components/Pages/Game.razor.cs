@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using OpenLayers.Blazor;
 using USPSimGame.Components.Game;
+using USPSimGame.Components.Game.BurgerMenu;
 using USPSimGame.Components.Game.Map;
 using USPSimGame.Components.Game.Plans;
 using USPSimGame.Data.Entities;
@@ -53,7 +54,7 @@ public partial class Game : ComponentBase, IDisposable
 
     private static readonly TimeSpan PreviewDilemmaDelay = TimeSpan.FromSeconds(4);
 
-    protected GameMenu? gameMenu;
+    protected InsightBurgerMenu? insightBurgerMenu;
     protected PlansControlPanel? plansControlPanel;
     protected MapFeaturePropertiesPanel? propertiesPanel;
     private DotNetObjectReference<Game>? _dotNetRef;
@@ -81,7 +82,7 @@ public partial class Game : ComponentBase, IDisposable
     {
         if (isCollapsed)
         {
-            gameMenu?.CloseSlot();
+            insightBurgerMenu?.CloseSlot();
         }
     }
 
@@ -105,7 +106,7 @@ public partial class Game : ComponentBase, IDisposable
     protected void ViewIncomingDilemma()
     {
         IncomingDilemma = null;
-        gameMenu?.OpenDilemmas();
+        insightBurgerMenu?.OpenDilemmas();
     }
 
     /// <summary>
@@ -131,7 +132,7 @@ public partial class Game : ComponentBase, IDisposable
             await Task.Delay(PreviewDilemmaDelay, _previewDilemmaCts.Token);
             await InvokeAsync(() =>
             {
-                ReceiveDilemma(GamePreviewData.GetIncomingDilemma(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0));
+                ReceiveDilemma(GamePreviewData.PreviewIncomingDilemma(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0));
                 StateHasChanged();
             });
         }
@@ -157,7 +158,7 @@ public partial class Game : ComponentBase, IDisposable
         }
 
         InitialZoom = session?.Zoom ?? 15;
-        Dilemmas = GamePreviewData.GetDilemmas(session?.CurrentMonth ?? 0);
+        Dilemmas = GamePreviewData.PreviewGetCurrentDilemmas(session?.CurrentMonth ?? 0);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -43,7 +43,7 @@
     --bs-primary: var(--app-primary);
     --bs-border-color: var(--app-border-color);
 
-    /* --- Game UI (HUD, panels) - matches the player screens in PlayerLayout --- */
+    /* --- Game UI - matches the player screens in PlayerLayout --- */
     --game-green: #5cb88d;
     --game-green-dark: #439a71;
     --game-text-dark: #182c25;
@@ -135,7 +135,7 @@ a:hover, .btn-link:hover {
     content: "An error has occurred.";
 }
 
-/* --- Map controls: keep the OpenLayers zoom buttons below the game top bar --- */
+/* --- Map controls: keep the OpenLayers zoom buttons below the control bar --- */
 .ol-viewport .ol-zoom {
     top: 96px;
     left: 12px;

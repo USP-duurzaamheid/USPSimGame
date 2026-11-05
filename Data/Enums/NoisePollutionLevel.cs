@@ -1,6 +1,6 @@
 namespace USPSimGame.Data.Enums;
 
-public enum OverlastLevel
+public enum NoisePollutionLevel
 {
     Low,
     Medium,

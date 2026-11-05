@@ -21,7 +21,7 @@ public class MapLayerOrderItem
     public GameSessionMapLayer? SessionMapLayer { get; set; }
 }
 
-public partial class MapControlPanel : ComponentBase
+public partial class LayerControls : ComponentBase
 {
     [Inject]
     public IMapLayerService MapLayerService { get; set; } = default!;
@@ -103,7 +103,7 @@ public partial class MapControlPanel : ComponentBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MapControlPanel] Error loading session teams: {ex.Message}");
+            Console.WriteLine($"[LayerControls] Error loading session teams: {ex.Message}");
         }
     }
 
@@ -115,7 +115,7 @@ public partial class MapControlPanel : ComponentBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MapControlPanel] Error loading session plannable layers: {ex.Message}");
+            Console.WriteLine($"[LayerControls] Error loading session plannable layers: {ex.Message}");
         }
     }
 
@@ -136,7 +136,7 @@ public partial class MapControlPanel : ComponentBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MapControlPanel] Error loading session layers: {ex.Message}");
+            Console.WriteLine($"[LayerControls] Error loading session layers: {ex.Message}");
         }
         await UpdateOrderedVisibleLayersAsync();
     }
@@ -156,7 +156,7 @@ public partial class MapControlPanel : ComponentBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MapControlPanel] JS Error toggling team areas visibility: {ex.Message}");
+            Console.WriteLine($"[LayerControls] JS Error toggling team areas visibility: {ex.Message}");
         }
         await UpdateOrderedVisibleLayersAsync();
     }
@@ -170,7 +170,7 @@ public partial class MapControlPanel : ComponentBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MapControlPanel] JS Error toggling implemented features visibility: {ex.Message}");
+            Console.WriteLine($"[LayerControls] JS Error toggling implemented features visibility: {ex.Message}");
         }
         await UpdateOrderedVisibleLayersAsync();
     }
@@ -186,7 +186,7 @@ public partial class MapControlPanel : ComponentBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MapControlPanel] JS Error setting visibility for '{layerKey}': {ex.Message}");
+            Console.WriteLine($"[LayerControls] JS Error setting visibility for '{layerKey}': {ex.Message}");
         }
     }
 
@@ -308,7 +308,7 @@ public partial class MapControlPanel : ComponentBase
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[MapControlPanel] JS Error setting zIndex for '{key}': {ex.Message}");
+                Console.WriteLine($"[LayerControls] JS Error setting zIndex for '{key}': {ex.Message}");
             }
         }
     }

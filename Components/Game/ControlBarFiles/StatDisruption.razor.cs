@@ -4,15 +4,15 @@ using Microsoft.AspNetCore.Components.Web;
 using USPSimGame.Data.Enums;
 using USPSimGame.Data.Models;
 
-namespace USPSimGame.Components.Game.Hud;
+namespace USPSimGame.Components.Game.ControlBarFiles;
 
 /// <summary>
-/// Overlast value in the game top bar. Clicking it opens a meter with the total,
-/// the limit and which installations cause the overlast.
+/// Noise pollution value in the control bar. Clicking it opens a meter with the total,
+/// the limit and which installations cause the noise pollution.
 /// </summary>
-public partial class OverlastIndicator : ComponentBase
+public partial class StatDisruption : ComponentBase
 {
-    [Parameter, EditorRequired] public OverlastInfo Overlast { get; set; } = default!;
+    [Parameter, EditorRequired] public NoisePollutionInfo NoisePollution { get; set; } = default!;
 
     /// <summary>Marks the values as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
@@ -22,23 +22,23 @@ public partial class OverlastIndicator : ComponentBase
 
     protected bool IsOpen { get; private set; }
 
-    protected IEnumerable<OverlastSource> OrderedSources =>
-        Overlast.Sources.OrderByDescending(s => s.TotalPoints).ThenByDescending(s => s.PointsPerUnit);
+    protected IEnumerable<NoisePollutionSource> OrderedSources =>
+        NoisePollution.Sources.OrderByDescending(s => s.SectorNoisePollution).ThenByDescending(s => s.PointsPerUnit);
 
-    protected string LevelClass => Overlast.Level.ToString().ToLowerInvariant();
+    protected string LevelClass => NoisePollution.Level.ToString().ToLowerInvariant();
 
-    protected string LevelLabel => Overlast.Level switch
+    protected string LevelLabel => NoisePollution.Level switch
     {
-        OverlastLevel.High => "Boven de grens",
-        OverlastLevel.Medium => "Gemiddeld",
+        NoisePollutionLevel.High => "Boven de grens",
+        NoisePollutionLevel.Medium => "Gemiddeld",
         _ => "Laag"
     };
 
     /// <summary>The meter shows twice the limit, or more when the total is even higher.</summary>
-    protected int MeterMax => Math.Max(Math.Max(Overlast.Limit * 2, Overlast.TotalPoints), 1);
+    protected int MeterMax => Math.Max(Math.Max(NoisePollution.Limit * 2, NoisePollution.OverallNoisePollution), 1);
 
-    protected string FillPercent => ToPercent(Overlast.TotalPoints);
-    protected string LimitPercent => ToPercent(Overlast.Limit);
+    protected string FillPercent => ToPercent(NoisePollution.OverallNoisePollution);
+    protected string LimitPercent => ToPercent(NoisePollution.Limit);
 
     protected void TogglePanel()
     {

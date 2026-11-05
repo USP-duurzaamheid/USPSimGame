@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using USPSimGame.Data.Models;
 
-namespace USPSimGame.Components.Game;
+namespace USPSimGame.Components.Game.BurgerMenu;
 
 public enum MenuSlot
 {
@@ -11,11 +11,11 @@ public enum MenuSlot
 }
 
 /// <summary>
-/// Game menu in the bottom-left corner (game layout design): Overzicht opens the KPI charts,
+/// Menu with insights in the bottom-left corner (game layout design): Overzicht opens the KPI charts,
 /// Doelen the active dilemmas and BUILDINGS the development plans. Doelen and BUILDINGS
 /// open a panel next to the menu; only one of them is open at a time.
 /// </summary>
-public partial class GameMenu : ComponentBase
+public partial class InsightBurgerMenu : ComponentBase
 {
     [Parameter, EditorRequired] public int GameSessionId { get; set; }
 

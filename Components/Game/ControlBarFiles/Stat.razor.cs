@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components;
 
-namespace USPSimGame.Components.Game.Hud;
+namespace USPSimGame.Components.Game.ControlBarFiles;
 
-public enum HudIconStyle
+public enum StatIconStyle
 {
     /// <summary>Light icon on a dark circle.</summary>
     Dark,
@@ -13,12 +13,12 @@ public enum HudIconStyle
 }
 
 /// <summary>
-/// One value in the game top bar: an icon followed by a value and optional unit.
+/// One value in the control bar: an icon followed by a value and optional unit.
 /// </summary>
-public partial class HudStat : ComponentBase
+public partial class Stat : ComponentBase
 {
     [Parameter, EditorRequired] public string Icon { get; set; } = string.Empty;
-    [Parameter] public HudIconStyle IconStyle { get; set; } = HudIconStyle.Dark;
+    [Parameter] public StatIconStyle IconStyle { get; set; } = StatIconStyle.Dark;
 
     /// <summary>Name of the value, read out by screen readers (e.g. "Campus Credits").</summary>
     [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;

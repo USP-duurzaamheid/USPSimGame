@@ -1,10 +1,10 @@
-.overlast-indicator {
+.disruption-indicator {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.overlast-button {
+.disruption-button {
     display: inline-flex;
     align-items: center;
     padding: 6px 10px;
@@ -16,23 +16,23 @@
     transition: background-color 0.15s ease;
 }
 
-.overlast-button:hover,
-.overlast-button:focus-visible {
+.disruption-button:hover,
+.disruption-button:focus-visible {
     background-color: rgba(92, 184, 141, 0.12);
 }
 
-.overlast-button:focus-visible {
+.disruption-button:focus-visible {
     outline: 2px solid var(--game-green);
     outline-offset: 2px;
 }
 
-.overlast-backdrop {
+.disruption-backdrop {
     position: fixed;
     inset: 0;
     z-index: 4;
 }
 
-.overlast-panel {
+.disruption-panel {
     position: absolute;
     top: calc(100% + 26px);
     left: 50%;
@@ -44,21 +44,21 @@
     box-shadow: var(--game-shadow);
     color: var(--game-text-dark);
     transform: translateX(-50%);
-    animation: overlast-panel-in 0.18s ease-out;
+    animation: disruption-panel-in 0.18s ease-out;
 }
 
-.overlast-panel:focus {
+.disruption-panel:focus {
     outline: none;
 }
 
-@keyframes overlast-panel-in {
+@keyframes disruption-panel-in {
     from {
         opacity: 0;
         transform: translate(-50%, -6px);
     }
 }
 
-.overlast-panel-header {
+.disruption-panel-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -66,7 +66,7 @@
     margin-bottom: 16px;
 }
 
-.overlast-panel-title {
+.disruption-panel-title {
     margin: 0;
     font-size: 18px;
     font-weight: 700;
@@ -74,14 +74,14 @@
     color: var(--game-text-dark);
 }
 
-.overlast-panel-subtitle {
+.disruption-panel-subtitle {
     margin: 2px 0 0;
     font-size: 13px;
     font-weight: 500;
     color: var(--game-text-muted);
 }
 
-.overlast-panel-close {
+.disruption-panel-close {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -94,31 +94,31 @@
     cursor: pointer;
 }
 
-.overlast-panel-close:hover {
+.disruption-panel-close:hover {
     background-color: rgba(92, 184, 141, 0.16);
 }
 
 /* --- Score --- */
-.overlast-score {
+.disruption-score {
     display: flex;
     align-items: baseline;
     gap: 8px;
     margin-bottom: 12px;
 }
 
-.overlast-score-value {
+.disruption-score-value {
     font-size: 36px;
     font-weight: 700;
     line-height: 1;
 }
 
-.overlast-score-unit {
+.disruption-score-unit {
     font-size: 14px;
     font-weight: 500;
     color: var(--game-text-muted);
 }
 
-.overlast-score-level {
+.disruption-score-level {
     margin-left: auto;
     padding: 4px 10px;
     border-radius: 999px;
@@ -126,27 +126,27 @@
     font-weight: 600;
 }
 
-.overlast-score--low .overlast-score-level {
+.disruption-score--low .disruption-score-level {
     background-color: rgba(92, 184, 141, 0.16);
     color: var(--game-green-dark);
 }
 
-.overlast-score--medium .overlast-score-level {
+.disruption-score--medium .disruption-score-level {
     background-color: rgba(245, 158, 11, 0.16);
     color: #b45309;
 }
 
-.overlast-score--high .overlast-score-level {
+.disruption-score--high .disruption-score-level {
     background-color: rgba(229, 72, 77, 0.14);
     color: var(--game-danger);
 }
 
-.overlast-score--high .overlast-score-value {
+.disruption-score--high .disruption-score-value {
     color: var(--game-danger);
 }
 
 /* --- Meter --- */
-.overlast-meter {
+.disruption-meter {
     position: relative;
     height: 10px;
     margin-bottom: 30px;
@@ -154,25 +154,25 @@
     background-color: #eef4f1;
 }
 
-.overlast-meter-fill {
+.disruption-meter-fill {
     height: 100%;
     border-radius: inherit;
     transition: width 0.4s ease;
 }
 
-.overlast-meter-fill--low {
+.disruption-meter-fill--low {
     background-color: var(--game-green);
 }
 
-.overlast-meter-fill--medium {
+.disruption-meter-fill--medium {
     background-color: #f59e0b;
 }
 
-.overlast-meter-fill--high {
+.disruption-meter-fill--high {
     background-color: var(--game-danger);
 }
 
-.overlast-meter-limit {
+.disruption-meter-limit {
     position: absolute;
     top: -4px;
     bottom: -4px;
@@ -181,7 +181,7 @@
     transform: translateX(-1px);
 }
 
-.overlast-meter-limit span {
+.disruption-meter-limit span {
     position: absolute;
     top: calc(100% + 4px);
     left: 50%;
@@ -193,7 +193,7 @@
 }
 
 /* --- Sources --- */
-.overlast-section-title {
+.disruption-section-title {
     margin: 0 0 8px;
     font-size: 12px;
     font-weight: 700;
@@ -202,7 +202,7 @@
     color: var(--game-text-muted);
 }
 
-.overlast-sources {
+.disruption-sources {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -211,7 +211,7 @@
     list-style: none;
 }
 
-.overlast-source {
+.disruption-source {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -220,11 +220,11 @@
     background-color: #f5f8f6;
 }
 
-.overlast-source--none {
+.disruption-source--none {
     opacity: 0.6;
 }
 
-.overlast-source-icon {
+.disruption-source-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -237,7 +237,7 @@
     color: #fff;
 }
 
-.overlast-source-name {
+.disruption-source-name {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -246,19 +246,19 @@
     line-height: 1.2;
 }
 
-.overlast-source-name small {
+.disruption-source-name small {
     font-size: 12px;
     font-weight: 500;
     color: var(--game-text-muted);
 }
 
-.overlast-source-total {
+.disruption-source-total {
     font-size: 15px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
 
-.overlast-hint {
+.disruption-hint {
     display: flex;
     gap: 8px;
     margin: 0;
@@ -267,23 +267,23 @@
     color: var(--game-text-muted);
 }
 
-.overlast-preview-note {
+.disruption-preview-note {
     margin: 10px 0 0;
     font-size: 11px;
     font-style: italic;
     color: var(--game-text-muted);
 }
 
-/* On smaller screens the top bar values scroll, so pin the panel below the bar instead */
+/* On smaller screens the control bar values scroll, so pin the panel below the bar instead */
 @media (max-width: 1023px) {
-    .overlast-panel {
+    .disruption-panel {
         position: fixed;
         top: 96px;
     }
 }
 
 @media (max-width: 768px) {
-    .overlast-panel {
+    .disruption-panel {
         position: fixed;
         top: 124px;
         left: 8px;

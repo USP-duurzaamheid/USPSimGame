@@ -9,9 +9,9 @@ using USPSimGame.Services.GameSessions;
 using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
 
-namespace USPSimGame.Components.Game;
+namespace USPSimGame.Components.Game.ControlBarFiles;
 
-public partial class GameOverlay : ComponentBase, IDisposable
+public partial class ControlBar : ComponentBase, IDisposable
 {
     [Inject]
     public PlayerSessionState PlayerSessionState { get; set; } = default!;
@@ -32,10 +32,10 @@ public partial class GameOverlay : ComponentBase, IDisposable
     private System.Threading.Timer? _clientTimer;
 
     // Example values until the backend provides them (see GamePreviewData).
-    protected int SustainabilityPoints => GamePreviewData.SustainabilityPoints;
-    protected int RenewableElectricityPercent => GamePreviewData.RenewableElectricityPercent;
-    protected int FineCount => GamePreviewData.FineCount;
-    protected OverlastInfo Overlast => GamePreviewData.Overlast;
+    protected int SustainabilityPoints => GamePreviewData.PreviewControlBarConstants.SustainabilityPoints;
+    protected int RenewableElectricityPercent => GamePreviewData.PreviewControlBarConstants.RenewableElectricityPercent;
+    protected int FineCount => GamePreviewData.PreviewControlBarConstants.FineCount;
+    protected NoisePollutionInfo NoisePollution => GamePreviewData.PreviewNoisePollutionInfo;
 
     protected static string TeamLabel(string teamName) =>
         teamName.StartsWith("Team ", StringComparison.OrdinalIgnoreCase) ? teamName : $"Team {teamName}";

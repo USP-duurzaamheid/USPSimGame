@@ -1,7 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
 
-namespace USPSimGame.Components.Game.Hud;
+namespace USPSimGame.Components.Game.Teams;
 
 /// <summary>
 /// Round badge with a team's initials on the team color (e.g. "HU" on yellow).
