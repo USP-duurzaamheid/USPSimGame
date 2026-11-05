@@ -29,21 +29,21 @@
             </div>
             <div class="control-bar-item">
                 <Stat Icon="bi-star" Label="Duurzaamheidspunten"
-                         Value="@SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
+                      Value="@SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
             </div>
             <div class="control-bar-item">
                 <StatTeamInfo TeamId="@team.Id" />
             </div>
             <div class="control-bar-item">
                 <Stat Icon="bi-lightning-charge-fill" IconStyle="StatIconStyle.Accent" Label="Duurzame elektriciteit"
-                         Value="@RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
+                      Value="@RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
             </div>
             <div class="control-bar-item">
                 <StatDisruption NoisePollution="@NoisePollution" IsPreview="true" />
             </div>
             <div class="control-bar-item">
                 <Stat Icon="bi-emoji-angry-fill" IconStyle="StatIconStyle.Plain" Label="Boetes" Caption="Boete"
-                         Value="@FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
+                      Value="@FineCount.ToString()" Title="Aantal Campus Credit-boetes voor gemiste deadlines" IsPreview="true" />
             </div>
         }
     </div>

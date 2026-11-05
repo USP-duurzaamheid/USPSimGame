@@ -1,8 +1,9 @@
 @namespace USPSimGame.Components.Game.ControlBarFiles
 
 <Stat Icon="bi-coin"
-         Label="Campus Credits"
-         Value="@CurrentBalance.ToString("N0")"
-         Unit="CC"
-         IsWarning="@(CurrentBalance < 0)"
-         Title="@CreditsTooltip" />
+      Label="Campus Credits"
+      SmallCaption="Campus Credits"
+      Value="@CurrentBalance.ToString("N0")"
+      Unit="CC"
+      IsWarning="@(CurrentBalance < 0)"
+      Title="@CreditsTooltip" />

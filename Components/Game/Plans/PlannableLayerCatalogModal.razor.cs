@@ -39,10 +39,10 @@ public partial class PlannableLayerCatalogModal : ComponentBase
     {
         return type switch
         {
-            PlannableGeometryType.Point => "pts / point",
-            PlannableGeometryType.Line => "pts / 50m",
-            PlannableGeometryType.Polygon => "pts / m²",
-            _ => "pts / unit"
+            PlannableGeometryType.Point => "CC / point",
+            PlannableGeometryType.Line => "CC / 50m",
+            PlannableGeometryType.Polygon => "CC / m²",
+            _ => "CC / unit"
         };
     }
 
@@ -50,10 +50,10 @@ public partial class PlannableLayerCatalogModal : ComponentBase
     {
         return type switch
         {
-            PlannableGeometryType.Point => "pts / point / month",
-            PlannableGeometryType.Line => "pts / 50m / month",
-            PlannableGeometryType.Polygon => "pts / m² / month",
-            _ => "pts / unit / month"
+            PlannableGeometryType.Point => "CC / point / month",
+            PlannableGeometryType.Line => "CC / 50m / month",
+            PlannableGeometryType.Polygon => "CC / m² / month",
+            _ => "CC / unit / month"
         };
     }
 

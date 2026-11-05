@@ -26,6 +26,9 @@ public partial class Stat : ComponentBase
     /// <summary>Visible text shown before the value (e.g. "Boete").</summary>
     [Parameter] public string? Caption { get; set; }
 
+    /// <summary>Small visible name above the value (e.g. "Campus Credits").</summary>
+    [Parameter] public string? SmallCaption { get; set; }
+
     [Parameter, EditorRequired] public string Value { get; set; } = string.Empty;
     [Parameter] public string? Unit { get; set; }
     [Parameter] public string? Title { get; set; }

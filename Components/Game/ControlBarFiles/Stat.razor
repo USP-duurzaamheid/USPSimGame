@@ -4,18 +4,26 @@
     <span class="stat-icon stat-icon--@IconStyle.ToString().ToLowerInvariant()" aria-hidden="true">
         <i class="bi @Icon"></i>
     </span>
-    @if (!string.IsNullOrEmpty(Caption))
-    {
-        <span class="stat-caption">@Caption</span>
-    }
-    else
-    {
-        <span class="visually-hidden">@Label:</span>
-    }
-    @* Keyed on the value so a changed value is re-created and its highlight animation plays again *@
-    <span class="stat-value" @key="Value">@Value</span>
-    @if (!string.IsNullOrEmpty(Unit))
-    {
-        <span class="stat-unit">@Unit</span>
-    }
+    <span class="stat-text">
+        @if (!string.IsNullOrEmpty(SmallCaption))
+        {
+            <span class="stat-small-caption">@SmallCaption</span>
+        }
+        <span class="stat-line">
+            @if (!string.IsNullOrEmpty(Caption))
+            {
+                <span class="stat-caption">@Caption</span>
+            }
+            else if (string.IsNullOrEmpty(SmallCaption))
+            {
+                <span class="visually-hidden">@Label:</span>
+            }
+            @* Keyed on the value so a changed value is re-created and its highlight animation plays again *@
+            <span class="stat-value" @key="Value">@Value</span>
+            @if (!string.IsNullOrEmpty(Unit))
+            {
+                <span class="stat-unit">@Unit</span>
+            }
+        </span>
+    </span>
 </span>

@@ -20,18 +20,18 @@
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle micro-text me-1"><i class="bi bi-trash me-1"></i>Demolition</span>
                     }
                     <span class="badge bg-light text-dark border micro-text ms-1" title="Upfront investment deduction">
-                        <i class="bi bi-bank text-danger me-1"></i> -@CalculatedInvestmentPoints pts
+                        <i class="bi bi-bank text-danger me-1"></i> -@CalculatedInvestmentPoints CC
                     </span>
                     @if (CalculatedMonthlyExpensePoints < 0)
                     {
                         <span class="badge bg-success-subtle text-success border border-success-subtle micro-text ms-1 fw-bold" title="Monthly expense savings (budget relief)">
-                            <i class="bi bi-arrow-repeat text-success me-1"></i> +@Math.Abs(CalculatedMonthlyExpensePoints) pts/mo
+                            <i class="bi bi-arrow-repeat text-success me-1"></i> +@Math.Abs(CalculatedMonthlyExpensePoints) CC/mo
                         </span>
                     }
                     else
                     {
                         <span class="badge bg-light text-dark border micro-text ms-1" title="Monthly expense cost">
-                            <i class="bi bi-arrow-repeat text-danger me-1"></i> -@CalculatedMonthlyExpensePoints pts/mo
+                            <i class="bi bi-arrow-repeat text-danger me-1"></i> -@CalculatedMonthlyExpensePoints CC/mo
                         </span>
                     }
                 }

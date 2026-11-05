@@ -26,7 +26,7 @@ public partial class StatTeamInfo : ComponentBase, IDisposable
     {
         get
         {
-            var tooltip = $"Campus Credits: {CurrentBalance:N0} CC beschikbaar";
+            var tooltip = $"Campus Credits (CC) zijn het budget van je organisatie: hiermee betaal je installaties. Beschikbaar: {CurrentBalance:N0} CC";
             if (MonthlyExpenseBurden > 0)
             {
                 tooltip += $" · vaste lasten -{MonthlyExpenseBurden:N1} CC per maand";
