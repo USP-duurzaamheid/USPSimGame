@@ -24,7 +24,7 @@
             <ul class="fines-list">
                 @foreach (var fine in OrderedFines)
                 {
-                    <li class="fine @(fine.IsActive ? "fine--active" : "fine--stopped")">
+                    <li class="fine @(fine.IsActive ? null : "fine--stopped")">
                         <div class="fine-header">
                             <span class="fine-code">@fine.DilemmaCode</span>
                             <span class="fine-title">@fine.DilemmaTitle</span>

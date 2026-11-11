@@ -98,7 +98,6 @@
     background-color: rgba(92, 184, 141, 0.16);
 }
 
-/* On smaller screens the control bar values scroll, so pin the panel below the bar instead */
 @media (max-width: 1023px) {
     .stat-panel {
         position: fixed;

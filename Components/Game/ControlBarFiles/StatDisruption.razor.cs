@@ -5,15 +5,9 @@ using USPSimGame.Data.Models;
 
 namespace USPSimGame.Components.Game.ControlBarFiles;
 
-/// <summary>
-/// Noise pollution value in the control bar. Clicking it opens a meter with the total,
-/// the limit and which installations cause the noise pollution.
-/// </summary>
 public partial class StatDisruption : ComponentBase
 {
     [Parameter, EditorRequired] public NoisePollutionInfo NoisePollution { get; set; } = default!;
-
-    /// <summary>Marks the values as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
 
     protected IEnumerable<NoisePollutionSource> OrderedSources =>
@@ -28,7 +22,6 @@ public partial class StatDisruption : ComponentBase
         _ => "Laag"
     };
 
-    /// <summary>The meter shows twice the limit, or more when the total is even higher.</summary>
     protected int MeterMax => Math.Max(Math.Max(NoisePollution.Limit * 2, NoisePollution.OverallNoisePollution), 1);
 
     protected string FillPercent => ToPercent(NoisePollution.OverallNoisePollution);

@@ -5,26 +5,13 @@ using USPSimGame.Data.Models;
 
 namespace USPSimGame.Components.Game.Dilemmas;
 
-/// <summary>
-/// Overview of the team's active dilemmas ("Doelen"). Regular dilemmas are listed first,
-/// with missed deadlines on top; long-term goals have their own section.
-/// Completed dilemmas are not shown.
-/// </summary>
 public partial class ActiveDilemmasPanel : ComponentBase
 {
     [Parameter, EditorRequired] public IReadOnlyList<DilemmaModel> Dilemmas { get; set; } = [];
-
-    /// <summary>Current game month of the session (0 = first month).</summary>
     [Parameter] public int CurrentMonth { get; set; }
-
     [Parameter] public int StartYear { get; set; } = 2026;
-
-    /// <summary>Code of a just received dilemma, marked as "Nieuw".</summary>
     [Parameter] public string? NewDilemmaCode { get; set; }
-
-    /// <summary>Marks the list as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
-
     [Parameter] public EventCallback OnClose { get; set; }
 
     private ElementReference panel;

@@ -86,10 +86,6 @@ public partial class Game : ComponentBase, IDisposable
         }
     }
 
-    /// <summary>
-    /// Adds a new dilemma to the team's dilemmas and shows the new-dilemma pop-up.
-    /// Call this when the team receives a dilemma during the game.
-    /// </summary>
     protected void ReceiveDilemma(DilemmaModel dilemma)
     {
         Dilemmas.RemoveAll(d => d.Code == dilemma.Code);
@@ -109,20 +105,12 @@ public partial class Game : ComponentBase, IDisposable
         insightBurgerMenu?.OpenDilemmas();
     }
 
-    /// <summary>
-    /// Adds a new fine and shows the fine message.
-    /// Call this when the team receives a fine during the game.
-    /// </summary>
     protected void ReceiveFine(FineModel fine)
     {
         Fines.Insert(0, fine);
         LatestFine = fine;
     }
 
-    /// <summary>
-    /// Marks the active fine of a dilemma as stopped and shows the fine message.
-    /// Call this when a fine stops during the game.
-    /// </summary>
     protected void StopFine(string dilemmaCode)
     {
         var fine = Fines.FirstOrDefault(f => f.DilemmaCode == dilemmaCode && f.IsActive);
@@ -138,11 +126,6 @@ public partial class Game : ComponentBase, IDisposable
         LatestFine = null;
     }
 
-    /// <summary>
-    /// Example data: shortly after a player opens the game (not during setup), a dilemma
-    /// arrives, a fine starts and a fine stops. Remove this once the backend calls
-    /// <see cref="ReceiveDilemma"/>, <see cref="ReceiveFine"/> and <see cref="StopFine"/>.
-    /// </summary>
     private void SchedulePreviewEvents()
     {
         var session = PlayerSessionState.CurrentGameSession;

@@ -1,4 +1,3 @@
-/* --- Score --- */
 .disruption-score {
     display: flex;
     align-items: baseline;
@@ -45,7 +44,6 @@
     color: var(--game-danger);
 }
 
-/* --- Meter --- */
 .disruption-meter {
     position: relative;
     height: 10px;
@@ -92,7 +90,6 @@
     transform: translateX(-50%);
 }
 
-/* --- Sources --- */
 .disruption-section-title {
     margin: 0 0 8px;
     font-size: 12px;

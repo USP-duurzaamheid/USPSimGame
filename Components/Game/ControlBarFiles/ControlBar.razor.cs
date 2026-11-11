@@ -34,7 +34,6 @@ public partial class ControlBar : ComponentBase, IDisposable
 
     private System.Threading.Timer? _clientTimer;
 
-    // Example values until the backend provides them (see GamePreviewData).
     protected int SustainabilityPoints => GamePreviewData.PreviewControlBarConstants.SustainabilityPoints;
     protected int RenewableElectricityPercent => GamePreviewData.PreviewControlBarConstants.RenewableElectricityPercent;
     protected NoisePollutionInfo NoisePollution => GamePreviewData.PreviewNoisePollutionInfo;

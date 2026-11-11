@@ -47,7 +47,6 @@ public partial class PlannableLayerCatalogModal : ComponentBase
 
     protected string GetConstructionTimeDisplay(PlannableLayerDefinition def)
     {
-        // A point has one known size; for lines and areas the build time grows with the size.
         if (def.GeometryType == PlannableGeometryType.Point)
         {
             return FormatMonths((int)Math.Ceiling(def.BaseConstructionTimeMonths + def.ConstructionTimeModifierPerUnit));
@@ -60,7 +59,6 @@ public partial class PlannableLayerCatalogModal : ComponentBase
 
     private static string GetAmountDisplay(PlannableGeometryType type, double baseAmount, double amountPerUnit, string suffix)
     {
-        // A point is one unit, so its total is known; for lines and areas it depends on the size.
         return type switch
         {
             PlannableGeometryType.Point => $"{baseAmount + amountPerUnit:0.##} CC{suffix}",

@@ -4,10 +4,6 @@ namespace USPSimGame.Data.Preview;
 
 public static partial class GamePreviewData
 {
-    /// <summary>
-    /// Installations causing noise pollution for the team. Points per unit follow the
-    /// "Game Journey" MVP balancing values (solar +1, wind +18, diesel +12).
-    /// </summary>
     public static readonly NoisePollutionInfo PreviewNoisePollutionInfo = new()
     {
         Limit = 30,

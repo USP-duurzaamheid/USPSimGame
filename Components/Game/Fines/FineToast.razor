@@ -1,6 +1,6 @@
 @namespace USPSimGame.Components.Game.Fines
 
-<div class="fine-toast @(Fine.IsActive ? "fine-toast--applied" : "fine-toast--stopped")" role="status" aria-live="polite">
+<div class="fine-toast @(Fine.IsActive ? null : "fine-toast--stopped")" role="status" aria-live="polite">
     <span class="fine-toast-icon" aria-hidden="true">
         <i class="bi @(Fine.IsActive ? "bi-exclamation-octagon-fill" : "bi-check-circle-fill")"></i>
     </span>

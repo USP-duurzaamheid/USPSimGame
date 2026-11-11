@@ -18,7 +18,7 @@ else
 {
     <ControlBar Fines="@Fines" />
 
-    <!-- Bottom-Left Insight Burger Menu: Overzicht (KPI charts), Doelen (dilemmas), BUILDINGS (development plans) -->
+    <!-- Bottom-Left Insight Burger Menu -->
     <InsightBurgerMenu @ref="insightBurgerMenu"
                        GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
                        ScopeTeamId="@(PlayerSessionState.IsAdmin ? null : PlayerSessionState.CurrentTeam?.Id)"
@@ -46,7 +46,7 @@ else
         </Buildings>
     </InsightBurgerMenu>
 
-    <!-- Top-Right: Map Layers & Legend Panel (below the control bar) -->
+    <!-- Top-Right: Map Layers & Legend Panel -->
     <div class="game-map-layers">
         <LayerControls GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
                        IsCollapsed="@isMapPanelCollapsed"

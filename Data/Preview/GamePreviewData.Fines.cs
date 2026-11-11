@@ -4,10 +4,8 @@ namespace USPSimGame.Data.Preview;
 
 public static partial class GamePreviewData
 {
-    /// <summary>Dilemma whose example fine stops shortly after the game screen opens.</summary>
     public const string PreviewStoppingFineDilemmaCode = "I-03";
 
-    /// <summary>Example fines the team already has: one that still applies and one that stopped.</summary>
     public static List<FineModel> PreviewGetCurrentFines(int currentMonth) => new()
     {
         new()
@@ -29,7 +27,6 @@ public static partial class GamePreviewData
         }
     };
 
-    /// <summary>Example fine that arrives shortly after the game screen opens, to show the fine message.</summary>
     public static FineModel PreviewIncomingFine(int currentMonth) => new()
     {
         DilemmaCode = "M-01",

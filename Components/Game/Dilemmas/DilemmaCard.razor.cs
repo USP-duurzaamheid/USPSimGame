@@ -5,20 +5,11 @@ using USPSimGame.Utils;
 
 namespace USPSimGame.Components.Game.Dilemmas;
 
-/// <summary>
-/// One dilemma: its assignment, how many months are left, the reward and the fine.
-/// A missed deadline is shown in red, a deadline in the current month in amber.
-/// </summary>
 public partial class DilemmaCard : ComponentBase
 {
     [Parameter, EditorRequired] public DilemmaModel Dilemma { get; set; } = default!;
-
-    /// <summary>Current game month of the session (0 = first month).</summary>
     [Parameter] public int CurrentMonth { get; set; }
-
     [Parameter] public int StartYear { get; set; } = 2026;
-
-    /// <summary>Marks a dilemma that was just received.</summary>
     [Parameter] public bool IsNew { get; set; }
 
     protected bool IsMissed => Dilemma.IsMissed(CurrentMonth);

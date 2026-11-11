@@ -5,22 +5,12 @@ using USPSimGame.Utils;
 
 namespace USPSimGame.Components.Game.Dilemmas;
 
-/// <summary>
-/// Pop-up shown when the team receives a new dilemma: the assignment, the deadline,
-/// the reward and the fine. The dilemma is already added to the Doelen list.
-/// </summary>
 public partial class DilemmaPopup : ComponentBase
 {
     [Parameter, EditorRequired] public DilemmaModel Dilemma { get; set; } = default!;
-
-    /// <summary>Current game month of the session (0 = first month).</summary>
     [Parameter] public int CurrentMonth { get; set; }
-
     [Parameter] public int StartYear { get; set; } = 2026;
-
     [Parameter] public EventCallback OnClose { get; set; }
-
-    /// <summary>Closes the pop-up and opens the Doelen overview.</summary>
     [Parameter] public EventCallback OnViewGoals { get; set; }
 
     private ElementReference primaryButton;

@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Components;
 
 namespace USPSimGame.Components.Game.Teams;
 
-/// <summary>
-/// Round badge with a team's initials on the team color (e.g. "HU" on yellow).
-/// </summary>
 public partial class TeamBadge : ComponentBase
 {
     private const string FallbackColor = "#5cb88d";
@@ -25,7 +22,6 @@ public partial class TeamBadge : ComponentBase
 
             if (words.Length == 0) return "?";
 
-            // Short single-word names are usually already an abbreviation ("HU", "UMC").
             if (words.Length == 1)
             {
                 var word = words[0];
@@ -36,7 +32,6 @@ public partial class TeamBadge : ComponentBase
         }
     }
 
-    /// <summary>Dark text on light team colors, white text on dark ones.</summary>
     protected string TextColor
     {
         get

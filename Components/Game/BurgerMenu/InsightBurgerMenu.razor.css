@@ -74,12 +74,11 @@
     color: #fff;
 }
 
-/* Panel opened from the menu, shown to the right of it */
 .insight-burger-menu-slot {
     position: fixed;
     left: 262px;
     bottom: 20px;
-    z-index: 4; /* above the map layers and plan panels when they overlap on small screens */
+    z-index: 4;
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 116px);
@@ -90,7 +89,6 @@
     max-width: calc(100vw - 274px);
 }
 
-/* Small screens: the menu becomes a row along the bottom edge, panels open above it */
 @media (max-width: 768px) {
     .insight-burger-menu {
         left: 8px;

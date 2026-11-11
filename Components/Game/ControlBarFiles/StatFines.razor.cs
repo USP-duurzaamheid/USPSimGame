@@ -4,17 +4,10 @@ using USPSimGame.Utils;
 
 namespace USPSimGame.Components.Game.ControlBarFiles;
 
-/// <summary>
-/// Number of active fines in the control bar. Clicking it shows all fines: the amount,
-/// the reason, the dilemma they belong to and whether they still apply.
-/// </summary>
 public partial class StatFines : ComponentBase
 {
     [Parameter, EditorRequired] public IReadOnlyList<FineModel> Fines { get; set; } = [];
-
     [Parameter] public int StartYear { get; set; } = 2026;
-
-    /// <summary>Marks the fines as example data that is not yet provided by the backend.</summary>
     [Parameter] public bool IsPreview { get; set; }
 
     protected int ActiveCount => Fines.Count(f => f.IsActive);

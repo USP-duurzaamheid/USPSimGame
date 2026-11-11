@@ -18,11 +18,11 @@
             {
                 <span class="visually-hidden">@Label:</span>
             }
-            @* Keyed on the value so a changed value is re-created and its highlight animation plays again *@
+            @* @key replays the highlight animation when the value changes *@
             <span class="stat-value" @key="Value">@Value</span>
             @if (!string.IsNullOrEmpty(Unit))
             {
-                <span class="stat-unit">@Unit</span>
+                <span>@Unit</span>
             }
         </span>
     </span>

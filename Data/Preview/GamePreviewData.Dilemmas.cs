@@ -5,10 +5,6 @@ namespace USPSimGame.Data.Preview;
 
 public static partial class GamePreviewData
 {
-    /// <summary>
-    /// Example dilemma that "arrives" shortly after the game screen opens, to show the
-    /// new-dilemma pop-up (the first guided challenge from "Game Journey").
-    /// </summary>
     public static DilemmaModel PreviewIncomingDilemma(int currentMonth) => new()
     {
         Code = "I-01",
@@ -20,11 +16,6 @@ public static partial class GamePreviewData
         FineCredits = 5
     };
 
-    /// <summary>
-    /// Example dilemmas the team already has, based on the MVP challenge list in "Game Journey".
-    /// Deadlines are relative to the current game month so the example stays meaningful
-    /// in every session. Rewards and fines are placeholders until the challenge catalogue is final.
-    /// </summary>
     public static List<DilemmaModel> PreviewGetCurrentDilemmas(int currentMonth) => new()
     {
         new()
