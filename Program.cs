@@ -66,7 +66,7 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCooki
 
 });
 builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
-
+builder.Services.AddCascadingAuthenticationState();
 
 // Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
 
