@@ -211,7 +211,7 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
 app.MapPost("/user-logout", async (HttpContext context) =>
 {
     // A null check on context.User in unnecessary because it's needed to authorisze the request, this doesn't get executed if there is no context.
-    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(IdentityConstants.ApplicationScheme);
     return Results.Redirect("/");
 
 }).RequireAuthorization();

@@ -14,15 +14,13 @@ using USPSimGame.Data.Models.LoginDto;
 
 namespace USPSimGame.Components.Pages.Creator.CreateUser
 {
-  public partial class CreateUser(UserManager<ApplicationUser> userManager, NavigationManager navigationManager, RoleManager<IdentityRole> roleManager)
+  public partial class CreateUser(UserManager<ApplicationUser> userManager, NavigationManager navigationManager)
   {
 
     [SupplyParameterFromForm(FormName = "CreateUser")]
     private UserDto? Dto { get; set; }
     private List<string> SubmitMessage { get; set; } = new();
     private readonly UserManager<ApplicationUser> _userManager = userManager;
-
-    private readonly RoleManager<IdentityRole> _roleUser = roleManager;
 
     private bool LoginBool { get; set; } = false;
     private readonly NavigationManager _navigationManager = navigationManager;
@@ -48,8 +46,9 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
       }
 
 
-      var user = new ApplicationUser(Dto.Email, Dto.UserName);
+      var user = new ApplicationUser { UserName = Dto.UserName, Email = Dto.Email };
       var resu = await _userManager.CreateAsync(user, Dto.Password);
+
       if (resu.Succeeded)
       {
         SubmitMessage.Add("Account has has been created");
