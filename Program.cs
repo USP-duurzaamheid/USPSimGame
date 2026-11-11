@@ -95,7 +95,7 @@ builder.Services.AddScoped<USPSimGame.Services.Simulation.ISimulationOrchestrato
 builder.Services.AddScoped<USPSimGame.Services.Simulation.IKpiChartDataService, USPSimGame.Services.Simulation.KpiChartDataService>();
 builder.Services.AddSingleton<USPSimGame.Services.Simulation.ISimulatorModule, USPSimGame.Services.Simulation.Modules.SampleEnergySimulatorModule>();
 builder.Services.AddHostedService<USPSimGame.Services.Simulation.GameLoopBackgroundService>();
-builder.Services.AddScoped<CreatorAuthState>();
+builder.Services.AddScoped<CreatorAuthState>(); // Per scoped circuit, when on creator creates a legacy creatorAuthState which gets used through components.
 builder.Services.AddScoped<PlayerSessionState>();
 
 // Register Building Service & Map Layer Strategy Providers
