@@ -1,0 +1,23 @@
+@namespace USPSimGame.Components.Game.Fines
+
+<div class="fine-toast @(Fine.IsActive ? null : "fine-toast--stopped")" role="status" aria-live="polite">
+    <span class="fine-toast-icon" aria-hidden="true">
+        <i class="bi @(Fine.IsActive ? "bi-exclamation-octagon-fill" : "bi-check-circle-fill")"></i>
+    </span>
+    <div class="fine-toast-body">
+        <strong class="fine-toast-title">@(Fine.IsActive ? "Boete ontvangen" : "Boete gestopt")</strong>
+        <span class="fine-toast-dilemma">@Fine.DilemmaCode · @Fine.DilemmaTitle</span>
+        @if (Fine.IsActive)
+        {
+            <span class="fine-toast-amount">-@Fine.AmountCredits CC per maand</span>
+            <span class="fine-toast-reason">@Fine.Reason</span>
+        }
+        else
+        {
+            <span class="fine-toast-reason">Je betaalt hiervoor geen -@Fine.AmountCredits CC per maand meer.</span>
+        }
+    </div>
+    <button type="button" class="fine-toast-close" aria-label="Melding sluiten" @onclick="OnClose">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+    </button>
+</div>

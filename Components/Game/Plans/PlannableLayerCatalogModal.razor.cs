@@ -28,33 +28,45 @@ public partial class PlannableLayerCatalogModal : ComponentBase
     {
         return type switch
         {
-            PlannableGeometryType.Point => "Point",
-            PlannableGeometryType.Line => "Line",
-            PlannableGeometryType.Polygon => "Polygon",
+            PlannableGeometryType.Point => "Punt",
+            PlannableGeometryType.Line => "Lijn",
+            PlannableGeometryType.Polygon => "Vlak",
             _ => type.ToString()
         };
     }
 
-    protected string GetInvestmentUnitDisplay(PlannableGeometryType type)
+    protected string GetCostDisplay(PlannableLayerDefinition def)
+    {
+        return GetAmountDisplay(def.GeometryType, def.BaseInvestmentPoints, def.InvestmentPointsPerUnit, string.Empty);
+    }
+
+    protected string GetExpenseDisplay(PlannableLayerDefinition def)
+    {
+        return GetAmountDisplay(def.GeometryType, def.BaseMonthlyExpensePoints, def.MonthlyExpensePointsPerUnit, " per maand");
+    }
+
+    protected string GetConstructionTimeDisplay(PlannableLayerDefinition def)
+    {
+        if (def.GeometryType == PlannableGeometryType.Point)
+        {
+            return FormatMonths((int)Math.Ceiling(def.BaseConstructionTimeMonths + def.ConstructionTimeModifierPerUnit));
+        }
+
+        return def.ConstructionTimeModifierPerUnit > 0
+            ? $"vanaf {FormatMonths(def.BaseConstructionTimeMonths)}"
+            : FormatMonths(def.BaseConstructionTimeMonths);
+    }
+
+    private static string GetAmountDisplay(PlannableGeometryType type, double baseAmount, double amountPerUnit, string suffix)
     {
         return type switch
         {
-            PlannableGeometryType.Point => "pts / point",
-            PlannableGeometryType.Line => "pts / 50m",
-            PlannableGeometryType.Polygon => "pts / m²",
-            _ => "pts / unit"
+            PlannableGeometryType.Point => $"{baseAmount + amountPerUnit:0.##} CC{suffix}",
+            _ when amountPerUnit == 0 => $"{baseAmount:0.##} CC{suffix}",
+            PlannableGeometryType.Line => $"{baseAmount:0.##} CC + {amountPerUnit:0.##} CC / 50m{suffix}",
+            _ => $"{baseAmount:0.##} CC + {amountPerUnit:0.##} CC / m²{suffix}"
         };
     }
 
-    protected string GetExpenseUnitDisplay(PlannableGeometryType type)
-    {
-        return type switch
-        {
-            PlannableGeometryType.Point => "pts / point / month",
-            PlannableGeometryType.Line => "pts / 50m / month",
-            PlannableGeometryType.Polygon => "pts / m² / month",
-            _ => "pts / unit / month"
-        };
-    }
-
+    private static string FormatMonths(int months) => months == 1 ? "1 maand" : $"{months} maanden";
 }

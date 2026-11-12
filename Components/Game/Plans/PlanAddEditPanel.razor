@@ -98,7 +98,7 @@
                         <button type="button" class="btn btn-sm btn-outline-success w-100 rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                                 @onclick="OpenCatalogModal">
                             <i class="bi bi-grid-3x3-gap-fill h6 mb-0"></i>
-                            <span>Browse & Add Development Option</span>
+                            <span>Bouwmenu openen</span>
                         </button>
                     </div>
 
@@ -203,17 +203,17 @@
                             </div>
                             <div class="d-flex justify-content-between small mb-1">
                                 <span>Investment:</span>
-                                <strong class="text-danger">⚡ -@CurrentPlanCost.TotalInvestmentPoints pts</strong>
+                                <strong class="text-danger">⚡ -@CurrentPlanCost.TotalInvestmentPoints CC</strong>
                             </div>
                             <div class="d-flex justify-content-between small mb-1">
                                 <span>Expense:</span>
                                 @if (CurrentPlanCost.TotalMonthlyExpensePoints < 0)
                                 {
-                                    <strong class="text-success">📈 +@Math.Abs(CurrentPlanCost.TotalMonthlyExpensePoints) pts/mo (savings)</strong>
+                                    <strong class="text-success">📈 +@Math.Abs(CurrentPlanCost.TotalMonthlyExpensePoints) CC/mo (savings)</strong>
                                 }
                                 else
                                 {
-                                    <strong class="text-danger">📉 -@CurrentPlanCost.TotalMonthlyExpensePoints pts/mo</strong>
+                                    <strong class="text-danger">📉 -@CurrentPlanCost.TotalMonthlyExpensePoints CC/mo</strong>
                                 }
                             </div>
                         </div>

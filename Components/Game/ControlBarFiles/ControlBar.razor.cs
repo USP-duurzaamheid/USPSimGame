@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
+using USPSimGame.Data.Preview;
 using USPSimGame.Services;
 using USPSimGame.Services.Auth;
 using USPSimGame.Services.PlayerSessions;
@@ -7,9 +9,9 @@ using USPSimGame.Services.GameSessions;
 using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
 
-namespace USPSimGame.Components.Game;
+namespace USPSimGame.Components.Game.ControlBarFiles;
 
-public partial class GameOverlay : ComponentBase, IDisposable
+public partial class ControlBar : ComponentBase, IDisposable
 {
     [Inject]
     public PlayerSessionState PlayerSessionState { get; set; } = default!;
@@ -23,12 +25,21 @@ public partial class GameOverlay : ComponentBase, IDisposable
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;
 
+    [Parameter]
+    public IReadOnlyList<FineModel> Fines { get; set; } = [];
+
     protected bool ShowStateControlPanel { get; set; } = false;
-    protected bool ShowKpiChartModal { get; set; } = false;
     protected int DurationMinutes { get; set; } = 2;
     protected int DurationSeconds { get; set; } = 0;
 
     private System.Threading.Timer? _clientTimer;
+
+    protected int SustainabilityPoints => GamePreviewData.PreviewControlBarConstants.SustainabilityPoints;
+    protected int RenewableElectricityPercent => GamePreviewData.PreviewControlBarConstants.RenewableElectricityPercent;
+    protected NoisePollutionInfo NoisePollution => GamePreviewData.PreviewNoisePollutionInfo;
+
+    protected static string TeamLabel(string teamName) =>
+        teamName.StartsWith("Team ", StringComparison.OrdinalIgnoreCase) ? teamName : $"Team {teamName}";
 
     public string RemainingTimeFormatted
     {
@@ -117,11 +128,6 @@ public partial class GameOverlay : ComponentBase, IDisposable
             InitDurationInputs();
             ShowStateControlPanel = !ShowStateControlPanel;
         }
-    }
-
-    protected void ToggleKpiChartModal()
-    {
-        ShowKpiChartModal = !ShowKpiChartModal;
     }
 
     protected async Task ApplyDurationAsync()

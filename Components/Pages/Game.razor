@@ -16,31 +16,41 @@
 }
 else
 {
-    <GameOverlay />
+    <ControlBar Fines="@Fines" />
 
-    <!-- Bottom-Left Stacked Controls Container (Plans on top, Map on bottom) -->
-    <div class="position-fixed bottom-0 start-0 m-3 z-3 d-flex flex-column gap-2 pointer-events-none" style="width: 360px; max-width: calc(100vw - 32px);">
-        <div class="pointer-events-auto">
-            <!-- Development Plans Panel (Top, expands upwards) -->
+    <!-- Bottom-Left Insight Burger Menu -->
+    <InsightBurgerMenu @ref="insightBurgerMenu"
+                       GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                       ScopeTeamId="@(PlayerSessionState.IsAdmin ? null : PlayerSessionState.CurrentTeam?.Id)"
+                       StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                       CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+                       ShowDilemmas="@(!PlayerSessionState.IsAdmin)"
+                       Dilemmas="@Dilemmas"
+                       NewDilemmaCode="@NewDilemmaCode"
+                       IsPreview="true"
+                       BuildingsEnabled="@(PlayerSessionState.CurrentGameSession?.State is not null and not GameState.Setup)">
+        <Buildings>
+            <!-- Development Plans Panel -->
             <PlansControlPanel @ref="plansControlPanel"
                                GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
                                CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
                                GameState="@(PlayerSessionState.CurrentGameSession?.State ?? GameState.Setup)"
                                IsAdmin="@PlayerSessionState.IsAdmin"
                                StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                               CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
                                ActivePlan="@ActivePlan"
-                               IsCollapsed="@isPlansPanelCollapsed"
-                               OnToggleCollapse="HandlePlansPanelToggle"
+                               IsCollapsed="false"
+                               OnToggleCollapse="CloseMenuPanelWhenCollapsed"
                                OnOpenNewPlan="OpenNewPlanPanel"
                                OnPlanSelected="HandlePlanSelectedAsync" />
-        </div>
+        </Buildings>
+    </InsightBurgerMenu>
 
-        <div class="pointer-events-auto">
-            <!-- Map Layers & Legend Panel (Bottom) -->
-            <MapControlPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
-                             IsCollapsed="@isMapPanelCollapsed"
-                             OnToggleCollapse="HandleMapPanelToggle" />
-        </div>
+    <!-- Top-Right: Map Layers & Legend Panel -->
+    <div class="game-map-layers">
+        <LayerControls GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                       IsCollapsed="@isMapPanelCollapsed"
+                       OnToggleCollapse="HandleMapPanelToggle" />
     </div>
 
     <!-- Team Area Definition Panel (Bottom Right during Setup State for Players) -->
@@ -68,12 +78,29 @@ else
     {
         <PlanViewPanel Plan="@ActivePlan"
                        StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                       CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
                        CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
                        CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)"
                        IsAdmin="@PlayerSessionState.IsAdmin"
                        SessionTeams="@SessionTeams"
                        OnEditPlan="HandleEditPlanAsync"
                        OnClose="ClosePlanViewAsync" />
+    }
+
+    <!-- Fine Message -->
+    @if (LatestFine != null)
+    {
+        <FineToast Fine="@LatestFine" OnClose="CloseFineToast" />
+    }
+
+    <!-- New Dilemma Pop-up -->
+    @if (IncomingDilemma != null)
+    {
+        <DilemmaPopup Dilemma="@IncomingDilemma"
+                      CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
+                      StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
+                      OnClose="CloseIncomingDilemma"
+                      OnViewGoals="ViewIncomingDilemma" />
     }
 
     <!-- Map Geometry Properties Floating Panel -->

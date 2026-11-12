@@ -8,9 +8,9 @@ using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
 using USPSimGame.Services.Costing;
 
-namespace USPSimGame.Components.Game.Teams;
+namespace USPSimGame.Components.Game.ControlBarFiles;
 
-public partial class TeamBudgetWidget : ComponentBase, IDisposable
+public partial class StatTeamInfo : ComponentBase, IDisposable
 {
     [Inject] public ITeamService TeamService { get; set; } = default!;
     [Inject] public ITeamBudgetService TeamBudgetService { get; set; } = default!;
@@ -22,6 +22,19 @@ public partial class TeamBudgetWidget : ComponentBase, IDisposable
     protected double CurrentBalance { get; set; } = 100;
     protected double MonthlyExpenseBurden { get; set; } = 0;
 
+    protected string CreditsTooltip
+    {
+        get
+        {
+            var tooltip = $"Campus Credits (CC) zijn het budget van je organisatie: hiermee betaal je installaties. Beschikbaar: {CurrentBalance:N0} CC";
+            if (MonthlyExpenseBurden > 0)
+            {
+                tooltip += $" · vaste lasten -{MonthlyExpenseBurden:N1} CC per maand";
+            }
+            return CurrentBalance < 0 ? $"{tooltip} · let op: je saldo is negatief!" : tooltip;
+        }
+    }
+
     private int _loadedTeamId = -1;
 
     protected override void OnInitialized()
@@ -32,7 +45,7 @@ public partial class TeamBudgetWidget : ComponentBase, IDisposable
 
     protected override async Task OnParametersSetAsync()
     {
-        // Note: this component's parent (GameOverlay) re-renders every second to drive a
+        // Note: this component's parent (ControlBar) re-renders every second to drive a
         // countdown timer, which would otherwise re-trigger a DB reload here every second too.
         // Only reload when the TeamId parameter actually changes; ongoing balance updates are
         // driven exclusively by the notifier events below, which fire once per real change
@@ -76,7 +89,7 @@ public partial class TeamBudgetWidget : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[TeamBudgetWidget] Error loading budget status: {ex.Message}");
+            Console.WriteLine($"[StatTeamInfo] Error loading budget status: {ex.Message}");
         }
     }
 

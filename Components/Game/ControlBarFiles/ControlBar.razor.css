@@ -1,0 +1,253 @@
+/* --- Control bar --- */
+.control-bar {
+    --control-bar-font-size: 18px;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 72px;
+    padding: 0 12px 0 9px;
+    border-radius: var(--game-radius-lg);
+    background-color: var(--game-surface);
+    box-shadow: var(--game-shadow);
+    color: var(--game-text-dark);
+    font-family: "Inter", var(--app-font-family);
+}
+
+.control-bar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: var(--game-radius-md);
+    background-color: var(--game-green);
+    filter: drop-shadow(0 10px 12px rgba(92, 184, 141, 0.2));
+    font-size: 26px;
+    line-height: 1;
+    color: #fff;
+}
+
+.control-bar-stats {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    scrollbar-width: none;
+}
+
+.control-bar-stats::-webkit-scrollbar {
+    display: none;
+}
+
+.control-bar-end {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.control-bar-item {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+    height: 40px;
+    padding: 0 clamp(10px, 1.3vw, 28px);
+}
+
+.control-bar-item + .control-bar-item {
+    border-left: 1px solid var(--game-divider);
+}
+
+.control-bar-text {
+    font-size: var(--control-bar-font-size);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.control-bar-team-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.control-bar-admin-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--game-danger);
+    font-size: 14px;
+    color: #fff;
+}
+
+.control-bar-role {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: rgba(229, 72, 77, 0.12);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--game-danger);
+    white-space: nowrap;
+}
+
+.control-bar-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: var(--control-bar-font-size);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--game-text-dark);
+}
+
+.control-bar-state--button {
+    padding: 8px 10px;
+    margin: -8px -10px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.control-bar-state--button .bi {
+    font-size: 15px;
+    color: var(--game-text-muted);
+}
+
+.control-bar-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border-radius: 10px;
+    background-color: #eef4f1;
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--game-text-muted);
+}
+
+.control-bar-state--button:hover {
+    background-color: rgba(92, 184, 141, 0.16);
+}
+
+.control-bar-exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    height: 48px;
+    margin-left: 8px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--game-radius-md);
+    background-color: var(--game-green);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.control-bar-exit:hover {
+    background-color: var(--game-green-dark);
+}
+
+.control-bar-state--button:focus-visible,
+.control-bar-exit:focus-visible {
+    outline: 2px solid var(--game-green);
+    outline-offset: 2px;
+}
+
+@media (max-width: 1366px) {
+    .control-bar {
+        --control-bar-font-size: 16px;
+    }
+}
+
+@media (max-width: 1320px) {
+    .control-bar {
+        --control-bar-font-size: 15px;
+    }
+
+    .control-bar-item {
+        padding: 0 10px;
+    }
+
+    .control-bar-team-name,
+    .control-bar-exit span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .control-bar-exit {
+        padding: 0 14px;
+    }
+}
+
+@media (max-width: 1023px) {
+    .control-bar-stats {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .control-bar {
+        --control-bar-font-size: 14px;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        flex-wrap: wrap;
+        row-gap: 4px;
+        height: auto;
+        padding: 6px;
+    }
+
+    .control-bar-logo {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+
+    .control-bar-stats {
+        order: 3;
+        flex-basis: 100%;
+        height: 44px;
+    }
+
+    .control-bar-item {
+        padding: 0 8px;
+    }
+
+    .control-bar-exit {
+        height: 44px;
+        margin-left: 4px;
+    }
+}
+
+/* --- Admin state control panel --- */
+.game-state-modal-backdrop {
+    z-index: 5;
+}
+
+.extra-small {
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+}
