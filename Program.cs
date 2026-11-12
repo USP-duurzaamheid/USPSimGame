@@ -66,7 +66,7 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCooki
 
 });
 builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
-
+builder.Services.AddCascadingAuthenticationState();
 
 // Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
 
@@ -95,7 +95,7 @@ builder.Services.AddScoped<USPSimGame.Services.Simulation.ISimulationOrchestrato
 builder.Services.AddScoped<USPSimGame.Services.Simulation.IKpiChartDataService, USPSimGame.Services.Simulation.KpiChartDataService>();
 builder.Services.AddSingleton<USPSimGame.Services.Simulation.ISimulatorModule, USPSimGame.Services.Simulation.Modules.SampleEnergySimulatorModule>();
 builder.Services.AddHostedService<USPSimGame.Services.Simulation.GameLoopBackgroundService>();
-builder.Services.AddScoped<CreatorAuthState>();
+builder.Services.AddScoped<CreatorAuthState>(); // Per scoped circuit, when on creator creates a legacy creatorAuthState which gets used through components.
 builder.Services.AddScoped<PlayerSessionState>();
 
 // Register Building Service & Map Layer Strategy Providers
@@ -211,7 +211,7 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
 app.MapPost("/user-logout", async (HttpContext context) =>
 {
     // A null check on context.User in unnecessary because it's needed to authorisze the request, this doesn't get executed if there is no context.
-    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(IdentityConstants.ApplicationScheme);
     return Results.Redirect("/");
 
 }).RequireAuthorization();

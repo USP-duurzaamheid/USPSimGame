@@ -1,12 +1,16 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using USPSimGame.Components.Creator;
 using USPSimGame.Components.Creator.Layers;
 using USPSimGame.Data.Entities;
 
 namespace USPSimGame.Components.Pages.Creator;
 
-public partial class CreatorLayers : ComponentBase
+public partial class CreatorLayers() : ComponentBase
 {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
     protected List<MapLayerDefinition> LayerDefinitions { get; set; } = new();
     protected List<PlannableLayerDefinition> PlannableDefinitions { get; set; } = new();
     protected bool IsLoading { get; set; } = true;
@@ -25,14 +29,19 @@ public partial class CreatorLayers : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthState.IsAuthenticated)
+        if (authenticationState is not null)
         {
-            await LoadDataAsync();
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                await LoadDataAsync();
+            }
         }
-        else
-        {
-            IsLoading = false;
-        }
+
+
+
     }
 
     private async Task LoadDataAsync()
