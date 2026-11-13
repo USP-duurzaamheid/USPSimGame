@@ -68,7 +68,8 @@ namespace USPSimGame.Migrations
                     MonthDurationSeconds = table.Column<int>(type: "integer", nullable: false),
                     TargetMonthEndUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RemainingSecondsOnPause = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    JoinCode = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -530,7 +531,6 @@ namespace USPSimGame.Migrations
                 columns: new[] { "Id", "Category", "DefaultStyleConfigJson", "Description", "IsEnabledByDefault", "Key", "LayerType", "Name", "SimulatorTags", "TranslatorTags" },
                 values: new object[,]
                 {
-                    { 1, "Buildings", null, "3D building footprints, roof shapes, heights, and volumes from 3D BAG (Kadaster/TU Delft).", true, "pdok-3dbag-buildings", "VectorGeoJson", "3D BAG Buildings", null, null },
                     { 2, "Infrastructure", null, "Low-, medium-, and high-voltage electricity grid network for Liander service territory.", false, "liander-open-data-elektra", "VectorGeoJson", "Liander Electricity Grid", null, null },
                     { 3, "Infrastructure", null, "Complete low-, medium-, and high-voltage electricity cables and transformer stations for Stedin service territory.", false, "stedin-open-data-elektra", "VectorGeoJson", "Stedin Regional Electricity Grid", null, null },
                     { 4, "Infrastructure", null, "Municipal urban water, sewage pipes, inspection manholes, and pumping stations from Stichting Rioned GWSW.", false, "pdok-gwsw-sewage", "VectorGeoJson", "Urban Sewage & Drainage Network (PDOK GWSW)", null, null },
@@ -606,6 +606,12 @@ namespace USPSimGame.Migrations
                 name: "IX_GameSessionPlannableLayers_PlannableLayerDefinitionId",
                 table: "GameSessionPlannableLayers",
                 column: "PlannableLayerDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameSessions_JoinCode",
+                table: "GameSessions",
+                column: "JoinCode",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlanFeatures_GameSessionPlannableLayerId",

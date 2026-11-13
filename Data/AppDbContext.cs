@@ -140,18 +140,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<MapLayerDefinition>().HasData(
             new MapLayerDefinition
             {
-                Id = 1,
-                Key = "pdok-3dbag-buildings",
-                Name = "3D BAG Buildings",
-                Description = "3D building footprints, roof shapes, heights, and volumes from 3D BAG (Kadaster/TU Delft).",
-                LayerType = MapLayerType.VectorGeoJson,
-                Category = MapLayerCategory.Buildings,
-                IsEnabledByDefault = true,
-                TranslatorTags = null,
-                SimulatorTags = null
-            },
-            new MapLayerDefinition
-            {
                 Id = 2,
                 Key = "liander-open-data-elektra",
                 Name = "Liander Electricity Grid",

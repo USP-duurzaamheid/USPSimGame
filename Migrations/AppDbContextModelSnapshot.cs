@@ -385,16 +385,6 @@ namespace USPSimGame.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Category = "Buildings",
-                            Description = "3D building footprints, roof shapes, heights, and volumes from 3D BAG (Kadaster/TU Delft).",
-                            IsEnabledByDefault = true,
-                            Key = "pdok-3dbag-buildings",
-                            LayerType = "VectorGeoJson",
-                            Name = "3D BAG Buildings"
-                        },
-                        new
-                        {
                             Id = 2,
                             Category = "Infrastructure",
                             Description = "Low-, medium-, and high-voltage electricity grid network for Liander service territory.",
