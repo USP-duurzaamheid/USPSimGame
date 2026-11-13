@@ -4,6 +4,8 @@ namespace USPSimGame.Data.Entities;
 
 public class GameSession
 {
+    public const int JoinCodeLength = 6;
+
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string CenterLatLong { get; set; } = string.Empty;

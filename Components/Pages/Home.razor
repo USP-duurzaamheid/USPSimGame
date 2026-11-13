@@ -1,19 +1,15 @@
 @page "/"
 @rendermode InteractiveServer
 
-<PageTitle>Common Ground - Select Session & Connect</PageTitle>
+<PageTitle>Common Ground - Join</PageTitle>
 
 <div class="home-container py-5">
     <div class="text-center mb-5">
         <h1 class="display-4 fw-bold text-primary mb-2">Common Ground</h1>
     </div>
 
-    <GameSessionSelector SelectedSessionId="@(SelectedSession?.Id ?? 0)" OnSessionSelected="HandleSessionSelected" />
+    <Join />
 
-    @if (SelectedSession != null)
-    {
-        <TeamConnectCard SelectedSession="SelectedSession" />
-    }
     <div class="text-center">
         Version: @Version
     </div>

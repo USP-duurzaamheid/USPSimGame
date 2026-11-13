@@ -3,6 +3,7 @@ using USPSimGame.Data;
 using USPSimGame.Data.Entities;
 using USPSimGame.Data.Enums;
 using USPSimGame.Services.Layers;
+using USPSimGame.Utils;
 using Npgsql;
 
 namespace USPSimGame.Services.GameSessions;
@@ -15,19 +16,22 @@ public class GameSessionService : IGameSessionService
     private readonly ILogger<GameSessionService> _logger;
 
     private readonly JoinCodeAllocator _joinCodeAllocator;
+    private readonly IJoinAttemptLimiter _joinAttemptLimiter;
 
     public GameSessionService(
         IDbContextFactory<AppDbContext> dbContextFactory,
         IMapLayerService mapLayerService,
         IGameSessionNotifierService notifier,
         ILogger<GameSessionService> logger,
-        JoinCodeAllocator joinCodeAllocator)
+        JoinCodeAllocator joinCodeAllocator,
+        IJoinAttemptLimiter joinAttemptLimiter)
     {
         _dbContextFactory = dbContextFactory;
         _mapLayerService = mapLayerService;
         _notifier = notifier;
         _logger = logger;
         _joinCodeAllocator = joinCodeAllocator;
+        _joinAttemptLimiter = joinAttemptLimiter;
     }
 
     public async Task<List<GameSession>> GetGameSessionsAsync()
@@ -72,8 +76,7 @@ public class GameSessionService : IGameSessionService
 
     public async Task<GameSession?> GetByJoinCodeAsync(string joinCode)
     {
-        var code = joinCode?.Trim();
-        if (string.IsNullOrEmpty(code))
+        if (!JoinCodeFormat.TryNormalize(joinCode, out var code))
         {
             return null;
         }
@@ -82,6 +85,23 @@ public class GameSessionService : IGameSessionService
         return await db.GameSessions
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.JoinCode == code);
+    }
+
+    public async Task<(bool Success, string? ErrorMessage, GameSession? GameSession)> FindJoinableByJoinCodeAsync(string joinCode, string clientKey)
+    {
+        if (_joinAttemptLimiter.IsBlocked(clientKey))
+        {
+            return (false, JoinCodeMessages.TooManyAttempts, null);
+        }
+
+        var session = await GetByJoinCodeAsync(joinCode);
+        if (session == null || !session.State.IsJoinable())
+        {
+            _joinAttemptLimiter.RecordFailure(clientKey);
+            return (false, JoinCodeMessages.NotFound, null);
+        }
+
+        return (true, null, session);
     }
 
     private static bool IsJoinCodeCollision(DbUpdateException ex) =>

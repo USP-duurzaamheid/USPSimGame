@@ -1,4 +1,4 @@
-@page "/join/team"
+@page "/join/team/{Code}"
 @layout PlayerLayout
 @rendermode InteractiveServer
 
@@ -21,11 +21,11 @@
             <div class="session-title-row">
                 <div class="session-title-stack">
                     <span class="session-eyebrow">Game Session</span>
-                    <span class="session-name">Utrecht Science Park</span>
+                    <span class="session-name">@Session?.Name</span>
                 </div>
                 <span class="session-status">
                     <span class="session-status-dot"></span>
-                    Paused
+                    @Session?.State
                 </span>
             </div>
 
@@ -57,7 +57,7 @@
                     <span class="session-meta-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
                     <div class="session-meta-labels">
                         <span class="session-meta-label">Teams</span>
-                        <span class="session-meta-value">4 teams connected</span>
+                        <span class="session-meta-value">@Teams.Count @(Teams.Count == 1 ? "team" : "teams")</span>
                     </div>
                 </div>
             </div>
@@ -67,18 +67,23 @@
             <div class="session-teams">
                 <div class="session-teams-header">
                     <span class="session-teams-title">Teams in session</span>
-                    <span class="session-teams-count">4 / 6</span>
+                    <span class="session-teams-count">@Teams.Count</span>
                 </div>
                 <div class="session-teams-list">
+                    @if (Session != null && Teams.Count == 0)
+                    {
+                        <p class="session-teams-empty">This session has no teams yet. Ask your host to add teams, then refresh this page.</p>
+                    }
                     @foreach (var team in Teams)
                     {
-                        var isSelected = team.Initials == SelectedTeam;
+                        var teamId = team.Id;
+                        var isSelected = teamId == SelectedTeamId;
                         <button type="button"
                                 class="team-row @(isSelected ? "team-row--selected" : null)"
                                 aria-pressed="@(isSelected ? "true" : "false")"
-                                @onclick="() => SelectedTeam = team.Initials">
+                                @onclick="() => SelectedTeamId = teamId">
                             <span class="team-row-left">
-                                <span class="team-badge">@team.Initials</span>
+                                <span class="team-badge">@GetInitials(team.Name)</span>
                                 <span class="team-name">@team.Name</span>
                             </span>
                             <span class="team-connection"></span>
@@ -87,7 +92,14 @@
                 </div>
             </div>
 
-            <button type="button" class="session-enter-button" disabled="@(SelectedTeam == null)">
+            <input type="text" class="session-player-name" maxlength="50" placeholder="Your name" aria-label="Your name" @bind="PlayerName" />
+
+            @if (ErrorMessage != null)
+            {
+                <p class="session-error" role="alert">@ErrorMessage</p>
+            }
+
+            <button type="button" class="session-enter-button" disabled="@(SelectedTeamId == null || IsJoining)" @onclick="EnterSessionAsync">
                 <span>Enter Session</span>
                 <i class="bi bi-arrow-right" aria-hidden="true"></i>
             </button>

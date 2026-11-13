@@ -1,14 +1,24 @@
 using Microsoft.AspNetCore.Components;
+using USPSimGame.Services.GameSessions;
+using USPSimGame.Services.PlayerSessions;
 
 namespace USPSimGame.Components.Pages;
 
 public partial class Join : ComponentBase
 {
-    protected const int PinLength = 6;
-    private const string MockPin = "123456";
+    protected const int PinLength = JoinCodeGenerator.CodeLength;
 
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;
+
+    [Inject]
+    public IGameSessionService GameSessionService { get; set; } = default!;
+
+    [Inject]
+    public ClientConnectionInfo ClientConnection { get; set; } = default!;
+
+    [Inject]
+    public ILogger<Join> Logger { get; set; } = default!;
 
     private ElementReference pinInput;
 
@@ -45,14 +55,31 @@ public partial class Join : ComponentBase
         Pin = digits;
     }
 
-    protected void HandleJoin()
+    protected async Task HandleJoin()
     {
-        if (Pin == MockPin)
+        // The UI check is only for convenience; FindJoinableByJoinCodeAsync validates again on the server.
+        if (!JoinCodeFormat.TryNormalize(Pin, out var code))
         {
-            Navigation.NavigateTo("/join/team");
+            ErrorMessage = $"Please enter a {PinLength}-digit game code.";
             return;
         }
 
-        ErrorMessage = "No active game found with this PIN.";
+        try
+        {
+            var result = await GameSessionService.FindJoinableByJoinCodeAsync(code, ClientConnection.ClientKey);
+            if (!result.Success)
+            {
+                ErrorMessage = result.ErrorMessage;
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Join: Error while looking up a game session by join code");
+            ErrorMessage = "Something went wrong. Please try again.";
+            return;
+        }
+
+        Navigation.NavigateTo($"/join/team/{code}");
     }
 }
