@@ -25,6 +25,9 @@ public partial class PlansControlPanel : ComponentBase, IDisposable
     public int StartYear { get; set; } = 2026;
 
     [Parameter]
+    public int CurrentMonth { get; set; }
+
+    [Parameter]
     public GameState GameState { get; set; } = GameState.Setup;
 
     [Parameter]

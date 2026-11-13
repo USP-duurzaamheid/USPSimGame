@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using OpenLayers.Blazor;
 using USPSimGame.Components.Game;
+using USPSimGame.Components.Game.BurgerMenu;
 using USPSimGame.Components.Game.Map;
 using USPSimGame.Components.Game.Plans;
 using USPSimGame.Data.Entities;
+using USPSimGame.Data.Enums;
+using USPSimGame.Data.Models;
+using USPSimGame.Data.Preview;
 using USPSimGame.Services;
 using USPSimGame.Services.Auth;
 using USPSimGame.Services.PlayerSessions;
@@ -48,9 +52,12 @@ public partial class Game : ComponentBase, IDisposable
     [Inject]
     public ILogger<Game> Logger { get; set; } = default!;
 
+    protected InsightBurgerMenu? insightBurgerMenu;
     protected PlansControlPanel? plansControlPanel;
     protected MapFeaturePropertiesPanel? propertiesPanel;
     private DotNetObjectReference<Game>? _dotNetRef;
+    private readonly CancellationTokenSource _previewEventsCts = new();
+    private bool _previewEventsScheduled;
 
     protected bool ShowPlanAddEditPanel { get; set; } = false;
     protected Plan? PlanToEdit { get; set; }
@@ -58,24 +65,109 @@ public partial class Game : ComponentBase, IDisposable
     protected string? LockErrorMessage { get; set; }
     protected List<Team> SessionTeams { get; set; } = new();
 
-    protected bool isPlansPanelCollapsed { get; set; } = true;
-    protected bool isMapPanelCollapsed { get; set; } = true;
+    protected List<DilemmaModel> Dilemmas { get; set; } = new();
+    protected DilemmaModel? IncomingDilemma { get; set; }
+    protected string? NewDilemmaCode { get; set; }
+    protected List<FineModel> Fines { get; set; } = new();
+    protected FineModel? LatestFine { get; set; }
 
-    protected void HandlePlansPanelToggle(bool newCollapsed)
-    {
-        isPlansPanelCollapsed = newCollapsed;
-        if (!isPlansPanelCollapsed)
-        {
-            isMapPanelCollapsed = true;
-        }
-    }
+    protected bool isMapPanelCollapsed { get; set; } = true;
 
     protected void HandleMapPanelToggle(bool newCollapsed)
     {
         isMapPanelCollapsed = newCollapsed;
-        if (!isMapPanelCollapsed)
+    }
+
+    protected void CloseMenuPanelWhenCollapsed(bool isCollapsed)
+    {
+        if (isCollapsed)
         {
-            isPlansPanelCollapsed = true;
+            insightBurgerMenu?.CloseSlot();
+        }
+    }
+
+    protected void ReceiveDilemma(DilemmaModel dilemma)
+    {
+        Dilemmas.RemoveAll(d => d.Code == dilemma.Code);
+        Dilemmas.Insert(0, dilemma);
+        NewDilemmaCode = dilemma.Code;
+        IncomingDilemma = dilemma;
+    }
+
+    protected void CloseIncomingDilemma()
+    {
+        IncomingDilemma = null;
+    }
+
+    protected void ViewIncomingDilemma()
+    {
+        IncomingDilemma = null;
+        insightBurgerMenu?.OpenDilemmas();
+    }
+
+    protected void ReceiveFine(FineModel fine)
+    {
+        Fines.Insert(0, fine);
+        LatestFine = fine;
+    }
+
+    protected void StopFine(string dilemmaCode)
+    {
+        var fine = Fines.FirstOrDefault(f => f.DilemmaCode == dilemmaCode && f.IsActive);
+        if (fine != null)
+        {
+            fine.EndedMonth = PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0;
+            LatestFine = fine;
+        }
+    }
+
+    protected void CloseFineToast()
+    {
+        LatestFine = null;
+    }
+
+    private void SchedulePreviewEvents()
+    {
+        var session = PlayerSessionState.CurrentGameSession;
+        if (_previewEventsScheduled || session == null || PlayerSessionState.IsAdmin || session.State == GameState.Setup)
+        {
+            return;
+        }
+
+        _previewEventsScheduled = true;
+        _ = RunPreviewEventsAsync();
+    }
+
+    private async Task RunPreviewEventsAsync()
+    {
+        try
+        {
+            int CurrentMonth() => PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0;
+
+            await Task.Delay(TimeSpan.FromSeconds(4), _previewEventsCts.Token);
+            await InvokeAsync(() =>
+            {
+                ReceiveDilemma(GamePreviewData.PreviewIncomingDilemma(CurrentMonth()));
+                StateHasChanged();
+            });
+
+            await Task.Delay(TimeSpan.FromSeconds(8), _previewEventsCts.Token);
+            await InvokeAsync(() =>
+            {
+                ReceiveFine(GamePreviewData.PreviewIncomingFine(CurrentMonth()));
+                StateHasChanged();
+            });
+
+            await Task.Delay(TimeSpan.FromSeconds(20), _previewEventsCts.Token);
+            await InvokeAsync(() =>
+            {
+                StopFine(GamePreviewData.PreviewStoppingFineDilemmaCode);
+                StateHasChanged();
+            });
+        }
+        catch (TaskCanceledException)
+        {
+            // The game screen was closed before the example events finished.
         }
     }
 
@@ -95,6 +187,8 @@ public partial class Game : ComponentBase, IDisposable
         }
 
         InitialZoom = session?.Zoom ?? 15;
+        Dilemmas = GamePreviewData.PreviewGetCurrentDilemmas(session?.CurrentMonth ?? 0);
+        Fines = GamePreviewData.PreviewGetCurrentFines(session?.CurrentMonth ?? 0);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -115,6 +209,8 @@ public partial class Game : ComponentBase, IDisposable
 
             if (session != null)
             {
+                SchedulePreviewEvents();
+
                 try
                 {
                     Logger.LogInformation("Game.razor: Loading session map layers for Session #{Id}...", session.Id);
@@ -181,6 +277,7 @@ public partial class Game : ComponentBase, IDisposable
             PlayerSessionState.CurrentGameSession.MonthDurationSeconds = updatedSession.MonthDurationSeconds;
             PlayerSessionState.CurrentGameSession.TargetMonthEndUtc = updatedSession.TargetMonthEndUtc;
             PlayerSessionState.CurrentGameSession.RemainingSecondsOnPause = updatedSession.RemainingSecondsOnPause;
+            SchedulePreviewEvents();
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -326,5 +423,7 @@ public partial class Game : ComponentBase, IDisposable
         TeamNotifier.OnTeamAreaChanged -= HandleTeamAreaChangedAsync;
         Notifier.OnGameSessionStateChanged -= HandleGameSessionStateChangedAsync;
         _dotNetRef?.Dispose();
+        _previewEventsCts.Cancel();
+        _previewEventsCts.Dispose();
     }
 }

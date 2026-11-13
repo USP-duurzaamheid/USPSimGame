@@ -1,0 +1,23 @@
+@namespace USPSimGame.Components.Game.Plans
+
+@if (Plan.State == PlanState.Implementing)
+{
+    <div class="plan-progress" title="@($"Klaar in {USPSimGame.Utils.CommonGameUtils.FormatMonthYear(Plan.StartMonth, StartYear)}")">
+        <div class="plan-progress-label">
+            <span class="plan-progress-state">
+                <i class="bi bi-cone-striped" aria-hidden="true"></i> @PlanStateLabels.Get(Plan.State)
+            </span>
+            <span class="plan-progress-left">@MonthsLeftLabel</span>
+        </div>
+        <div class="plan-progress-bar" role="progressbar" aria-label="Bouwvoortgang"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Progress.PercentComplete">
+            <div class="plan-progress-fill" style="width: @Progress.PercentComplete%"></div>
+        </div>
+    </div>
+}
+else if (Plan.State == PlanState.Implemented)
+{
+    <span class="plan-progress-active">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i> @PlanStateLabels.Get(Plan.State)
+    </span>
+}

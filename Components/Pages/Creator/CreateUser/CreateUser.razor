@@ -1,23 +1,31 @@
 @page "/create-user"
 @rendermode InteractiveServer
+
+
 @inject ILogger<Program> logger;
 
 <PageTitle>Create User</PageTitle>
 
+@if(LoginBool == false)
+{
 <p>Sample create user form</p>
-
-
-<EditForm Model="User" OnSubmit="AddUser" FormName="Onnodig">
+  <EditForm Model="Dto" OnSubmit="AddUser" FormName="CreateUser">
     <div>
         <label>
-            Identifier:
-            <InputText @bind-Value="User!.UserName" />
+            Username:
+            <InputText @bind-Value="Dto!.UserName"/>
 
         </label>
 
         <label>
-            Identifier:
-            <InputText @bind-Value="User!.Email" />
+            Password:
+            <InputText @bind-Value="Dto!.Password" />
+
+        </label>
+
+        <label>
+            Email:
+            <InputText @bind-Value="Dto!.Email" />
 
         </label>
 
@@ -26,18 +34,24 @@
     <div>
         <button type="submit">Submit</button>
     </div>
+    </EditForm> 
 
-
-@if(IsSend)
+@if(SubmitMessage.Count() > 0)
     {
-        <div>Form has been sent, waiting for result</div>
+       @foreach (string message in SubmitMessage)
+        {
+            <p>@message</p>
+        }
+
     }
-
-</EditForm>
-
-
+} else
+{
+    <p>Account sucessfully created, you will be redirected in a few seconds</p>
+}
 
 @* 
+
+
 Gebruikte referentie:
 
 https://learn.microsoft.com/en-us/aspnet/core/blazor/forms/?view=aspnetcore-10.0

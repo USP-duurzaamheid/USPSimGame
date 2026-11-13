@@ -1,0 +1,26 @@
+@namespace USPSimGame.Components.Game.ControlBarFiles
+
+<div class="stat-panel-anchor">
+    <button type="button" class="stat-panel-button" aria-expanded="@(IsOpen ? "true" : "false")" @onclick="TogglePanel">
+        @StatContent
+    </button>
+
+    @if (IsOpen)
+    {
+        <div class="stat-panel-backdrop" @onclick="ClosePanel"></div>
+
+        <section @ref="panel" class="stat-panel" role="dialog" aria-label="@Title" tabindex="-1" @onkeydown="HandleKeyDown">
+            <header class="stat-panel-header">
+                <div>
+                    <h2 class="stat-panel-title">@Title</h2>
+                    <p class="stat-panel-subtitle">@Subtitle</p>
+                </div>
+                <button type="button" class="stat-panel-close" @onclick="ClosePanel" aria-label="Sluiten">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            @ChildContent
+        </section>
+    }
+</div>

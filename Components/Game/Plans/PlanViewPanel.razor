@@ -47,13 +47,21 @@
                 else
                 {
                     <span class="badge border font-monospace px-3 py-1 @GetStateBadgeClass(Plan.State)">
-                        @Plan.State
+                        @PlanStateLabels.Get(Plan.State)
                     </span>
                 }
                 <span class="badge bg-light text-dark border font-monospace small">
                     <i class="bi bi-calendar-check text-primary me-1"></i>@FormatMonthYear(Plan.StartMonth)
                 </span>
             </div>
+
+            <!-- Construction Progress -->
+            @if (Plan.State == PlanState.Implementing)
+            {
+                <div class="mb-3">
+                    <PlanConstructionProgress Plan="@Plan" CurrentMonth="@CurrentMonth" StartYear="@StartYear" />
+                </div>
+            }
 
             <!-- Spatial Evaluation Explanation Banner -->
             @if (Evaluation != null && !string.IsNullOrWhiteSpace(Evaluation.ExplanatoryText))

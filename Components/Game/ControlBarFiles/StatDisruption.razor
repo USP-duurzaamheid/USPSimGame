@@ -1,0 +1,53 @@
+@namespace USPSimGame.Components.Game.ControlBarFiles
+
+<StatPanel Title="Overlast" Subtitle="Geluid en hinder door je installaties">
+    <StatContent>
+        <Stat Icon="bi-emoji-angry-fill"
+              IconStyle="StatIconStyle.Plain"
+              Label="Overlastpunten"
+              Value="@NoisePollution.OverallNoisePollution.ToString()"
+              IsWarning="@(NoisePollution.Level == NoisePollutionLevel.High)"
+              IsPreview="@IsPreview"
+              Title="Overlast van je campus, klik voor details" />
+    </StatContent>
+    <ChildContent>
+        <div class="disruption-score disruption-score--@LevelClass">
+            <span class="disruption-score-value">@NoisePollution.OverallNoisePollution</span>
+            <span class="disruption-score-unit">overlastpunten</span>
+            <span class="disruption-score-level">@LevelLabel</span>
+        </div>
+
+        <div class="disruption-meter" role="meter" aria-label="Overlastmeter"
+             aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@NoisePollution.OverallNoisePollution">
+            <div class="disruption-meter-fill disruption-meter-fill--@LevelClass" style="width: @FillPercent"></div>
+            <div class="disruption-meter-limit" style="left: @LimitPercent">
+                <span>grens @NoisePollution.Limit</span>
+            </div>
+        </div>
+
+        <h3 class="disruption-section-title">Waar komt het vandaan?</h3>
+        <ul class="disruption-sources">
+            @foreach (var source in OrderedSources)
+            {
+                <li class="disruption-source @(source.Count == 0 ? "disruption-source--none" : null)">
+                    <span class="disruption-source-icon" aria-hidden="true"><i class="bi @source.Icon"></i></span>
+                    <span class="disruption-source-name">
+                        @source.Name
+                        <small>@source.Count × @source.PointsPerUnit @(source.PointsPerUnit == 1 ? "punt" : "punten")</small>
+                    </span>
+                    <span class="disruption-source-total">+@source.SectorNoisePollution</span>
+                </li>
+            }
+        </ul>
+
+        <p class="disruption-hint">
+            <i class="bi bi-lightbulb" aria-hidden="true"></i>
+            Elke installatie die je plaatst telt mee. Kies je voor installaties met veel punten per stuk, dan loopt je overlast snel op.
+        </p>
+
+        @if (IsPreview)
+        {
+            <p class="disruption-preview-note">Voorbeelddata: wordt vervangen door de echte waarden uit het spel.</p>
+        }
+    </ChildContent>
+</StatPanel>
