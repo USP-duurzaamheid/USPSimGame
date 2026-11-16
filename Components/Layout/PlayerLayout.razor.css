@@ -1,7 +1,7 @@
 .player-layout {
   --player-bg: #e2ece7;
-  --player-green: #5cb88d;
-  --player-green-dark: #439a71;
+  --game-green: #5cb88d;
+  --game-green-dark: #439a71;
   --player-text-dark: #182c25;
   --player-text-muted: #60756f;
   --player-text-subtle: #95a8a0;
@@ -32,7 +32,7 @@
   width: 54px;
   height: 54px;
   border-radius: 16px;
-  background-color: var(--player-green);
+  background-color: var(--game-green);
   filter: drop-shadow(0 10px 12px rgba(92, 184, 141, 0.2));
   font-size: 26px;
   line-height: 1;
