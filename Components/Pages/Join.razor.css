@@ -87,7 +87,7 @@
 }
 
 .join-pin-slot--active {
-  border-color: var(--player-green);
+  border-color: var(--game-green);
   box-shadow: 0 0 0 3px rgba(92, 184, 141, 0.25);
 }
 
@@ -142,9 +142,9 @@
   justify-content: center;
   width: 100%;
   height: 56px;
-  border: 1px solid var(--player-green-dark);
+  border: 1px solid var(--game-green-dark);
   border-radius: 16px;
-  background-color: var(--player-green);
+  background-color: var(--game-green);
   filter: drop-shadow(0 10px 12px rgba(92, 184, 141, 0.2));
   font-size: 18px;
   font-weight: 700;
@@ -163,7 +163,7 @@
 }
 
 .join-button:hover:not(:disabled) {
-  background-color: var(--player-green-dark);
+  background-color: var(--game-green-dark);
 }
 
 .join-button:disabled {

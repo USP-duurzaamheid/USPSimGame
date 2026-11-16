@@ -59,7 +59,7 @@
 
 .session-card-accent {
   height: 6px;
-  background-color: var(--player-green);
+  background-color: var(--game-green);
 }
 
 .session-card-body {
@@ -88,7 +88,7 @@
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--player-green);
+  color: var(--game-green);
 }
 
 .session-name {
@@ -231,7 +231,7 @@
 
 .team-row--selected,
 .team-row--selected:hover {
-  border-color: var(--player-green);
+  border-color: var(--game-green);
   background-color: #fff;
   box-shadow: 0 0 0 3px rgba(92, 184, 141, 0.2);
 }
@@ -283,9 +283,9 @@
   justify-content: center;
   width: 100%;
   padding: 14px 24px;
-  border: 1.5px solid var(--player-green-dark);
+  border: 1.5px solid var(--game-green-dark);
   border-radius: 12px;
-  background-color: var(--player-green);
+  background-color: var(--game-green);
   font-size: 15px;
   font-weight: 700;
   line-height: normal;
@@ -303,7 +303,7 @@
 }
 
 .session-enter-button:hover:not(:disabled) {
-  background-color: var(--player-green-dark);
+  background-color: var(--game-green-dark);
 }
 
 .session-enter-button:disabled {
