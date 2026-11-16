@@ -1,5 +1,6 @@
 @page "/login-user"
 
+
 @* 
 Let op, we moeten een statische webpagina gebruiken voor het gebruik van een login form.
 Blazor heeft normaliter altijd een websocket aanstaan met interactive server en alles wordt daar naartoe gehardwired
@@ -8,27 +9,48 @@ Leuk voor Gijs: .NET 11 voegt pas voor het eerst basis client-side validation to
 Veel plezier!
  *@
 
-<PageTitle>Login</PageTitle>
+<div class="login-card-container">
+    <div class="card shadow-lg login-card">
+        <div class="card-header text-center bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Creator Authentication</h4>
+        </div>
+        <div class="card-body p-4">
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>@ErrorMessage
+                </div>
+            }
 
-<EditForm EditContext="editContext" OnSubmit="SignIn" FormName="login">
-        <DataAnnotationsValidator />
-    <div>
-        <div class="form-floating mb-3">
-    <InputText @bind-Value="Dto!.UserName" id="Input.UserName" class="form-control" autocomplete="username webauthn" aria-required="true" placeholder="Username" />
-    <label for="Input.UserName" class="form-label">Username</label>
-    <ValidationMessage For="() => Dto.UserName" class="text-danger" />
+            <EditForm Model="Dto" OnValidSubmit="SignIn" FormName="login" id="loginForm">
+                  <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label for="username" class="form-label font-weight-bold">Username</label>
+                    <ValidationMessage For="() => Dto!.UserName" class="text-danger" />
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <InputText id="username" type="text" class="form-control" placeholder="Enter username (e.g. Admin)" @bind-Value="Dto!.UserName" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label font-weight-bold">Password</label>
+                    <ValidationMessage For="() => Dto.Password" class="text-danger" />
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <InputText id="password" type="password" class="form-control" placeholder="Password" @bind-Value="Dto.Password" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 font-weight-bold" id="loginButton">
+                   
+                        
+                        <span id="loginButtonText"><i class="bi bi-box-arrow-in-right me-2"></i>Log In</span>
+                    
+                </button>
+            </EditForm>
+        </div>
+    </div>
 </div>
 
-       <div class="form-floating mb-3">
-    <InputText type="password" @bind-Value="Dto!.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-    <label for="Input.Password" class="form-label">Password</label>
-    <ValidationMessage For="() => Dto.Password" class="text-danger" />
-</div>
-
-    </div>
-
-    <div>
-        <button type="submit">Submit</button>
-    </div>
-      </EditForm>
-
+<script src="/js/LoginCard.js"></script>

@@ -6,14 +6,14 @@ using USPSimGame.Data.Models.LoginDto;
 
 namespace USPSimGame.Components.Pages.Creator.CreateUser
 {
-  public partial class LoginUser(SignInManager<ApplicationUser> signInManager, NavigationManager navigationManager)
+  public partial class LoginUser(SignInManager<ApplicationUser> signInManager, NavigationManager navigationManager, ILogger<LoginUser> logger)
   {
-    private List<string> SubmitMessage { get; set; } = new();
+    private bool _isBusy = false;
+    protected string? ErrorMessage { get; set; }
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
-    private bool LoginBool { get; set; } = false;
     private readonly NavigationManager _navigationManager = navigationManager;
+    private readonly ILogger<LoginUser> _logger = logger;
 
-    private EditContext? editContext;
 
     [SupplyParameterFromForm(FormName = "login")]
     private LoginDto? Dto { get; set; }
@@ -21,25 +21,36 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     public async Task SignIn()
     {
+      if (_isBusy) return;
+      Interlocked.Exchange(ref _isBusy, true);
 
-      if (editContext!.Validate())
+      try
       {
         var resu = await _signInManager.PasswordSignInAsync(Dto!.UserName, Dto.Password, isPersistent: false, false);
-        if (resu.Succeeded) _navigationManager.NavigateTo("/secured");
+        if (resu.Succeeded) _navigationManager.NavigateTo("/creator");
+        else ErrorMessage = "Could not Authenticate user";
+      }
+      catch (Exception e)
+      {
+        ErrorMessage = "Oops, something is wrong on our side, please come back on a different occasion :(";
+        _logger.LogError($"LOGIN ERROR: {e}");
       }
 
+      _isBusy = false;
     }
-
 
     protected override async Task OnInitializedAsync()
     {
       Dto ??= new();
-      editContext = new EditContext(Dto);
+
 
 
     }
 
-
+    public void HandleLoginSuccess()
+    {
+      Console.WriteLine("Hallo");
+    }
 
 
   }
