@@ -16,6 +16,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 {
   public partial class CreateUser(UserManager<ApplicationUser> userManager, NavigationManager navigationManager)
   {
+    private bool _isBusy = false;
 
     [SupplyParameterFromForm(FormName = "CreateUser")]
     private UserDto? Dto { get; set; }
@@ -36,7 +37,8 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     private async Task AddUser()
     {
-
+      if (_isBusy) return;
+      Interlocked.Exchange(ref _isBusy, true);
 
 
       if (string.IsNullOrEmpty(Dto!.Email) || string.IsNullOrEmpty(Dto.Password) || string.IsNullOrEmpty(Dto.UserName))
@@ -56,7 +58,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
         LoginBool = true; // Update UI 
 
-        await Task.Delay(2000);
+        await Task.Delay(500);
         _navigationManager.NavigateTo("/login-user");
       }
       else
@@ -64,6 +66,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
         SubmitMessage = resu.Errors.Select(err => err.Description).ToList();
       }
 
+      _isBusy = false;
     }
 
     // De rest van het programma hoeft de DTO niet te kennen.

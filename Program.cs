@@ -128,6 +128,7 @@ using (var scope = app.Services.CreateScope())
 
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     int maxRetries = 10;
     for (int retry = 1; retry <= maxRetries; retry++)
@@ -137,7 +138,7 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Applying EF Core database migrations (attempt {Attempt}/{MaxRetries})...", retry, maxRetries);
             await dbContext.Database.MigrateAsync();
             logger.LogInformation("EF Core database migrations applied successfully.");
-            await Seeder.AsyncRoles(roleManager);
+            await Seeder.AsyncRoles(roleManager, userManager);
 
             break;
         }

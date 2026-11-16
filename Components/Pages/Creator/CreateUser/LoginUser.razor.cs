@@ -8,6 +8,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 {
   public partial class LoginUser(SignInManager<ApplicationUser> signInManager, NavigationManager navigationManager, ILogger<LoginUser> logger)
   {
+    private bool _isBusy = false;
     protected string? ErrorMessage { get; set; }
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     private readonly NavigationManager _navigationManager = navigationManager;
@@ -20,6 +21,8 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     public async Task SignIn()
     {
+      if (_isBusy) return;
+      Interlocked.Exchange(ref _isBusy, true);
 
       try
       {
@@ -33,7 +36,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
         _logger.LogError($"LOGIN ERROR: {e}");
       }
 
-
+      _isBusy = false;
     }
 
     protected override async Task OnInitializedAsync()
