@@ -15,6 +15,7 @@ namespace USPSimGame.Data.Entities;
 ///</summary>
 public class ApplicationUser : IdentityUser
 {
+  public ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();
 }
 
 

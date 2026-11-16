@@ -48,7 +48,7 @@ public partial class PlanAddEditPanel : ComponentBase, IDisposable
     public int TeamId { get; set; }
 
     [Parameter]
-    public int CurrentPlayerSessionId { get; set; }
+    public string CurrentPlayerSessionId { get; set; }
 
     [Parameter]
     public int StartYear { get; set; } = 2026;

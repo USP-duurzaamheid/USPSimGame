@@ -32,7 +32,7 @@ public class PlayerSessionState
         CurrentTeam = null;
         CurrentPlayerSession = new PlayerSession
         {
-            Id = -adminUser.Id,
+            Id = adminUser.Id,
             UserName = adminUser.Username,
             TeamId = 0,
             IsActive = true,

@@ -58,6 +58,7 @@ public class PlayerSessionService : IPlayerSessionService
 
         var playerSession = new PlayerSession
         {
+            Id = Guid.NewGuid().ToString(),
             TeamId = team.Id,
             UserName = string.IsNullOrWhiteSpace(trimmedName) ? "Player" : trimmedName,
             CreatedAt = DateTime.UtcNow,

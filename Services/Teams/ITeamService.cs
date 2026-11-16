@@ -10,7 +10,7 @@ public interface ITeamService
     Task<Team> UpdateTeamAsync(Team team);
     Task<bool> DeleteTeamAsync(int id);
 
-    Task<(bool Success, string? ErrorMessage)> TryLockTeamAreaAsync(int teamId, int playerSessionId);
+    Task<(bool Success, string? ErrorMessage)> TryLockTeamAreaAsync(int teamId, string playerSessionId);
     Task UnlockTeamAreaAsync(int teamId);
     Task UpdateTeamAreaAsync(int teamId, string? areaDefinition);
 

@@ -40,8 +40,8 @@ public class PlanService : IPlanService
 
         // Populate LockedByUserName if locked
         var lockedSessionIds = plans
-            .Where(p => !string.IsNullOrEmpty(p.LockedBySessionId) && int.TryParse(p.LockedBySessionId, out _))
-            .Select(p => int.Parse(p.LockedBySessionId!))
+            .Where(p => !string.IsNullOrEmpty(p.LockedBySessionId))
+            .Select(p => (p.LockedBySessionId!))
             .Distinct()
             .ToList();
 
@@ -49,7 +49,7 @@ public class PlanService : IPlanService
         {
             var playerSessions = await context.PlayerSessions
                 .Where(ps => lockedSessionIds.Contains(ps.Id))
-                .ToDictionaryAsync(ps => ps.Id.ToString(), ps => ps.UserName);
+                .ToDictionaryAsync(ps => ps.Id, ps => ps.UserName);
 
             foreach (var plan in plans)
             {
@@ -77,8 +77,12 @@ public class PlanService : IPlanService
                     .ThenInclude(gpl => gpl.PlannableLayerDefinition)
             .FirstOrDefaultAsync(p => p.Id == planId);
 
-        if (plan != null && !string.IsNullOrEmpty(plan.LockedBySessionId) && int.TryParse(plan.LockedBySessionId, out int playerSessionId))
+
+
+
+        if (plan != null && !string.IsNullOrEmpty(plan.LockedBySessionId))
         {
+            string playerSessionId = plan.LockedBySessionId;
             var ps = await context.PlayerSessions.FindAsync(playerSessionId);
             if (ps != null)
             {
@@ -275,7 +279,7 @@ public class PlanService : IPlanService
         }
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> TryLockPlanAsync(int planId, int playerSessionId)
+    public async Task<(bool Success, string? ErrorMessage)> TryLockPlanAsync(int planId, string playerSessionId)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
         var plan = await context.Plans.FindAsync(planId);

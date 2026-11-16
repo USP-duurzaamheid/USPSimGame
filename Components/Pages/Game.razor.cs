@@ -294,7 +294,7 @@ public partial class Game : ComponentBase, IDisposable
     protected async Task HandleEditPlanAsync(Plan plan)
     {
         LockErrorMessage = null;
-        int currentSessionId = PlayerSessionState.CurrentPlayerSession?.Id ?? 0;
+        string currentSessionId = PlayerSessionState.CurrentPlayerSession.Id;
 
         var (success, errorMsg) = await PlanService.TryLockPlanAsync(plan.Id, currentSessionId);
         if (success)

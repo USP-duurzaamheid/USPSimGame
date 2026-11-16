@@ -21,10 +21,13 @@ public class Seeder
         if (!await roleManager.RoleExistsAsync(role))
         {
           var IDRole = new IdentityRole(role);
-          await roleManager.CreateAsync(IDRole);
-          await roleManager.AddClaimAsync(IDRole, new Claim("Role", role));
+          var createdRole = await roleManager.CreateAsync(IDRole);
+          var associatedClaim = await roleManager.AddClaimAsync(IDRole, new Claim("Role", role));
+
+          if (!createdRole.Succeeded || !associatedClaim.Succeeded) Console.WriteLine("Configured role or claim incorrectly added");
         }
       }
+
     }
     catch (Exception e)
     {
@@ -32,13 +35,16 @@ public class Seeder
     }
 
 
-    var testuser = new ApplicationUser { UserName = "admin", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", Email = "testmail@gmail.com", Id = "1" };
-    if (await userManager.GetUserIdAsync(testuser) == testuser.Id) return;
+    var testUser = new ApplicationUser { UserName = "admin", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", Email = "testmail@gmail.com", Id = "1" };
+    var fetchUser = await userManager.FindByIdAsync(testUser.Id);
+
+    if (fetchUser is not null && fetchUser.Id == testUser.Id) return;
 
     try
     {
-      await userManager.CreateAsync(testuser);
-      await userManager.AddToRoleAsync(testuser, "Creator");
+      var createdUser = await userManager.CreateAsync(testUser);
+      var associatedRole = await userManager.AddToRoleAsync(testUser, "Creator");
+      if (!createdUser.Succeeded || !associatedRole.Succeeded) Console.WriteLine($"Test user incorrectly created. ID:  {testUser.Id}");
     }
     catch (Exception e)
     {

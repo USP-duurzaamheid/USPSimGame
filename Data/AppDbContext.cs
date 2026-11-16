@@ -30,7 +30,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "admin", Email = "harald.warmelink@hu.nl", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==" }
+            new User { Id = "12345", Username = "admin", Email = "harald.warmelink@hu.nl", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==" }
         );
 
         modelBuilder.Entity<Team>()
@@ -50,6 +50,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<GameSession>()
             .HasIndex(s => s.JoinCode)
             .IsUnique();
+
+        modelBuilder.Entity<GameSession>()
+                 .HasOne(s => s.Owner)
+                .WithMany(u => u.GameSessions)
+                .HasForeignKey(s => s.OwnerId);
 
         modelBuilder.Entity<MapLayerDefinition>()
             .Property(l => l.LayerType)
