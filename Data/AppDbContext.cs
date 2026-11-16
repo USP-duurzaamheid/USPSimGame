@@ -45,7 +45,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<GameSession>()
             .Property(s => s.JoinCode)
-            .HasMaxLength(6);
+            .HasMaxLength(GameSession.JoinCodeLength);
 
         modelBuilder.Entity<GameSession>()
             .HasIndex(s => s.JoinCode)

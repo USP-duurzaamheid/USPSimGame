@@ -15,6 +15,9 @@ public static class CommonGameUtils
         _ => "bg-secondary"
     };
 
+    public static bool IsJoinable(this GameState state) =>
+        state is GameState.Setup or GameState.Pause or GameState.Play;
+
     public static string FormatMonthYear(int startMonth, int startYear = 2026)
     {
         int totalMonths = (startYear * 12) + startMonth;
