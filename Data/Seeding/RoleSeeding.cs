@@ -33,6 +33,7 @@ public class Seeder
 
 
     var testuser = new ApplicationUser { UserName = "admin", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", Email = "testmail@gmail.com", Id = "1" };
+    if (await userManager.GetUserIdAsync(testuser) == testuser.Id) return;
 
     try
     {
@@ -41,7 +42,7 @@ public class Seeder
     }
     catch (Exception e)
     {
-      Console.WriteLine($"Can't ssed test user: ${e}");
+      Console.WriteLine($"Can't seed test user: ${e}");
     }
 
 
