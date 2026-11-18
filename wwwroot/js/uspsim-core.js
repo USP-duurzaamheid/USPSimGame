@@ -52,6 +52,7 @@ window.uspsim2d5.configureMap = function (mapOL) {
     if (mapOL) {
         window.activeOlMap = mapOL.Map ? mapOL.Map : mapOL;
         console.log("[2.5D Log] Captured OpenLayers map instance successfully:", window.activeOlMap);
+        window.uspsim2d5.attachGrid();
 
         if (window._pendingLayersToRender && window._pendingLayersToRender.length > 0) {
             const pending = window._pendingLayersToRender.slice();
