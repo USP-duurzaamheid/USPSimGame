@@ -26,7 +26,8 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
       try
       {
-        var resu = await _signInManager.PasswordSignInAsync(Dto!.UserName, Dto.Password, isPersistent: false, false);
+        var resu = await _signInManager.PasswordSignInAsync(Dto!.UserName, Dto.Password, isPersistent: false, lockoutOnFailure: false);
+
         if (resu.Succeeded) _navigationManager.NavigateTo("/creator");
         else ErrorMessage = "Could not Authenticate user";
       }
@@ -45,11 +46,6 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
 
 
-    }
-
-    public void HandleLoginSuccess()
-    {
-      Console.WriteLine("Hallo");
     }
 
 

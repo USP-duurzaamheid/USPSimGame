@@ -33,6 +33,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             new User { Id = "12345", Username = "admin", Email = "harald.warmelink@hu.nl", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==" }
         );
 
+        modelBuilder.Entity<PlayerSession>()
+            .HasOne(p => p.GameSession)
+            .WithMany(g => g.Players)
+            .HasForeignKey(p => p.GameId);
+
         modelBuilder.Entity<Team>()
             .HasOne<GameSession>()
             .WithMany(s => s.Teams)

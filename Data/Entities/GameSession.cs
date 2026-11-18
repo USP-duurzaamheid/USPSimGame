@@ -30,4 +30,6 @@ public class GameSession
     public ICollection<Team> Teams { get; set; } = new List<Team>();
     public ICollection<GameSessionPlannableLayer> PlannableLayers { get; set; } = new List<GameSessionPlannableLayer>();
     public ICollection<Plan> Plans { get; set; } = new List<Plan>();
+
+    public ICollection<PlayerSession> Players { get; set; } = new List<PlayerSession>();
 }

@@ -14,9 +14,8 @@ using USPSimGame.Services.Layers;
 using USPSimGame.Data.Seeding;
 using Microsoft.AspNetCore.Identity;
 using USPSimGame.Data.Entities;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using USPSimGame.Data.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,8 +62,8 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCooki
     options.LoginPath = "/login-user";
     options.Cookie.HttpOnly = true;
     options.AccessDeniedPath = "/Error";
-
-
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+    options.SlidingExpiration = true;
 });
 builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
 builder.Services.AddCascadingAuthenticationState();
@@ -221,8 +220,18 @@ app.MapPost("/user-logout", async (HttpContext context) =>
     if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(IdentityConstants.ApplicationScheme);
     return Results.Redirect("/");
 
+
+
 }).RequireAuthorization();
 
+app.MapPost("/api/join/{joinCode:int}", async (int joinCode, JoinRequest JoinRequest, HttpContext context) =>
+{
+
+
+
+
+
+});
 
 app.MapStaticAssets();
 
