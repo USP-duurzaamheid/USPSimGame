@@ -1,10 +1,10 @@
 window.uspsim2d5 = window.uspsim2d5 || {};
 
 (function () {
-    const CELL_SIZE_METERS = 20;
-    const MIN_DOT_SPACING_PX = 20;
-    const DOT_COLOR = 'rgba(24, 44, 37, 0.75)';
-    const DOT_HALO_COLOR = 'rgba(255, 255, 255, 0.85)';
+    const BASE_CELL_METERS = 2.5;
+    const MIN_DOT_SPACING_PX = 12;
+    const DOT_COLOR = 'rgba(24, 44, 37, 0.7)';
+    const DOT_HALO_COLOR = 'rgba(255, 255, 255, 0.75)';
     const HOVER_FILL = 'rgba(92, 184, 141, 0.22)';
     const HOVER_STROKE = '#439a71';
     const SELECTED_FILL = 'rgba(255, 214, 10, 0.18)';
@@ -16,7 +16,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
     const grid = {
         map: null,
         layer: null,
-        cellSize: 0,
+        baseSize: 0,
         selectedCell: null,
         hoverCell: null,
         snapInteraction: null,
@@ -25,37 +25,39 @@ window.uspsim2d5 = window.uspsim2d5 || {};
 
     // Web Mercator units stretch with latitude. Rounding the latitude keeps the cell size,
     // and so the cell positions, the same for every player in a session.
-    function cellSizeFor(map) {
+    function baseSizeFor(map) {
         const center = map.getView().getCenter();
         const latitude = center ? Math.round(ol.proj.toLonLat(center)[1]) : 52;
-        return CELL_SIZE_METERS / Math.cos(latitude * Math.PI / 180);
+        return BASE_CELL_METERS / Math.cos(latitude * Math.PI / 180);
     }
 
-    function cellAt(coordinate) {
-        return [Math.floor(coordinate[0] / grid.cellSize), Math.floor(coordinate[1] / grid.cellSize)];
+    // Distance between the visible dots: the base cell doubled until the dots are far enough apart.
+    function spacingFor(resolution) {
+        let spacing = grid.baseSize;
+        while (spacing / resolution < MIN_DOT_SPACING_PX) spacing *= 2;
+        return spacing;
+    }
+
+    function cellAt(coordinate, size) {
+        return [Math.floor(coordinate[0] / size) * size, Math.floor(coordinate[1] / size) * size, size];
     }
 
     function cellCenter(cell) {
-        return [(cell[0] + 0.5) * grid.cellSize, (cell[1] + 0.5) * grid.cellSize];
+        return [cell[0] + cell[2] / 2, cell[1] + cell[2] / 2];
     }
 
-    function nearestCorner(coordinate) {
-        return [
-            Math.round(coordinate[0] / grid.cellSize) * grid.cellSize,
-            Math.round(coordinate[1] / grid.cellSize) * grid.cellSize
-        ];
+    function nearestDot(coordinate, size) {
+        return [Math.round(coordinate[0] / size) * size, Math.round(coordinate[1] / size) * size];
     }
 
     function sameCell(a, b) {
-        return !!a && !!b && a[0] === b[0] && a[1] === b[1];
+        return !!a && !!b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
     }
 
     function cellCorners(cell, toPixel) {
-        const minX = cell[0] * grid.cellSize;
-        const minY = cell[1] * grid.cellSize;
-        const maxX = minX + grid.cellSize;
-        const maxY = minY + grid.cellSize;
-        return [toPixel(minX, minY), toPixel(maxX, minY), toPixel(maxX, maxY), toPixel(minX, maxY)];
+        const maxX = cell[0] + cell[2];
+        const maxY = cell[1] + cell[2];
+        return [toPixel(cell[0], cell[1]), toPixel(maxX, cell[1]), toPixel(maxX, maxY), toPixel(cell[0], maxY)];
     }
 
     function tracePolygon(ctx, corners) {
@@ -66,11 +68,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
     }
 
     function drawDots(ctx, frameState, toPixel) {
-        const cellPx = grid.cellSize / frameState.viewState.resolution;
-        let step = 1;
-        while (cellPx * step < MIN_DOT_SPACING_PX) step *= 2;
-
-        const spacing = grid.cellSize * step;
+        const spacing = spacingFor(frameState.viewState.resolution);
         const extent = frameState.extent;
         const startX = Math.floor(extent[0] / spacing);
         const endX = Math.ceil(extent[2] / spacing);
@@ -82,7 +80,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
             for (let j = startY; j <= endY; j++) dots.push(toPixel(i * spacing, j * spacing));
         }
 
-        [[DOT_HALO_COLOR, 2.4], [DOT_COLOR, 1.3]].forEach(function (pass) {
+        [[DOT_HALO_COLOR, 2], [DOT_COLOR, 1.1]].forEach(function (pass) {
             ctx.fillStyle = pass[0];
             ctx.beginPath();
             dots.forEach(function (p) {
@@ -94,8 +92,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
     }
 
     function drawHoverCell(ctx, toPixel) {
-        const corners = cellCorners(grid.hoverCell, toPixel);
-        tracePolygon(ctx, corners);
+        tracePolygon(ctx, cellCorners(grid.hoverCell, toPixel));
         ctx.fillStyle = HOVER_FILL;
         ctx.fill();
         ctx.lineWidth = 2;
@@ -108,18 +105,18 @@ window.uspsim2d5 = window.uspsim2d5 || {};
         tracePolygon(ctx, corners);
         ctx.fillStyle = SELECTED_FILL;
         ctx.fill();
-        ctx.lineWidth = 7;
+        ctx.lineWidth = 6;
         ctx.strokeStyle = '#ffffff';
         ctx.stroke();
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.strokeStyle = SELECTED_STROKE;
         ctx.stroke();
 
         corners.forEach(function (p) {
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(p[0] - 5, p[1] - 5, 10, 10);
+            ctx.fillRect(p[0] - 4, p[1] - 4, 8, 8);
             ctx.fillStyle = SELECTED_STROKE;
-            ctx.fillRect(p[0] - 3.5, p[1] - 3.5, 7, 7);
+            ctx.fillRect(p[0] - 2.5, p[1] - 2.5, 5, 5);
         });
     }
 
@@ -151,9 +148,13 @@ window.uspsim2d5 = window.uspsim2d5 || {};
         if (grid.layer) grid.layer.changed();
     }
 
+    function currentSpacing() {
+        return spacingFor(grid.map.getView().getResolution());
+    }
+
     function handleMapClick(evt) {
         if (grid.snapInteraction) return;
-        const cell = cellAt(evt.coordinate);
+        const cell = cellAt(evt.coordinate, currentSpacing());
         grid.selectedCell = sameCell(cell, grid.selectedCell) ? null : cell;
         redraw();
     }
@@ -161,7 +162,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
     function selectPlacedCell(evt) {
         const point = evt.feature && evt.feature.getGeometry();
         if (point) {
-            grid.selectedCell = cellAt(point.getCoordinates());
+            grid.selectedCell = cellAt(point.getCoordinates(), currentSpacing());
             redraw();
         }
     }
@@ -176,7 +177,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
         }
 
         grid.map = map;
-        grid.cellSize = cellSizeFor(map);
+        grid.baseSize = baseSizeFor(map);
         grid.selectedCell = null;
         grid.hoverCell = null;
         grid.layer = new ol.layer.Layer({ render: render, zIndex: 996 });
@@ -194,17 +195,17 @@ window.uspsim2d5 = window.uspsim2d5 || {};
             handleEvent: function (evt) {
                 if (!evt.coordinate) return true;
 
+                const spacing = currentSpacing();
                 if (snapToCellCenter) {
-                    const cell = cellAt(evt.coordinate);
+                    const cell = cellAt(evt.coordinate, spacing);
                     if (evt.type === 'pointermove' && !sameCell(cell, grid.hoverCell)) {
                         grid.hoverCell = cell;
                         redraw();
                     }
                     evt.coordinate = cellCenter(cell);
                 } else {
-                    evt.coordinate = nearestCorner(evt.coordinate);
+                    evt.coordinate = nearestDot(evt.coordinate, spacing);
                 }
-                evt.pixel = evt.map.getPixelFromCoordinate(evt.coordinate);
                 return true;
             }
         });
