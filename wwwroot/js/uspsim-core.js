@@ -58,7 +58,25 @@ window.uspsim2d5.configureMap = function (mapOL) {
             window._pendingLayersToRender = [];
             pending.forEach(fn => fn());
         }
+
+        window.uspsim2d5.restrictToPlayArea(window.activeOlMap);
     }
+};
+
+// Utrecht Science Park: from the A27 to Tolakkerlaan, and from the A28 to the fields south of Toulouselaan.
+window.uspsim2d5.restrictToPlayArea = function (map) {
+    const view = map.getView();
+    const playArea = ol.proj.transformExtent([5.161, 52.077, 5.196, 52.094], 'EPSG:4326', view.getProjection());
+    if (!ol.extent.containsCoordinate(playArea, view.getCenter())) return;
+
+    map.setView(new ol.View({
+        projection: view.getProjection(),
+        center: view.getCenter(),
+        zoom: view.getZoom(),
+        minZoom: view.getMinZoom(),
+        maxZoom: view.getMaxZoom(),
+        extent: playArea
+    }));
 };
 
 window.uspsim2d5.loadSessionLayer = function (sessionId, layerKey) {
