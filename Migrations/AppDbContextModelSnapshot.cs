@@ -747,6 +747,9 @@ namespace USPSimGame.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("GameId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -761,6 +764,8 @@ namespace USPSimGame.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.ToTable("PlayerSessions");
                 });
@@ -1120,6 +1125,15 @@ namespace USPSimGame.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("USPSimGame.Data.Entities.PlayerSession", b =>
+                {
+                    b.HasOne("USPSimGame.Data.Entities.GameSession", "GameSession")
+                        .WithMany("Players")
+                        .HasForeignKey("GameId");
+
+                    b.Navigation("GameSession");
+                });
+
             modelBuilder.Entity("USPSimGame.Data.Entities.SimulationKpiOutput", b =>
                 {
                     b.HasOne("USPSimGame.Data.Entities.GameSession", "GameSession")
@@ -1169,6 +1183,8 @@ namespace USPSimGame.Migrations
                     b.Navigation("PlannableLayers");
 
                     b.Navigation("Plans");
+
+                    b.Navigation("Players");
 
                     b.Navigation("Teams");
                 });

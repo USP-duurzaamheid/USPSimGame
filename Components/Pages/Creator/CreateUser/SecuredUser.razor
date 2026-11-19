@@ -1,10 +1,18 @@
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.VisualBasic
 @page "/secured"
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Creator")]
+@attribute [Authorize(AuthenticationSchemes = "PlayerSession", Roles = "Player")]
 
+<h1>Player information</h1>
 
-<h1>Je kan hier alleen zijn als je bent ingelogd</h1>
-
-
-
+<AuthorizeView>
+    <Authorized Context="auth">
+        <p>Username: @auth.User.Identity?.Name</p>
+        <p>Authenticated: @auth.User.Identity?.IsAuthenticated</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Not authorized</p>
+    </NotAuthorized>
+</AuthorizeView>

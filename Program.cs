@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Identity;
 using USPSimGame.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using USPSimGame.Data.Models;
+using System.Security.Claims;
+using USPSimGame.Components.Pages;
+using System.Net;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,14 +60,42 @@ builder.Services
 // builder.Services.AddIdentity<ApplicationUser, IdentityRole>();
 
 // Add Identity Services
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie(IdentityConstants.ApplicationScheme, options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "AppOrPlayer";
+    options.DefaultAuthenticateScheme = "AppOrPlayer";
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+})
+.AddPolicyScheme("AppOrPlayer", "Application or Player", options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        if (context.Request.Cookies.ContainsKey("PlayerSession"))
+        {
+            return "PlayerSession";
+        }
+
+        return IdentityConstants.ApplicationScheme;
+    };
+})
+.AddCookie(IdentityConstants.ApplicationScheme, options =>
 {
     options.LoginPath = "/login-user";
     options.Cookie.HttpOnly = true;
     options.AccessDeniedPath = "/Error";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
     options.SlidingExpiration = true;
+})
+.AddCookie("PlayerSession", options =>
+{
+    options.LoginPath = "/";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.Name = "PlayerSession";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
 });
+
+
 builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
 builder.Services.AddCascadingAuthenticationState();
 
@@ -227,9 +258,25 @@ app.MapPost("/user-logout", async (HttpContext context) =>
 app.MapPost("/api/join/{joinCode:int}", async (int joinCode, JoinRequest JoinRequest, HttpContext context) =>
 {
 
+    var PlayerID = Guid.NewGuid();
+    var Claims = new List<Claim>()
+    {
+        new Claim("GameID", joinCode.ToString()),
+        new Claim("TeamID", JoinRequest.TeamId.ToString()),
+        new Claim(ClaimTypes.NameIdentifier, PlayerID.ToString()),
+        new Claim(ClaimTypes.Name, JoinRequest.UserName),
+        new Claim(ClaimTypes.Role, "Player"),
+
+
+    };
+    var claimIdentity = new ClaimsIdentity(claims: Claims, authenticationType: "PlayerSession");
 
 
 
+
+    await context.SignInAsync("PlayerSession", new ClaimsPrincipal(claimIdentity), new AuthenticationProperties { IsPersistent = true, AllowRefresh = true });
+
+    return Results.Ok(new { succes = true });
 
 });
 
