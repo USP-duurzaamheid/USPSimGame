@@ -257,6 +257,7 @@ app.MapPost("/user-logout", async (HttpContext context) =>
 
 app.MapPost("/api/join/{joinCode:int}", async (int joinCode, JoinRequest JoinRequest, HttpContext context) =>
 {
+    context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s));
 
     var PlayerID = Guid.NewGuid();
     var Claims = new List<Claim>()
@@ -266,18 +267,12 @@ app.MapPost("/api/join/{joinCode:int}", async (int joinCode, JoinRequest JoinReq
         new Claim(ClaimTypes.NameIdentifier, PlayerID.ToString()),
         new Claim(ClaimTypes.Name, JoinRequest.UserName),
         new Claim(ClaimTypes.Role, "Player"),
-
-
     };
     var claimIdentity = new ClaimsIdentity(claims: Claims, authenticationType: "PlayerSession");
-
-
-
 
     await context.SignInAsync("PlayerSession", new ClaimsPrincipal(claimIdentity), new AuthenticationProperties { IsPersistent = true, AllowRefresh = true });
 
     return Results.Ok(new { succes = true });
-
 });
 
 app.MapStaticAssets();

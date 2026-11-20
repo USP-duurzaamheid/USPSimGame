@@ -1,6 +1,10 @@
+using System.Transactions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Net.Http.Headers;
 using USPSimGame.Data.Entities;
 using USPSimGame.Data.Models.LoginDto;
 
@@ -14,6 +18,8 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
     private readonly NavigationManager _navigationManager = navigationManager;
     private readonly ILogger<LoginUser> _logger = logger;
 
+    [CascadingParameter]
+    private HttpContext? Context { get; set; }
 
     [SupplyParameterFromForm(FormName = "login")]
     private LoginDto? Dto { get; set; }
@@ -21,6 +27,9 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     public async Task SignIn()
     {
+      Context!.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await Context.SignOutAsync(s));
+
+
       if (_isBusy) return;
       Interlocked.Exchange(ref _isBusy, true);
 
