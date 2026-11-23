@@ -308,6 +308,7 @@ window.uspsim2d5.startDrawing = function (geomType, strokeColor, fillColor, laye
 
     map.addInteraction(window._drawInteraction);
     map.addInteraction(window._modifyInteraction);
+    window.uspsim2d5.enableGridSnapping(window._drawInteraction, olGeomType);
 
     if (!window._draftMapClickListener) {
         window._draftMapClickListener = function (evt) {
@@ -402,6 +403,7 @@ window.uspsim2d5.stopInteractionOnly = function () {
             window._draftMapClickListener = null;
         }
     }
+    window.uspsim2d5.disableGridSnapping();
     window._drawRedoStack = [];
     window._activeSketchGeometry = null;
     window._selectedDraftVertex = null;
