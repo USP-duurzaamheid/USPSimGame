@@ -1,10 +1,12 @@
 @page "/creator/layers"
+@using Microsoft.AspNetCore.Authorization
 @using USPSimGame.Components.Creator
 @using USPSimGame.Data.Entities
 @inject NavigationManager Navigation
-@inject USPSimGame.Services.Auth.CreatorAuthState AuthState
+
 @inject USPSimGame.Services.Layers.IMapLayerService MapLayerService
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Creator")]
 
 <PageTitle>Map & Plannable Layers - Creator Portal</PageTitle>
 
@@ -12,9 +14,9 @@
     <CreatorHeader />
 
     <div class="container">
-        @if (!AuthState.IsAuthenticated)
-        {
-            <div class="card shadow-sm p-4 text-center border-0 rounded-4">
+        
+        
+            @* <div class="card shadow-sm p-4 text-center border-0 rounded-4">
                 <i class="bi bi-shield-lock display-4 text-secondary mb-3"></i>
                 <h4 class="fw-bold">Access Restricted</h4>
                 <p class="text-muted mb-3">Please log in to access the Creator Portal.</p>
@@ -23,10 +25,10 @@
                         <i class="bi bi-box-arrow-in-right me-1"></i>Go to Login
                     </a>
                 </div>
-            </div>
-        }
-        else
-        {
+            </div> *@
+        
+        
+        
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                 <div>
                     <h2 class="fw-bold mb-1 text-dark">
@@ -93,7 +95,7 @@
                     }
                 </div>
             }
-        }
+        
     </div>
 </div>
 

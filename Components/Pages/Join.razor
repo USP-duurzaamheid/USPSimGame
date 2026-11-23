@@ -1,9 +1,3 @@
-@page "/join"
-@layout PlayerLayout
-@rendermode InteractiveServer
-
-<PageTitle>Common Ground - Join</PageTitle>
-
 <div class="join-main">
     <form class="join-card" @onsubmit="HandleJoin">
         <div class="join-card-header">
@@ -45,8 +39,12 @@
         </div>
 
         <button type="submit" class="join-button" disabled="@(!IsPinComplete)">
-            <span>JOIN</span>
-            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            <span>JOIN GAME</span>
         </button>
+
+         <NavLink href="/login-user" style="font-size: 1.5rem;">
+              <span>Login as a creator</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </NavLink>
     </form>
 </div>

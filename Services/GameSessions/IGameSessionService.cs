@@ -8,6 +8,7 @@ public interface IGameSessionService
     Task<List<GameSession>> GetGameSessionsAsync();
     Task<GameSession> CreateGameSessionAsync(GameSession session);
     Task<GameSession?> GetByJoinCodeAsync(string joinCode);
+    Task<(bool Success, string? ErrorMessage, GameSession? GameSession)> FindJoinableByJoinCodeAsync(string joinCode, string clientKey);
     Task<bool> DeleteGameSessionAsync(int sessionId);
     Task UpdateGameSessionStateAsync(int sessionId, GameState newState);
     Task UpdateGameSessionStateWithTimerAsync(int sessionId, GameState newState, int monthDurationSeconds);

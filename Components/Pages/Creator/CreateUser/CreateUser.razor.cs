@@ -14,15 +14,14 @@ using USPSimGame.Data.Models.LoginDto;
 
 namespace USPSimGame.Components.Pages.Creator.CreateUser
 {
-  public partial class CreateUser(UserManager<ApplicationUser> userManager, NavigationManager navigationManager, RoleManager<IdentityRole> roleManager)
+  public partial class CreateUser(UserManager<ApplicationUser> userManager, NavigationManager navigationManager)
   {
+    private bool _isBusy = false;
 
     [SupplyParameterFromForm(FormName = "CreateUser")]
     private UserDto? Dto { get; set; }
     private List<string> SubmitMessage { get; set; } = new();
     private readonly UserManager<ApplicationUser> _userManager = userManager;
-
-    private readonly RoleManager<IdentityRole> _roleUser = roleManager;
 
     private bool LoginBool { get; set; } = false;
     private readonly NavigationManager _navigationManager = navigationManager;
@@ -38,7 +37,8 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     private async Task AddUser()
     {
-
+      if (_isBusy) return;
+      Interlocked.Exchange(ref _isBusy, true);
 
 
       if (string.IsNullOrEmpty(Dto!.Email) || string.IsNullOrEmpty(Dto.Password) || string.IsNullOrEmpty(Dto.UserName))
@@ -48,8 +48,9 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
       }
 
 
-      var user = new ApplicationUser(Dto.Email, Dto.UserName);
+      var user = new ApplicationUser { UserName = Dto.UserName, Email = Dto.Email };
       var resu = await _userManager.CreateAsync(user, Dto.Password);
+
       if (resu.Succeeded)
       {
         SubmitMessage.Add("Account has has been created");
@@ -57,7 +58,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
         LoginBool = true; // Update UI 
 
-        await Task.Delay(2000);
+        await Task.Delay(500);
         _navigationManager.NavigateTo("/login-user");
       }
       else
@@ -65,6 +66,7 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
         SubmitMessage = resu.Errors.Select(err => err.Description).ToList();
       }
 
+      _isBusy = false;
     }
 
     // De rest van het programma hoeft de DTO niet te kennen.

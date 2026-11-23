@@ -35,7 +35,6 @@ public partial class SessionTeamsModal : ComponentBase
     protected bool IsExportingPreset { get; set; } = false;
 
     protected string NewTeamName { get; set; } = string.Empty;
-    protected string NewTeamPassword { get; set; } = string.Empty;
     protected string NewTeamColor { get; set; } = "#3b82f6";
     protected int NewTeamAnnualBudgetAllowance { get; set; } = 100;
     protected bool IsLoading { get; set; } = true;
@@ -43,7 +42,6 @@ public partial class SessionTeamsModal : ComponentBase
     // Inline edit state
     protected int? EditingTeamId { get; set; }
     protected string EditingTeamName { get; set; } = string.Empty;
-    protected string EditingTeamPassword { get; set; } = string.Empty;
     protected string EditingTeamColor { get; set; } = "#3b82f6";
     protected int EditingTeamAnnualBudgetAllowance { get; set; } = 100;
 
@@ -115,14 +113,13 @@ public partial class SessionTeamsModal : ComponentBase
     protected void ResetNewTeamForm()
     {
         NewTeamName = string.Empty;
-        NewTeamPassword = string.Empty;
         NewTeamColor = "#3b82f6";
         NewTeamAnnualBudgetAllowance = 100;
     }
 
     protected async Task AddTeamToSessionAsync()
     {
-        if (!string.IsNullOrWhiteSpace(NewTeamName) && !string.IsNullOrWhiteSpace(NewTeamPassword))
+        if (!string.IsNullOrWhiteSpace(NewTeamName))
         {
             try
             {
@@ -134,7 +131,7 @@ public partial class SessionTeamsModal : ComponentBase
                     AnnualBudgetAllowance = NewTeamAnnualBudgetAllowance
                 };
 
-                await TeamService.CreateTeamAsync(newTeam, NewTeamPassword.Trim());
+                await TeamService.CreateTeamAsync(newTeam);
                 ResetNewTeamForm();
                 await LoadSessionTeamsAsync();
                 await OnUpdated.InvokeAsync();
@@ -150,7 +147,6 @@ public partial class SessionTeamsModal : ComponentBase
     {
         EditingTeamId = team.Id;
         EditingTeamName = team.Name;
-        EditingTeamPassword = string.Empty; // Blank means leave existing password unchanged
         EditingTeamColor = team.Color;
         EditingTeamAnnualBudgetAllowance = (int)team.AnnualBudgetAllowance;
     }
@@ -159,7 +155,6 @@ public partial class SessionTeamsModal : ComponentBase
     {
         EditingTeamId = null;
         EditingTeamName = string.Empty;
-        EditingTeamPassword = string.Empty;
         EditingTeamColor = "#3b82f6";
         EditingTeamAnnualBudgetAllowance = 100;
     }
@@ -179,9 +174,7 @@ public partial class SessionTeamsModal : ComponentBase
                     AnnualBudgetAllowance = EditingTeamAnnualBudgetAllowance
                 };
 
-                string? passwordArg = string.IsNullOrWhiteSpace(EditingTeamPassword) ? null : EditingTeamPassword.Trim();
-
-                await TeamService.UpdateTeamAsync(teamToUpdate, passwordArg);
+                await TeamService.UpdateTeamAsync(teamToUpdate);
                 CancelEditTeam();
                 await LoadSessionTeamsAsync();
                 await OnUpdated.InvokeAsync();

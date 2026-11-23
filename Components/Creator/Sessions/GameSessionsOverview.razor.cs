@@ -17,6 +17,12 @@ public partial class GameSessionsOverview : ComponentBase, IDisposable
     [Inject]
     public IGameSessionNotifierService Notifier { get; set; } = default!;
 
+    [Inject]
+    public PlayerSessionState PlayerSessionState { get; set; } = default!;
+
+    [Inject]
+    public NavigationManager Navigation { get; set; } = default!;
+
     [Parameter, EditorRequired]
     public User CurrentUser { get; set; } = default!;
 
@@ -92,6 +98,13 @@ public partial class GameSessionsOverview : ComponentBase, IDisposable
         {
             ErrorMessage = $"Error deleting game session: {ex.Message}";
         }
+    }
+
+    // The creator is already authenticated on this page, so no second admin login is needed to open a game.
+    protected void OpenSessionAsAdmin(GameSession session)
+    {
+        PlayerSessionState.SetAdminSession(CurrentUser, session);
+        Navigation.NavigateTo("/game");
     }
 
     // Modal Trigger Handlers

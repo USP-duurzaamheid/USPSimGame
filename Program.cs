@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using USPSimGame.Components;
@@ -66,7 +67,7 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCooki
 
 });
 builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
-
+builder.Services.AddCascadingAuthenticationState();
 
 // Bad article: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio
 
@@ -82,6 +83,11 @@ builder.Services.AddSingleton<ITeamNotifierService, TeamNotifierService>();
 builder.Services.AddSingleton<IPlanNotifierService, PlanNotifierService>();
 builder.Services.AddSingleton<IJoinCodeGenerator, JoinCodeGenerator>();
 builder.Services.AddSingleton<JoinCodeAllocator>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IJoinAttemptLimiter, JoinAttemptLimiter>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ClientConnectionInfo>();
+builder.Services.AddScoped<CircuitHandler, ClientConnectionCircuitHandler>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGameSessionService, GameSessionService>();
@@ -95,7 +101,7 @@ builder.Services.AddScoped<USPSimGame.Services.Simulation.ISimulationOrchestrato
 builder.Services.AddScoped<USPSimGame.Services.Simulation.IKpiChartDataService, USPSimGame.Services.Simulation.KpiChartDataService>();
 builder.Services.AddSingleton<USPSimGame.Services.Simulation.ISimulatorModule, USPSimGame.Services.Simulation.Modules.SampleEnergySimulatorModule>();
 builder.Services.AddHostedService<USPSimGame.Services.Simulation.GameLoopBackgroundService>();
-builder.Services.AddScoped<CreatorAuthState>();
+builder.Services.AddScoped<CreatorAuthState>(); // Per scoped circuit, when on creator creates a legacy creatorAuthState which gets used through components.
 builder.Services.AddScoped<PlayerSessionState>();
 
 // Register Building Service & Map Layer Strategy Providers
@@ -126,6 +132,7 @@ using (var scope = app.Services.CreateScope())
 
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     int maxRetries = 10;
     for (int retry = 1; retry <= maxRetries; retry++)
@@ -135,7 +142,7 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Applying EF Core database migrations (attempt {Attempt}/{MaxRetries})...", retry, maxRetries);
             await dbContext.Database.MigrateAsync();
             logger.LogInformation("EF Core database migrations applied successfully.");
-            await Seeder.AsyncRoles(roleManager);
+            await Seeder.AsyncRoles(roleManager, userManager);
 
             break;
         }
@@ -209,7 +216,7 @@ app.MapGet("/api/layers/{sessionId:int}/implemented-features", async (int sessio
 app.MapPost("/user-logout", async (HttpContext context) =>
 {
     // A null check on context.User in unnecessary because it's needed to authorisze the request, this doesn't get executed if there is no context.
-    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(IdentityConstants.ApplicationScheme);
     return Results.Redirect("/");
 
 }).RequireAuthorization();
