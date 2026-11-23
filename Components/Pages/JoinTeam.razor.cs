@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.JSInterop;
 using USPSimGame.Data.Entities;
+using USPSimGame.Data.Models;
 using USPSimGame.Services.GameSessions;
 using USPSimGame.Services.PlayerSessions;
 using USPSimGame.Services.Teams;
@@ -8,6 +11,9 @@ namespace USPSimGame.Components.Pages;
 
 public partial class JoinTeam : ComponentBase
 {
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
     [Inject]
     public IGameSessionService GameSessionService { get; set; } = default!;
 
@@ -79,16 +85,11 @@ public partial class JoinTeam : ComponentBase
 
         try
         {
-            var result = await PlayerSessionService.JoinByCodeAsync(Code ?? string.Empty, SelectedTeamId.Value, PlayerName, ClientConnection.ClientKey);
-            if (result.Success && result.PlayerSession != null && result.Team != null && result.GameSession != null)
-            {
-                PlayerSessionState.SetSession(result.PlayerSession, result.Team, result.GameSession);
-                Navigation.NavigateTo("/game");
-            }
-            else
-            {
-                ErrorMessage = result.ErrorMessage;
-            }
+            JoinRequest playerValues = new JoinRequest(UserName: PlayerName, TeamId: SelectedTeamId.Value);
+            await JS.InvokeVoidAsync("getGameCookie", Code, playerValues);
+
+            Navigation.NavigateTo("/secured", forceLoad: true);
+
         }
         catch (Exception ex)
         {

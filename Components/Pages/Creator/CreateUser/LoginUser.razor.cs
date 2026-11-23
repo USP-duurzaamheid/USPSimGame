@@ -1,6 +1,10 @@
+using System.Transactions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Net.Http.Headers;
 using USPSimGame.Data.Entities;
 using USPSimGame.Data.Models.LoginDto;
 
@@ -14,6 +18,8 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
     private readonly NavigationManager _navigationManager = navigationManager;
     private readonly ILogger<LoginUser> _logger = logger;
 
+    [CascadingParameter]
+    private HttpContext? Context { get; set; }
 
     [SupplyParameterFromForm(FormName = "login")]
     private LoginDto? Dto { get; set; }
@@ -21,12 +27,21 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     public async Task SignIn()
     {
+      var schemas = Context!.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList();
+
+      foreach (string? schema in schemas) // Use PLINQ for async foreach
+      {
+        if (schema is null) return;
+        await Context.SignOutAsync(schema);
+      }
+
       if (_isBusy) return;
       Interlocked.Exchange(ref _isBusy, true);
 
       try
       {
-        var resu = await _signInManager.PasswordSignInAsync(Dto!.UserName, Dto.Password, isPersistent: false, false);
+        var resu = await _signInManager.PasswordSignInAsync(Dto!.UserName, Dto.Password, isPersistent: false, lockoutOnFailure: false);
+
         if (resu.Succeeded) _navigationManager.NavigateTo("/creator");
         else ErrorMessage = "Could not Authenticate user";
       }
@@ -45,11 +60,6 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
 
 
-    }
-
-    public void HandleLoginSuccess()
-    {
-      Console.WriteLine("Hallo");
     }
 
 

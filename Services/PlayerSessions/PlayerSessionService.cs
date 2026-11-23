@@ -23,12 +23,12 @@ public class PlayerSessionService : IPlayerSessionService
         _joinAttemptLimiter = joinAttemptLimiter;
     }
 
-    public async Task<(bool Success, string? ErrorMessage, PlayerSession? PlayerSession, Team? Team, GameSession? GameSession)> JoinByCodeAsync(string joinCode, int teamId, string userName, string clientKey)
+    public async Task<(bool Success, string? ErrorMessage, Team? Team, GameSession? GameSession)> CheckLobby(string joinCode, int teamId, string clientKey)
     {
-        var lookup = await _gameSessionService.FindJoinableByJoinCodeAsync(joinCode, clientKey);
+        var lookup = await _gameSessionService.FindJoinableByJoinCodeAsync(joinCode, clientKey); // keeps track of
         if (!lookup.Success || lookup.GameSession == null)
         {
-            return (false, lookup.ErrorMessage, null, null, null);
+            return (false, lookup.ErrorMessage, null, null);
         }
 
         var gameSession = lookup.GameSession;
@@ -40,16 +40,20 @@ public class PlayerSessionService : IPlayerSessionService
         if (team == null || team.GameSessionId != gameSession.Id)
         {
             _joinAttemptLimiter.RecordFailure(clientKey);
-            return (false, JoinCodeMessages.NotFound, null, null, null);
+            return (false, JoinCodeMessages.NotFound, null, null);
         }
 
-        var playerSession = await AddPlayerSessionAsync(db, team, userName);
 
-        return (true, null, playerSession, team, gameSession);
+
+        return (true, null, team, gameSession);
     }
 
-    private static async Task<PlayerSession> AddPlayerSessionAsync(AppDbContext db, Team team, string userName)
+    public static async Task<(bool Success, PlayerSession? Player)> AddPlayerSessionAsync(AppDbContext context, int team, string userName, string joinCode)
     {
+        int GameId = await context.GameSessions.Where(id => id.JoinCode == joinCode).Select(o => o.Id).SingleAsync();
+        var GameFull = await GameSessionFull(context, GameId);
+        if (GameFull) return (false, null);
+
         var trimmedName = userName?.Trim();
         if (trimmedName?.Length > MaxUserNameLength)
         {
@@ -58,16 +62,39 @@ public class PlayerSessionService : IPlayerSessionService
 
         var playerSession = new PlayerSession
         {
-            TeamId = team.Id,
+            Id = Guid.NewGuid().ToString(),
+            TeamId = team,
             UserName = string.IsNullOrWhiteSpace(trimmedName) ? "Player" : trimmedName,
             CreatedAt = DateTime.UtcNow,
             LastActive = DateTime.UtcNow,
-            IsActive = true
+            IsActive = true,
+            GameId = GameId
         };
 
-        db.PlayerSessions.Add(playerSession);
-        await db.SaveChangesAsync();
+        context.PlayerSessions.Add(playerSession);
+        await context.SaveChangesAsync();
 
-        return playerSession;
+        return (true, playerSession);
+    }
+
+
+    /// <summary>
+    /// Check if a lobby is full, max players is 50
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
+    public static async Task<bool> GameSessionFull(AppDbContext context, int gameId)
+    {
+        try
+        {
+            int SessionPlayerTotal = context.PlayerSessions.Select(p => p.GameId).Where(id => id == gameId).ToList().Count();
+            if (SessionPlayerTotal >= 50) return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return false;
     }
 }

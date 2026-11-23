@@ -248,6 +248,10 @@ namespace USPSimGame.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("RemainingSecondsOnPause")
                         .HasColumnType("integer");
 
@@ -268,6 +272,8 @@ namespace USPSimGame.Migrations
 
                     b.HasIndex("JoinCode")
                         .IsUnique();
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("GameSessions");
                 });
@@ -735,14 +741,14 @@ namespace USPSimGame.Migrations
 
             modelBuilder.Entity("USPSimGame.Data.Entities.PlayerSession", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("GameId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -758,6 +764,8 @@ namespace USPSimGame.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.ToTable("PlayerSessions");
                 });
@@ -931,11 +939,8 @@ namespace USPSimGame.Migrations
 
             modelBuilder.Entity("USPSimGame.Data.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -956,7 +961,7 @@ namespace USPSimGame.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = "12345",
                             Email = "harald.warmelink@hu.nl",
                             PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==",
                             Username = "admin"
@@ -1012,6 +1017,17 @@ namespace USPSimGame.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("USPSimGame.Data.Entities.GameSession", b =>
+                {
+                    b.HasOne("USPSimGame.Data.Entities.ApplicationUser", "Owner")
+                        .WithMany("GameSessions")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("USPSimGame.Data.Entities.GameSessionMapLayer", b =>
@@ -1109,6 +1125,15 @@ namespace USPSimGame.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("USPSimGame.Data.Entities.PlayerSession", b =>
+                {
+                    b.HasOne("USPSimGame.Data.Entities.GameSession", "GameSession")
+                        .WithMany("Players")
+                        .HasForeignKey("GameId");
+
+                    b.Navigation("GameSession");
+                });
+
             modelBuilder.Entity("USPSimGame.Data.Entities.SimulationKpiOutput", b =>
                 {
                     b.HasOne("USPSimGame.Data.Entities.GameSession", "GameSession")
@@ -1146,6 +1171,11 @@ namespace USPSimGame.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("USPSimGame.Data.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("GameSessions");
+                });
+
             modelBuilder.Entity("USPSimGame.Data.Entities.GameSession", b =>
                 {
                     b.Navigation("MapLayers");
@@ -1153,6 +1183,8 @@ namespace USPSimGame.Migrations
                     b.Navigation("PlannableLayers");
 
                     b.Navigation("Plans");
+
+                    b.Navigation("Players");
 
                     b.Navigation("Teams");
                 });

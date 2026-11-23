@@ -32,7 +32,7 @@ else
         <Buildings>
             <!-- Development Plans Panel -->
             <PlansControlPanel @ref="plansControlPanel"
-                               GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+                               GameSessionId="@(PlayerSessionState.CurrentGameSession.Id)"
                                CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
                                GameState="@(PlayerSessionState.CurrentGameSession?.State ?? GameState.Setup)"
                                IsAdmin="@PlayerSessionState.IsAdmin"
@@ -56,9 +56,9 @@ else
     <!-- Team Area Definition Panel (Bottom Right during Setup State for Players) -->
     @if (!PlayerSessionState.IsAdmin && PlayerSessionState.CurrentGameSession?.State == GameState.Setup && !ShowPlanAddEditPanel && ActivePlan == null && PlayerSessionState.CurrentTeam != null)
     {
-        <TeamAreaPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
+        <TeamAreaPanel GameSessionId="@(PlayerSessionState.CurrentGameSession.Id)"
                        Team="@PlayerSessionState.CurrentTeam"
-                       CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)" />
+                       CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession.Id)" />
     }
 
     <!-- Plan Add & Edit Panel (Bottom Right) -->
@@ -66,7 +66,7 @@ else
     {
         <PlanAddEditPanel GameSessionId="@(PlayerSessionState.CurrentGameSession?.Id ?? 0)"
                           TeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
-                          CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)"
+                          CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession.Id)"
                           StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
                           PlanToEdit="@PlanToEdit"
                           OnSaved="HandlePlanSavedAsync"
@@ -80,7 +80,7 @@ else
                        StartYear="@(PlayerSessionState.CurrentGameSession?.StartYear ?? 2026)"
                        CurrentMonth="@(PlayerSessionState.CurrentGameSession?.CurrentMonth ?? 0)"
                        CurrentTeamId="@(PlayerSessionState.CurrentTeam?.Id ?? 0)"
-                       CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession?.Id ?? 0)"
+                       CurrentPlayerSessionId="@(PlayerSessionState.CurrentPlayerSession.Id)"
                        IsAdmin="@PlayerSessionState.IsAdmin"
                        SessionTeams="@SessionTeams"
                        OnEditPlan="HandleEditPlanAsync"

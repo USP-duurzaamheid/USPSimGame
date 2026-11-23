@@ -23,7 +23,7 @@ public interface IPlanService
     Task SubmitTeamJudgmentAsync(int planId, int teamId, PlanJudgmentType judgment);
     Task ResetPlanJudgmentsAsync(int planId);
 
-    Task<(bool Success, string? ErrorMessage)> TryLockPlanAsync(int planId, int playerSessionId);
+    Task<(bool Success, string? ErrorMessage)> TryLockPlanAsync(int planId, string playerSessionId);
     Task UnlockPlanAsync(int planId);
 
     Task<string> GetImplementedFeaturesGeoJsonAsync(int gameSessionId, int? targetSimMonth = null);

@@ -7,11 +7,17 @@ using USPSimGame.Services.PlayerSessions;
 using USPSimGame.Services.GameSessions;
 using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace USPSimGame.Components.Creator.Sessions;
 
 public partial class AddGameSessionForm : ComponentBase
 {
+    [Inject]
+    private AuthenticationStateProvider AuthStateProdiver { get; set; }
+
+
     [Inject]
     public IGameSessionService GameSessionService { get; set; } = default!;
 
@@ -24,7 +30,8 @@ public partial class AddGameSessionForm : ComponentBase
     protected GameSession NewSession { get; set; } = new()
     {
         Name = "Utrecht Science Park",
-        CenterLatLong = "52.08640, 5.17516"
+        CenterLatLong = "52.08640, 5.17516",
+        OwnerId = ""
     };
 
     protected string? ErrorMessage { get; set; }
@@ -38,6 +45,10 @@ public partial class AddGameSessionForm : ComponentBase
 
     protected async Task HandleSubmit()
     {
+        var authState = await AuthStateProdiver.GetAuthenticationStateAsync();
+        string? adminID = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (adminID is not null) NewSession.OwnerId = adminID;
+
         ErrorMessage = null;
         IsSubmitting = true;
 

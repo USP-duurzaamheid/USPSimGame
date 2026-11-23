@@ -21,7 +21,7 @@ public partial class PlanViewPanel : ComponentBase, IDisposable
     [Parameter] public int StartYear { get; set; } = 2026;
     [Parameter] public int CurrentMonth { get; set; }
     [Parameter] public int CurrentTeamId { get; set; }
-    [Parameter] public int CurrentPlayerSessionId { get; set; }
+    [Parameter] public string CurrentPlayerSessionId { get; set; }
     [Parameter] public bool IsAdmin { get; set; }
     [Parameter] public List<Team> SessionTeams { get; set; } = new();
     [Parameter] public EventCallback OnClose { get; set; }

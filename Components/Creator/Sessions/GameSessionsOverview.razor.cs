@@ -6,11 +6,16 @@ using USPSimGame.Services.PlayerSessions;
 using USPSimGame.Services.GameSessions;
 using USPSimGame.Services.Teams;
 using USPSimGame.Services.Plans;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace USPSimGame.Components.Creator.Sessions;
 
 public partial class GameSessionsOverview : ComponentBase, IDisposable
 {
+    [Inject]
+    private AuthenticationStateProvider? AuthStateProvider { get; set; }
+
     [Inject]
     public IGameSessionService GameSessionService { get; set; } = default!;
 
@@ -101,10 +106,18 @@ public partial class GameSessionsOverview : ComponentBase, IDisposable
     }
 
     // The creator is already authenticated on this page, so no second admin login is needed to open a game.
-    protected void OpenSessionAsAdmin(GameSession session)
+    protected async Task OpenSessionAsAdmin(GameSession session)
     {
-        PlayerSessionState.SetAdminSession(CurrentUser, session);
-        Navigation.NavigateTo("/game");
+        var authState = await AuthStateProvider!.GetAuthenticationStateAsync();
+        var adminId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (adminId is not null)
+        {
+            var fakeAdminState = new User { Id = adminId, Username = authState.User.FindFirstValue(ClaimTypes.Name) };
+            PlayerSessionState.SetAdminSession(fakeAdminState, session);
+            Navigation.NavigateTo("/game");
+        }
+
+
     }
 
     // Modal Trigger Handlers

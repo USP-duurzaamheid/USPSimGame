@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc;
 using USPSimGame.Data.Enums;
 
 namespace USPSimGame.Data.Entities;
@@ -5,8 +7,12 @@ namespace USPSimGame.Data.Entities;
 public class GameSession
 {
     public const int JoinCodeLength = 6;
-
     public int Id { get; set; }
+    public string OwnerId { get; set; } = string.Empty;
+
+    [ForeignKey(nameof(OwnerId))]
+    public ApplicationUser? Owner { get; set; }
+
     public string Name { get; set; } = string.Empty;
     public string CenterLatLong { get; set; } = string.Empty;
     public int Zoom { get; set; } = 16;
@@ -24,4 +30,6 @@ public class GameSession
     public ICollection<Team> Teams { get; set; } = new List<Team>();
     public ICollection<GameSessionPlannableLayer> PlannableLayers { get; set; } = new List<GameSessionPlannableLayer>();
     public ICollection<Plan> Plans { get; set; } = new List<Plan>();
+
+    public ICollection<PlayerSession> Players { get; set; } = new List<PlayerSession>();
 }

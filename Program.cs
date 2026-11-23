@@ -14,9 +14,12 @@ using USPSimGame.Services.Layers;
 using USPSimGame.Data.Seeding;
 using Microsoft.AspNetCore.Identity;
 using USPSimGame.Data.Entities;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using USPSimGame.Data.Models;
+using System.Security.Claims;
+using USPSimGame.Components.Pages;
+using System.Net;
+using Microsoft.EntityFrameworkCore.Internal;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,14 +61,42 @@ builder.Services
 // builder.Services.AddIdentity<ApplicationUser, IdentityRole>();
 
 // Add Identity Services
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie(IdentityConstants.ApplicationScheme, options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "AppOrPlayer";
+    options.DefaultAuthenticateScheme = "AppOrPlayer";
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+})
+.AddPolicyScheme("AppOrPlayer", "Application or Player", options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        if (context.Request.Cookies.ContainsKey("PlayerSession"))
+        {
+            return "PlayerSession";
+        }
+
+        return IdentityConstants.ApplicationScheme;
+    };
+})
+.AddCookie(IdentityConstants.ApplicationScheme, options =>
 {
     options.LoginPath = "/login-user";
     options.Cookie.HttpOnly = true;
     options.AccessDeniedPath = "/Error";
-
-
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+    options.SlidingExpiration = true;
+})
+.AddCookie("PlayerSession", options =>
+{
+    options.LoginPath = "/";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.Name = "PlayerSession";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
 });
+
+
 builder.Services.AddAuthorization(); // Add authentication DI to resolve auth states throughout the application
 builder.Services.AddCascadingAuthenticationState();
 
@@ -221,8 +252,22 @@ app.MapPost("/user-logout", async (HttpContext context) =>
     if (context.User.IsInRole("Creator") || context.User.IsInRole("Player")) await context.SignOutAsync(IdentityConstants.ApplicationScheme);
     return Results.Redirect("/");
 
+
+
 }).RequireAuthorization();
 
+app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequest, HttpContext context, IDbContextFactory<AppDbContext> dbContextFactory, IPlayerSessionService playerSessionService) =>
+{
+    var canJoin = await playerSessionService.CheckLobby(joinCode, JoinRequest.TeamId, context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+    if (!canJoin.Success) return Results.BadRequest(new { success = false });
+
+    using var dbContext = await dbContextFactory.CreateDbContextAsync();
+    var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode); // Add session
+    if (!result.Success) return Results.Ok(new { success = false });
+
+    await PlayerCookieService.SetCookie(joinCode, JoinRequest, context, result);
+    return Results.Ok(new { success = true });
+});
 
 app.MapStaticAssets();
 
@@ -238,3 +283,4 @@ app.MapRazorComponents<App>()
 
 
 app.Run();
+

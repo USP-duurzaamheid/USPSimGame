@@ -27,8 +27,8 @@ public class TeamService : ITeamService
             .ToListAsync();
 
         var lockedSessionIds = teams
-            .Where(t => !string.IsNullOrEmpty(t.LockedBySessionId) && int.TryParse(t.LockedBySessionId, out _))
-            .Select(t => int.Parse(t.LockedBySessionId!))
+            .Where(t => !string.IsNullOrEmpty(t.LockedBySessionId))
+            .Select(t => t.LockedBySessionId)
             .Distinct()
             .ToList();
 
@@ -109,7 +109,7 @@ public class TeamService : ITeamService
         return true;
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> TryLockTeamAreaAsync(int teamId, int playerSessionId)
+    public async Task<(bool Success, string? ErrorMessage)> TryLockTeamAreaAsync(int teamId, string playerSessionId)
     {
         await using var db = await _dbContextFactory.CreateDbContextAsync();
         var team = await db.Teams.FindAsync(teamId);
@@ -119,7 +119,7 @@ public class TeamService : ITeamService
             return (false, "Team not found.");
         }
 
-        string sessionStr = playerSessionId.ToString();
+        string sessionStr = playerSessionId;
 
         if (!string.IsNullOrEmpty(team.LockedBySessionId) && team.LockedBySessionId != sessionStr)
         {

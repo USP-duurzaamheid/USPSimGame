@@ -4,5 +4,5 @@ namespace USPSimGame.Services.PlayerSessions;
 
 public interface IPlayerSessionService
 {
-    Task<(bool Success, string? ErrorMessage, PlayerSession? PlayerSession, Team? Team, GameSession? GameSession)> JoinByCodeAsync(string joinCode, int teamId, string userName, string clientKey);
+    Task<(bool Success, string? ErrorMessage, Team? Team, GameSession? GameSession)> CheckLobby(string joinCode, int teamId, string clientKey);
 }

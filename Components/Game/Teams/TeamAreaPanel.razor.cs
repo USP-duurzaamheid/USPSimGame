@@ -25,7 +25,7 @@ public partial class TeamAreaPanel : ComponentBase
     public Team Team { get; set; } = default!;
 
     [Parameter]
-    public int CurrentPlayerSessionId { get; set; }
+    public string CurrentPlayerSessionId { get; set; }
 
     protected bool IsEditing { get; set; } = false;
     protected bool IsSaving { get; set; } = false;

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace USPSimGame.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCommit : Migration
+    public partial class InitCommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,33 +54,10 @@ namespace USPSimGame.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameSessions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CenterLatLong = table.Column<string>(type: "text", nullable: false),
-                    Zoom = table.Column<int>(type: "integer", nullable: false),
-                    StartYear = table.Column<int>(type: "integer", nullable: false),
-                    CurrentMonth = table.Column<int>(type: "integer", nullable: false),
-                    State = table.Column<string>(type: "text", nullable: false),
-                    MonthDurationSeconds = table.Column<int>(type: "integer", nullable: false),
-                    TargetMonthEndUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RemainingSecondsOnPause = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameSessions", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "LegacyUser",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false)
@@ -144,8 +121,7 @@ namespace USPSimGame.Migrations
                 name: "PlayerSessions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     TeamId = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -284,54 +260,31 @@ namespace USPSimGame.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SimulationMapOutputs",
+                name: "GameSessions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    GameSessionId = table.Column<int>(type: "integer", nullable: false),
-                    SimulatedMonth = table.Column<int>(type: "integer", nullable: false),
-                    SimulatorKey = table.Column<string>(type: "text", nullable: false),
-                    LayerName = table.Column<string>(type: "text", nullable: false),
-                    DataType = table.Column<int>(type: "integer", nullable: false),
-                    GeoJsonOrImageData = table.Column<string>(type: "text", nullable: false),
-                    BoundingBoxJson = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SimulationMapOutputs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SimulationMapOutputs_GameSessions_GameSessionId",
-                        column: x => x.GameSessionId,
-                        principalTable: "GameSessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Teams",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    GameSessionId = table.Column<int>(type: "integer", nullable: false),
+                    OwnerId = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Color = table.Column<string>(type: "text", nullable: false),
-                    AreaDefinition = table.Column<string>(type: "text", nullable: true),
-                    LockedBySessionId = table.Column<string>(type: "text", nullable: true),
-                    LockedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    InvestmentPointsBalance = table.Column<double>(type: "double precision", nullable: false),
-                    AnnualBudgetAllowance = table.Column<double>(type: "double precision", nullable: false)
+                    CenterLatLong = table.Column<string>(type: "text", nullable: false),
+                    Zoom = table.Column<int>(type: "integer", nullable: false),
+                    StartYear = table.Column<int>(type: "integer", nullable: false),
+                    CurrentMonth = table.Column<int>(type: "integer", nullable: false),
+                    State = table.Column<string>(type: "text", nullable: false),
+                    MonthDurationSeconds = table.Column<int>(type: "integer", nullable: false),
+                    TargetMonthEndUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RemainingSecondsOnPause = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    JoinCode = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.PrimaryKey("PK_GameSessions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Teams_GameSessions_GameSessionId",
-                        column: x => x.GameSessionId,
-                        principalTable: "GameSessions",
+                        name: "FK_GameSessions_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -392,6 +345,58 @@ namespace USPSimGame.Migrations
                         principalTable: "PlannableLayerDefinitions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SimulationMapOutputs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GameSessionId = table.Column<int>(type: "integer", nullable: false),
+                    SimulatedMonth = table.Column<int>(type: "integer", nullable: false),
+                    SimulatorKey = table.Column<string>(type: "text", nullable: false),
+                    LayerName = table.Column<string>(type: "text", nullable: false),
+                    DataType = table.Column<int>(type: "integer", nullable: false),
+                    GeoJsonOrImageData = table.Column<string>(type: "text", nullable: false),
+                    BoundingBoxJson = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SimulationMapOutputs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SimulationMapOutputs_GameSessions_GameSessionId",
+                        column: x => x.GameSessionId,
+                        principalTable: "GameSessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GameSessionId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Color = table.Column<string>(type: "text", nullable: false),
+                    AreaDefinition = table.Column<string>(type: "text", nullable: true),
+                    LockedBySessionId = table.Column<string>(type: "text", nullable: true),
+                    LockedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    InvestmentPointsBalance = table.Column<double>(type: "double precision", nullable: false),
+                    AnnualBudgetAllowance = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teams_GameSessions_GameSessionId",
+                        column: x => x.GameSessionId,
+                        principalTable: "GameSessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -523,7 +528,7 @@ namespace USPSimGame.Migrations
             migrationBuilder.InsertData(
                 table: "LegacyUser",
                 columns: new[] { "Id", "Email", "PasswordHash", "Username" },
-                values: new object[] { 1, "harald.warmelink@hu.nl", "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", "admin" });
+                values: new object[] { "12345", "harald.warmelink@hu.nl", "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", "admin" });
 
             migrationBuilder.InsertData(
                 table: "MapLayerDefinitions",
@@ -606,6 +611,17 @@ namespace USPSimGame.Migrations
                 name: "IX_GameSessionPlannableLayers_PlannableLayerDefinitionId",
                 table: "GameSessionPlannableLayers",
                 column: "PlannableLayerDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameSessions_JoinCode",
+                table: "GameSessions",
+                column: "JoinCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameSessions_OwnerId",
+                table: "GameSessions",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlanFeatures_GameSessionPlannableLayerId",
@@ -704,9 +720,6 @@ namespace USPSimGame.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "MapLayerDefinitions");
 
             migrationBuilder.DropTable(
@@ -723,6 +736,9 @@ namespace USPSimGame.Migrations
 
             migrationBuilder.DropTable(
                 name: "GameSessions");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }
