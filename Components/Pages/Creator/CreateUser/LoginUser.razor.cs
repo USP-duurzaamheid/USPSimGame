@@ -27,7 +27,13 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
 
     public async Task SignIn()
     {
-      Context!.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await Context.SignOutAsync(s));
+      var schemas = Context!.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList();
+
+      foreach (string? schema in schemas) // Use PLINQ for async foreach
+      {
+        if (schema is null) return;
+        await Context.SignOutAsync(schema);
+      }
 
       if (_isBusy) return;
       Interlocked.Exchange(ref _isBusy, true);

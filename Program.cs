@@ -265,7 +265,7 @@ app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequ
     var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode); // Add session
     if (!result.Succes) return Results.Ok(new { succes = false });
 
-    await PlayerCookieService.SetPlayerCookie(joinCode, JoinRequest, context, result);
+    await PlayerCookieService.SetCookie(joinCode, JoinRequest, context, result);
     return Results.Ok(new { succes = true });
 });
 
