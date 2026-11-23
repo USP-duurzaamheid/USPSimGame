@@ -265,20 +265,7 @@ app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequ
     var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode); // Add session
     if (!result.Succes) return Results.Ok(new { succes = false });
 
-    context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s)); // Delete present cookies.
-
-    var Claims = new List<Claim>()
-    {
-        new ("GameID", joinCode),
-        new ("TeamID", JoinRequest.TeamId.ToString()),
-        new (ClaimTypes.NameIdentifier, result.Player!.Id!),
-        new (ClaimTypes.Name, JoinRequest.UserName),
-        new (ClaimTypes.Role, "Player"),
-    };
-    var claimIdentity = new ClaimsIdentity(claims: Claims, authenticationType: "PlayerSession");
-
-    await context.SignInAsync("PlayerSession", new ClaimsPrincipal(claimIdentity), new AuthenticationProperties { IsPersistent = true, AllowRefresh = true });
-
+    await PlayerCookieService.SetPlayerCookie(joinCode, JoinRequest, context, result);
     return Results.Ok(new { succes = true });
 });
 
@@ -296,3 +283,4 @@ app.MapRazorComponents<App>()
 
 
 app.Run();
+
