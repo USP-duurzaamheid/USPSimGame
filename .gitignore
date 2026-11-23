@@ -204,3 +204,6 @@ Thumbs.db
 
 # Rider
 .idea/
+
+# Local secrets (see .env.example)
+.env

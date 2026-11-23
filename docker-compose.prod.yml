@@ -1,0 +1,50 @@
+# Production: runs the prebuilt image that CI publishes to GHCR on every push to master.
+# No source code or SDK needed on the server. See README "Production / deploy".
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Requires a .env file next to this file with at least POSTGRES_PASSWORD (see .env.example).
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: uspsimgame-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: uspsimgame_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d uspsimgame_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    image: ghcr.io/usp-duurzaamheid/uspsimgame:latest
+    container_name: uspsimgame-web
+    restart: unless-stopped
+    ports:
+      - "5261:5261"
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=uspsimgame_db;Username=postgres;Password=${POSTGRES_PASSWORD}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      # Only containers with this label are updated by watchtower (see --label-enable).
+      - com.centurylinklabs.watchtower.enable=true
+
+  # Checks GHCR every 5 minutes for a new :latest image and restarts `web` with it.
+  watchtower:
+    image: nickfedor/watchtower:1.24.1
+    container_name: uspsimgame-watchtower
+    restart: unless-stopped
+    command: --label-enable --interval 300 --cleanup
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  postgres_data:

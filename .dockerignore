@@ -12,3 +12,4 @@ scratch/
 *.shx
 Dockerfile*
 .dockerignore
+.env

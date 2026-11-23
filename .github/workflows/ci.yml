@@ -1,39 +1,131 @@
-name: CI
+name: CI/CD
 
 on:
   pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Least privilege: jobs only get write access where they explicitly ask for it.
+permissions:
+  contents: read
+
+# A new push to the same PR cancels the run that is still going.
+# Runs on master are never cancelled, so every merge gets published.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
-  build:
+  build-and-test:
+    name: Build & test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
       - run: dotnet restore USPSimGame.sln
-      - run: dotnet build USPSimGame.sln --no-restore --configuration Release --nologo
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: .
-          include-hidden-files: true
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: .
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-      - run: dotnet test USPSimGame.sln --no-build --configuration Release --nologo
+      - run: dotnet build USPSimGame.sln --no-restore --configuration Release
 
+      - run: >
+          dotnet test USPSimGame.sln --no-build --configuration Release
+          --logger trx --results-directory TestResults
+          --collect "XPlat Code Coverage"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: TestResults
+          retention-days: 14
+
+  # Runs on every PR and push: proves the production image still builds. Pushes nothing.
   docker:
+    name: Docker image
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: docker compose build
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate compose files
+        run: |
+          docker compose -f docker-compose.yml config --quiet
+          POSTGRES_PASSWORD=ci docker compose -f docker-compose.prod.yml config --quiet
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Only on master, and only after someone approves the "production" environment.
+  # The server picks up the new :latest image automatically, so this is the deploy.
+  publish:
+    name: Publish to GHCR
+    needs: docker
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # GHCR image names must be lowercase (repo is USP-duurzaamheid/USPSimGame).
+      - name: Set image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image tags and labels
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=raw,value=latest
+            type=sha
+
+      # Same Dockerfile and build cache as the docker job, so this is mostly cache hits.
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
