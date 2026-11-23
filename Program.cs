@@ -19,6 +19,7 @@ using USPSimGame.Data.Models;
 using System.Security.Claims;
 using USPSimGame.Components.Pages;
 using System.Net;
+using Microsoft.EntityFrameworkCore.Internal;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -255,16 +256,24 @@ app.MapPost("/user-logout", async (HttpContext context) =>
 
 }).RequireAuthorization();
 
-app.MapPost("/api/join/{joinCode:int}", async (int joinCode, JoinRequest JoinRequest, HttpContext context) =>
+app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequest, HttpContext context, IDbContextFactory<AppDbContext> dbContextFactory, IPlayerSessionService playerSessionService) =>
 {
     context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s));
+    using var dbContext = await dbContextFactory.CreateDbContextAsync(); // Delete present cookies.
 
-    var PlayerID = Guid.NewGuid();
+    var canJoin = await playerSessionService.CheckLobby(joinCode, JoinRequest.TeamId, JoinRequest.UserName, context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+    if (!canJoin.Success) return Results.BadRequest(new { succes = false });
+
+
+    var PlayerID = Guid.NewGuid().ToString();
+    var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode, PlayerID); // Add session
+    if (!result.Succes) return Results.Ok(new { succes = false });
+
     var Claims = new List<Claim>()
     {
-        new Claim("GameID", joinCode.ToString()),
+        new Claim("GameID", joinCode),
         new Claim("TeamID", JoinRequest.TeamId.ToString()),
-        new Claim(ClaimTypes.NameIdentifier, PlayerID.ToString()),
+        new Claim(ClaimTypes.NameIdentifier, PlayerID),
         new Claim(ClaimTypes.Name, JoinRequest.UserName),
         new Claim(ClaimTypes.Role, "Player"),
     };

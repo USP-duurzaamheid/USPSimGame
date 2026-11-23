@@ -85,22 +85,11 @@ public partial class JoinTeam : ComponentBase
 
         try
         {
-            var result = await PlayerSessionService.JoinByCodeAsync(Code ?? string.Empty, SelectedTeamId.Value, PlayerName, ClientConnection.ClientKey);
-            if (result.Success && result.PlayerSession != null && result.Team != null && result.GameSession != null)
-            {
-                // PlayerSessionState.SetSession(result.PlayerSession, result.Team, result.GameSession); // Pain-in-the-butt-state
+            JoinRequest playerValues = new JoinRequest(UserName: PlayerName, TeamId: SelectedTeamId.Value);
+            await JS.InvokeVoidAsync("getGameCookie", Code, playerValues);
 
-                JoinRequest a = new JoinRequest(UserName: PlayerName, TeamId: SelectedTeamId.Value);
+            Navigation.NavigateTo("/secured", forceLoad: true);
 
-                await JS.InvokeVoidAsync("getGameCookie", Code, a);
-
-
-                Navigation.NavigateTo("/secured", forceLoad: true);
-            }
-            else
-            {
-                ErrorMessage = result.ErrorMessage;
-            }
         }
         catch (Exception ex)
         {

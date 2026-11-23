@@ -29,7 +29,6 @@ namespace USPSimGame.Components.Pages.Creator.CreateUser
     {
       Context!.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await Context.SignOutAsync(s));
 
-
       if (_isBusy) return;
       Interlocked.Exchange(ref _isBusy, true);
 
