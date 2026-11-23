@@ -129,7 +129,7 @@ public partial class LayerControls : ComponentBase
             {
                 if (!LayerVisibilities.ContainsKey(layer.LayerDefinition.Key))
                 {
-                    bool isDefaultOn = layer.LayerDefinition.Key == "pdok-3dbag-buildings" || layer.LayerDefinition.IsEnabledByDefault;
+                    bool isDefaultOn = layer.LayerDefinition.IsEnabledByDefault;
                     LayerVisibilities[layer.LayerDefinition.Key] = isDefaultOn;
                 }
             }

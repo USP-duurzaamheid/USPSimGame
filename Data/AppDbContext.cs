@@ -140,7 +140,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<MapLayerDefinition>().HasData(
             new MapLayerDefinition
             {
-                Id = 2,
+                Id = 1,
                 Key = "liander-open-data-elektra",
                 Name = "Liander Electricity Grid",
                 Description = "Low-, medium-, and high-voltage electricity grid network for Liander service territory.",
@@ -152,7 +152,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             },
             new MapLayerDefinition
             {
-                Id = 3,
+                Id = 2,
                 Key = "stedin-open-data-elektra",
                 Name = "Stedin Regional Electricity Grid",
                 Description = "Complete low-, medium-, and high-voltage electricity cables and transformer stations for Stedin service territory.",
@@ -164,7 +164,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             },
             new MapLayerDefinition
             {
-                Id = 4,
+                Id = 3,
                 Key = "pdok-gwsw-sewage",
                 Name = "Urban Sewage & Drainage Network (PDOK GWSW)",
                 Description = "Municipal urban water, sewage pipes, inspection manholes, and pumping stations from Stichting Rioned GWSW.",
@@ -176,7 +176,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             },
             new MapLayerDefinition
             {
-                Id = 5,
+                Id = 4,
                 Key = "pdok-brk-bestuurlijkegebieden",
                 Name = "Municipal Boundaries (BRK Bestuurlijke Gebieden)",
                 Description = "Official municipal boundaries and administrative jurisdiction borders derived from Kadaster BRK.",
@@ -188,7 +188,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             },
             new MapLayerDefinition
             {
-                Id = 6,
+                Id = 5,
                 Key = "pdok-brk-kadastralekaart",
                 Name = "Cadastral Parcels (BRK Kadastrale Kaart WFS)",
                 Description = "Official cadastral land parcel boundaries, plot sizes, section codes, and parcel numbers from Kadaster BRK.",

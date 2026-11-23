@@ -30,10 +30,6 @@
     window.ol.Map = function (options) {
       const map = new OriginalMap(options);
       window.activeOlMap = map;
-      console.log(
-        "[2.5D Log] Intercepted ol.Map instance successfully! Target element ID:",
-        options.target,
-      );
       if (
         window._pendingLayersToRender &&
         window._pendingLayersToRender.length > 0
@@ -58,14 +54,8 @@ window._currentDraftLayerId = null;
 window.uspsim2d5 = window.uspsim2d5 || {};
 
 window.uspsim2d5.configureMap = function (mapOL) {
-  console.log("[2.5D Log] ConfigureJsMethod invoked with mapOL object:", mapOL);
   if (mapOL) {
     window.activeOlMap = mapOL.Map ? mapOL.Map : mapOL;
-    console.log(
-      "[2.5D Log] Captured OpenLayers map instance successfully:",
-      window.activeOlMap,
-    );
-
     if (
       window._pendingLayersToRender &&
       window._pendingLayersToRender.length > 0
@@ -74,7 +64,31 @@ window.uspsim2d5.configureMap = function (mapOL) {
       window._pendingLayersToRender = [];
       pending.forEach((fn) => fn());
     }
+
+    window.uspsim2d5.restrictToPlayArea(window.activeOlMap);
   }
+};
+
+// Utrecht Science Park: from the A27 to Tolakkerlaan, and from the A28 to the fields south of Toulouselaan.
+window.uspsim2d5.restrictToPlayArea = function (map) {
+  const view = map.getView();
+  const playArea = ol.proj.transformExtent(
+    [5.161, 52.077, 5.196, 52.094],
+    "EPSG:4326",
+    view.getProjection(),
+  );
+  if (!ol.extent.containsCoordinate(playArea, view.getCenter())) return;
+
+  map.setView(
+    new ol.View({
+      projection: view.getProjection(),
+      center: view.getCenter(),
+      zoom: view.getZoom(),
+      minZoom: view.getMinZoom(),
+      maxZoom: view.getMaxZoom(),
+      extent: playArea,
+    }),
+  );
 };
 
 window.uspsim2d5.loadSessionLayer = function (sessionId, layerKey) {
@@ -97,9 +111,6 @@ window.uspsim2d5.loadSessionLayer = function (sessionId, layerKey) {
         `[Map Control] Successfully fetched GeoJSON payload for '${layerKey}' via HTTP API! Features count: ${geoJsonObj.features ? geoJsonObj.features.length : 0}`,
       );
       window.uspsim2d5.renderInfrastructureLayer(geoJsonObj, layerKey);
-    })
-    .catch((err) => {
-      console.error(`[Map Control] Error loading layer '${layerKey}':`, err);
     });
 };
 
