@@ -258,15 +258,15 @@ app.MapPost("/user-logout", async (HttpContext context) =>
 
 app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequest, HttpContext context, IDbContextFactory<AppDbContext> dbContextFactory, IPlayerSessionService playerSessionService) =>
 {
-    var canJoin = await playerSessionService.CheckLobby(joinCode, JoinRequest.TeamId, JoinRequest.UserName, context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
-    if (!canJoin.Success) return Results.BadRequest(new { succes = false });
+    var canJoin = await playerSessionService.CheckLobby(joinCode, JoinRequest.TeamId, context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+    if (!canJoin.Success) return Results.BadRequest(new { success = false });
 
     using var dbContext = await dbContextFactory.CreateDbContextAsync();
     var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode); // Add session
-    if (!result.Succes) return Results.Ok(new { succes = false });
+    if (!result.Success) return Results.Ok(new { success = false });
 
     await PlayerCookieService.SetCookie(joinCode, JoinRequest, context, result);
-    return Results.Ok(new { succes = true });
+    return Results.Ok(new { success = true });
 });
 
 app.MapStaticAssets();

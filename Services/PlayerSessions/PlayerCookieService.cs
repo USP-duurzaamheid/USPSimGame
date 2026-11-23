@@ -24,7 +24,7 @@ public static class PlayerCookieService
         new ("GameID", joinCode),
         new ("TeamID", JoinRequest.TeamId.ToString()),
         new (ClaimTypes.NameIdentifier, result.Player!.Id!),
-        new (ClaimTypes.Name, JoinRequest.UserName),
+        new (ClaimTypes.Name, result.Player.UserName),
         new (ClaimTypes.Role, "Player"),
     };
     var claimIdentity = new ClaimsIdentity(claims: Claims, authenticationType: "PlayerSession");
