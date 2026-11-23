@@ -258,16 +258,14 @@ app.MapPost("/user-logout", async (HttpContext context) =>
 
 app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequest, HttpContext context, IDbContextFactory<AppDbContext> dbContextFactory, IPlayerSessionService playerSessionService) =>
 {
-    context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s)); // Delete present cookies.
-
-    using var dbContext = await dbContextFactory.CreateDbContextAsync();
     var canJoin = await playerSessionService.CheckLobby(joinCode, JoinRequest.TeamId, JoinRequest.UserName, context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
     if (!canJoin.Success) return Results.BadRequest(new { succes = false });
 
-
-
+    using var dbContext = await dbContextFactory.CreateDbContextAsync();
     var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode); // Add session
     if (!result.Succes) return Results.Ok(new { succes = false });
+
+    context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s)); // Delete present cookies.
 
     var Claims = new List<Claim>()
     {

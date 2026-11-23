@@ -25,7 +25,7 @@ public class PlayerSessionService : IPlayerSessionService
 
     public async Task<(bool Success, string? ErrorMessage, Team? Team, GameSession? GameSession)> CheckLobby(string joinCode, int teamId, string userName, string clientKey)
     {
-        var lookup = await _gameSessionService.FindJoinableByJoinCodeAsync(joinCode, clientKey);
+        var lookup = await _gameSessionService.FindJoinableByJoinCodeAsync(joinCode, clientKey); // keeps track of
         if (!lookup.Success || lookup.GameSession == null)
         {
             return (false, lookup.ErrorMessage, null, null);
@@ -48,7 +48,7 @@ public class PlayerSessionService : IPlayerSessionService
         return (true, null, team, gameSession);
     }
 
-    public static async Task<(bool Succes, PlayerSession? Player)> AddPlayerSessionAsync(AppDbContext context, int team, string userName, string joinCode, string playerId)
+    public static async Task<(bool Succes, PlayerSession? Player)> AddPlayerSessionAsync(AppDbContext context, int team, string userName, string joinCode)
     {
         int GameId = await context.GameSessions.Where(id => id.JoinCode == joinCode).Select(o => o.Id).SingleAsync();
         var GameFull = await GameSessionFull(context, GameId);
@@ -62,7 +62,7 @@ public class PlayerSessionService : IPlayerSessionService
 
         var playerSession = new PlayerSession
         {
-            Id = playerId,
+            Id = Guid.NewGuid().ToString(),
             TeamId = team,
             UserName = string.IsNullOrWhiteSpace(trimmedName) ? "Player" : trimmedName,
             CreatedAt = DateTime.UtcNow,
@@ -89,7 +89,7 @@ public class PlayerSessionService : IPlayerSessionService
         try
         {
             int SessionPlayerTotal = context.PlayerSessions.Select(p => p.GameId).Where(id => id == gameId).ToList().Count();
-            if (SessionPlayerTotal >= 50) return true;
+            if (SessionPlayerTotal >= 51) return true;
         }
         catch (Exception)
         {
