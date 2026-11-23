@@ -258,24 +258,24 @@ app.MapPost("/user-logout", async (HttpContext context) =>
 
 app.MapPost("/api/join/{joinCode}", async (string joinCode, JoinRequest JoinRequest, HttpContext context, IDbContextFactory<AppDbContext> dbContextFactory, IPlayerSessionService playerSessionService) =>
 {
-    context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s));
-    using var dbContext = await dbContextFactory.CreateDbContextAsync(); // Delete present cookies.
+    context.User.Identities.Select(i => i.AuthenticationType).Where(t => t is not null).ToList().ForEach(async s => await context.SignOutAsync(s)); // Delete present cookies.
 
+    using var dbContext = await dbContextFactory.CreateDbContextAsync();
     var canJoin = await playerSessionService.CheckLobby(joinCode, JoinRequest.TeamId, JoinRequest.UserName, context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
     if (!canJoin.Success) return Results.BadRequest(new { succes = false });
 
 
-    var PlayerID = Guid.NewGuid().ToString();
-    var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode, PlayerID); // Add session
+
+    var result = await PlayerSessionService.AddPlayerSessionAsync(dbContext, JoinRequest.TeamId, JoinRequest.UserName, joinCode); // Add session
     if (!result.Succes) return Results.Ok(new { succes = false });
 
     var Claims = new List<Claim>()
     {
-        new Claim("GameID", joinCode),
-        new Claim("TeamID", JoinRequest.TeamId.ToString()),
-        new Claim(ClaimTypes.NameIdentifier, PlayerID),
-        new Claim(ClaimTypes.Name, JoinRequest.UserName),
-        new Claim(ClaimTypes.Role, "Player"),
+        new ("GameID", joinCode),
+        new ("TeamID", JoinRequest.TeamId.ToString()),
+        new (ClaimTypes.NameIdentifier, result.Player!.Id!),
+        new (ClaimTypes.Name, JoinRequest.UserName),
+        new (ClaimTypes.Role, "Player"),
     };
     var claimIdentity = new ClaimsIdentity(claims: Claims, authenticationType: "PlayerSession");
 
