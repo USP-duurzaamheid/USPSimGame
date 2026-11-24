@@ -17,9 +17,9 @@ public partial class StatDisruption : ComponentBase
 
     protected string LevelLabel => NoisePollution.Level switch
     {
-        NoisePollutionLevel.High => "Boven de grens",
-        NoisePollutionLevel.Medium => "Gemiddeld",
-        _ => "Laag"
+        NoisePollutionLevel.High => "Above the limit",
+        NoisePollutionLevel.Medium => "Medium",
+        _ => "Low"
     };
 
     protected int MeterMax => Math.Max(Math.Max(NoisePollution.Limit * 2, NoisePollution.OverallNoisePollution), 1);

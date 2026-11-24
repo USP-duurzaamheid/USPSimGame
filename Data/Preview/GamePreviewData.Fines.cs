@@ -11,16 +11,16 @@ public static partial class GamePreviewData
         new()
         {
             DilemmaCode = PreviewStoppingFineDilemmaCode,
-            DilemmaTitle = "Vang 20% extra vraag op met een windturbine",
-            Reason = "Deadline gemist: de opdracht was niet op tijd af.",
+            DilemmaTitle = "Meet a 20% demand increase using a wind turbine",
+            Reason = "Deadline missed: the challenge was not completed in time.",
             AmountCredits = 5,
             StartedMonth = currentMonth - 1
         },
         new()
         {
             DilemmaCode = "I-02",
-            DilemmaTitle = "Plaats twee laadpalen",
-            Reason = "Deadline gemist: de opdracht was niet op tijd af.",
+            DilemmaTitle = "Place two charging points",
+            Reason = "Deadline missed: the challenge was not completed in time.",
             AmountCredits = 5,
             StartedMonth = currentMonth - 3,
             EndedMonth = currentMonth - 1
@@ -30,8 +30,8 @@ public static partial class GamePreviewData
     public static FineModel PreviewIncomingFine(int currentMonth) => new()
     {
         DilemmaCode = "M-01",
-        DilemmaTitle = "Genoeg stroom bij minder zon",
-        Reason = "Deadline gemist: de opdracht was niet op tijd af.",
+        DilemmaTitle = "Enough electricity with less sun",
+        Reason = "Deadline missed: the challenge was not completed in time.",
         AmountCredits = 15,
         StartedMonth = currentMonth
     };

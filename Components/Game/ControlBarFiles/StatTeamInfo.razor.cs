@@ -26,12 +26,12 @@ public partial class StatTeamInfo : ComponentBase, IDisposable
     {
         get
         {
-            var tooltip = $"Campus Credits (CC) zijn het budget van je organisatie: hiermee betaal je installaties. Beschikbaar: {CurrentBalance:N0} CC";
+            var tooltip = $"Campus Credits (CC) are your organization's budget: you use them to pay for installations. Available: {CurrentBalance:N0} CC";
             if (MonthlyExpenseBurden > 0)
             {
-                tooltip += $" · vaste lasten -{MonthlyExpenseBurden:N1} CC per maand";
+                tooltip += $" · running costs -{MonthlyExpenseBurden:N1} CC per month";
             }
-            return CurrentBalance < 0 ? $"{tooltip} · let op: je saldo is negatief!" : tooltip;
+            return CurrentBalance < 0 ? $"{tooltip} · note: your balance is negative!" : tooltip;
         }
     }
 

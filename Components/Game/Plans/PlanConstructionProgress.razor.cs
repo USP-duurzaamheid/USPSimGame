@@ -23,7 +23,7 @@ public partial class PlanConstructionProgress : ComponentBase
 
     protected string MonthsLeftLabel => Progress.MonthsLeft switch
     {
-        <= 1 => "nog 1 maand",
-        var months => $"nog {months} maanden"
+        <= 1 => "1 month left",
+        var months => $"{months} months left"
     };
 }

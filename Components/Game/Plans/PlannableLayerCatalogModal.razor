@@ -11,11 +11,11 @@
                         <i class="bi bi-grid-3x3-gap-fill h5 mb-0"></i>
                     </div>
                     <div>
-                        <h5 id="build-menu-title" class="fw-bold mb-0">Bouwmenu</h5>
-                        <small class="text-muted">Kies een installatie en plaats die op de kaart</small>
+                        <h5 id="build-menu-title" class="fw-bold mb-0">Build Menu</h5>
+                        <small class="text-muted">Choose an installation and place it on the map</small>
                     </div>
                 </div>
-                <button type="button" class="btn-close" aria-label="Sluiten" @onclick="Close"></button>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
             </div>
 
             <!-- Body: Grid of Installations -->
@@ -24,7 +24,7 @@
                 {
                     <div class="text-center py-5 text-muted">
                         <i class="bi bi-layers-half display-4 d-block mb-2 text-secondary"></i>
-                        <p class="mb-0">Er zijn geen installaties beschikbaar in deze sessie.</p>
+                        <p class="mb-0">No installations are available in this session.</p>
                     </div>
                 }
                 else
@@ -64,21 +64,21 @@
 
                                             <!-- Description -->
                                             <p class="text-muted small mb-3 line-clamp-2" style="font-size: 0.82rem; min-height: 2.5rem;">
-                                                @(string.IsNullOrWhiteSpace(def.Description) ? "Installatie die je op de kaart kunt plaatsen." : def.Description)
+                                                @(string.IsNullOrWhiteSpace(def.Description) ? "An installation you can place on the map." : def.Description)
                                             </p>
 
                                             <!-- Costs & Build Time -->
                                             <dl class="build-menu-facts">
                                                 <div class="build-menu-fact">
-                                                    <dt><i class="bi bi-coin" aria-hidden="true"></i> Kosten</dt>
+                                                    <dt><i class="bi bi-coin" aria-hidden="true"></i> Cost</dt>
                                                     <dd>@GetCostDisplay(def)</dd>
                                                 </div>
                                                 <div class="build-menu-fact">
-                                                    <dt><i class="bi bi-hourglass-split" aria-hidden="true"></i> Bouwtijd</dt>
+                                                    <dt><i class="bi bi-hourglass-split" aria-hidden="true"></i> Build time</dt>
                                                     <dd>@GetConstructionTimeDisplay(def)</dd>
                                                 </div>
                                                 <div class="build-menu-fact">
-                                                    <dt><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Vaste lasten</dt>
+                                                    <dt><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Running costs</dt>
                                                     <dd>@GetExpenseDisplay(def)</dd>
                                                 </div>
                                             </dl>
@@ -102,11 +102,11 @@
                                                 @onclick="() => SelectLayer(layer.Id)">
                                             @if (isAlreadyIncluded)
                                             {
-                                                <span><i class="bi bi-check-circle-fill me-1"></i>Toegevoegd, opnieuw selecteren</span>
+                                                <span><i class="bi bi-check-circle-fill me-1"></i>Added, select again</span>
                                             }
                                             else
                                             {
-                                                <span><i class="bi bi-plus-lg me-1"></i>Selecteren en plaatsen</span>
+                                                <span><i class="bi bi-plus-lg me-1"></i>Select and place</span>
                                             }
                                         </button>
                                     </div>
@@ -120,7 +120,7 @@
             <!-- Footer -->
             <div class="modal-footer-custom p-3 bg-white border-top d-flex justify-content-end">
                 <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4" @onclick="Close">
-                    Sluiten
+                    Close
                 </button>
             </div>
         </div>

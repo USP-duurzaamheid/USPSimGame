@@ -6,8 +6,8 @@ public static class PlanStateLabels
 {
     public static string Get(PlanState state) => state switch
     {
-        PlanState.Implementing => "In aanbouw",
-        PlanState.Implemented => "Actief",
+        PlanState.Implementing => "Under construction",
+        PlanState.Implemented => "Active",
         _ => state.ToString()
     };
 }

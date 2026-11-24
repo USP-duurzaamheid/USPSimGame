@@ -1,9 +1,9 @@
 @namespace USPSimGame.Components.Game.BurgerMenu
 
-<nav class="insight-burger-menu" aria-label="Spelmenu">
+<nav class="insight-burger-menu" aria-label="Game menu">
     <button type="button" class="insight-burger-menu-button" @onclick="OpenOverview">
         <i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i>
-        <span>Overzicht</span>
+        <span>Overview</span>
     </button>
 
     @if (ShowDilemmas)
@@ -12,10 +12,10 @@
                 aria-pressed="@(ActiveSlot == MenuSlot.Dilemmas ? "true" : "false")"
                 @onclick="() => ToggleSlot(MenuSlot.Dilemmas)">
             <i class="bi bi-bullseye" aria-hidden="true"></i>
-            <span>Doelen</span>
+            <span>Challenges</span>
             @if (AttentionCount > 0)
             {
-                <span class="insight-burger-menu-badge" title="@AttentionCount doel(en) met een deadline die deze maand afloopt of gemist is">@AttentionCount</span>
+                <span class="insight-burger-menu-badge" title="@AttentionCount challenge(s) with a deadline that ends this month or has been missed">@AttentionCount</span>
             }
         </button>
     }
@@ -23,7 +23,7 @@
     <button type="button" class="insight-burger-menu-button @(ActiveSlot == MenuSlot.Buildings ? "insight-burger-menu-button--active" : null)"
             aria-pressed="@(ActiveSlot == MenuSlot.Buildings ? "true" : "false")"
             disabled="@(!BuildingsEnabled)"
-            title="@(BuildingsEnabled ? "Ontwikkelplannen" : "Beschikbaar na de setup-fase")"
+            title="@(BuildingsEnabled ? "Development plans" : "Available after the setup phase")"
             @onclick="() => ToggleSlot(MenuSlot.Buildings)">
         <i class="bi bi-building-fill" aria-hidden="true"></i>
         <span>BUILDINGS</span>

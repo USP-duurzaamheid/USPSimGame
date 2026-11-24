@@ -27,7 +27,7 @@ public partial class Stat : ComponentBase
         get
         {
             var title = Title ?? Label;
-            return IsPreview ? $"{title} (voorbeeldwaarde)" : title;
+            return IsPreview ? $"{title} (sample value)" : title;
         }
     }
 }

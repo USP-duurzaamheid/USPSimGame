@@ -22,23 +22,23 @@ public partial class DilemmaCard : ComponentBase
     {
         get
         {
-            if (IsMissed) return $"Deadline gemist ({DeadlineLabel})";
+            if (IsMissed) return $"Deadline missed ({DeadlineLabel})";
 
             var monthsLeft = Dilemma.MonthsLeft(CurrentMonth);
             return monthsLeft switch
             {
-                0 => "Laatste maand",
-                1 => "Nog 1 maand",
-                < 24 => $"Nog {monthsLeft} maanden",
-                _ => $"Nog {monthsLeft / 12} jaar"
+                0 => "Final month",
+                1 => "1 month left",
+                < 24 => $"{monthsLeft} months left",
+                _ => $"{monthsLeft / 12} years left"
             };
         }
     }
 
     protected string CategoryLabel => Dilemma.Category switch
     {
-        DilemmaCategory.Guided => "Introductie",
-        DilemmaCategory.LongTerm => "Lange termijn",
-        _ => "Opdracht"
+        DilemmaCategory.Guided => "Guided",
+        DilemmaCategory.LongTerm => "Long-term",
+        _ => "Medium"
     };
 }
