@@ -8,8 +8,8 @@ public static partial class GamePreviewData
     public static DilemmaModel PreviewIncomingDilemma(int currentMonth) => new()
     {
         Code = "I-01",
-        Title = "Plaats één zonnepaneel",
-        Assignment = "Plaats een zonnepaneel op een toegestane plek in het gebied van je organisatie. Het bouwen duurt 1 maand.",
+        Title = "Place one solar panel",
+        Assignment = "Place a solar panel in your organization's installation area. Construction takes 1 month.",
         Category = DilemmaCategory.Guided,
         DeadlineMonth = currentMonth + 2,
         RewardPoints = 10,
@@ -21,8 +21,8 @@ public static partial class GamePreviewData
         new()
         {
             Code = "I-02",
-            Title = "Plaats twee laadpalen",
-            Assignment = "Plaats twee laadpalen voor elektrische auto's.",
+            Title = "Place two charging points",
+            Assignment = "Place two charging points for electric cars.",
             Category = DilemmaCategory.Guided,
             DeadlineMonth = currentMonth + 1,
             RewardPoints = 10,
@@ -32,8 +32,8 @@ public static partial class GamePreviewData
         new()
         {
             Code = "M-01",
-            Title = "Genoeg stroom bij minder zon",
-            Assignment = "Zorg dat er genoeg elektriciteit is terwijl zonnepanelen 30% minder opleveren.",
+            Title = "Enough electricity with less sun",
+            Assignment = "Maintain enough electricity during a 30% solar-output reduction.",
             Category = DilemmaCategory.Medium,
             DeadlineMonth = currentMonth - 1,
             RewardPoints = 25,
@@ -43,8 +43,8 @@ public static partial class GamePreviewData
         new()
         {
             Code = "M-03",
-            Title = "Samen 50% duurzame stroom",
-            Assignment = "Bereik samen met alle organisaties 50% duurzame elektriciteitsproductie op de campus.",
+            Title = "Together 50% renewable electricity",
+            Assignment = "Together reach 50% renewable electricity production across campus.",
             Category = DilemmaCategory.Medium,
             IsCollaborative = true,
             DeadlineMonth = currentMonth,
@@ -54,8 +54,8 @@ public static partial class GamePreviewData
         new()
         {
             Code = "L-01",
-            Title = "70% duurzame elektriciteit",
-            Assignment = "Bereik 70% duurzame elektriciteitsproductie.",
+            Title = "70% renewable electricity",
+            Assignment = "Reach 70% renewable electricity production.",
             Category = DilemmaCategory.LongTerm,
             DeadlineMonth = currentMonth + 36,
             RewardPoints = 60,
@@ -64,8 +64,8 @@ public static partial class GamePreviewData
         new()
         {
             Code = "L-02",
-            Title = "Opwekcapaciteit van 130%",
-            Assignment = "Zorg voor een opwekcapaciteit van 130% van de normale vraag.",
+            Title = "Generation capacity of 130%",
+            Assignment = "Reach generation capacity of 130% of normal demand.",
             Category = DilemmaCategory.LongTerm,
             DeadlineMonth = currentMonth + 24,
             RewardPoints = 50,

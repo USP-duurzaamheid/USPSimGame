@@ -21,11 +21,11 @@ public partial class StatFines : ComponentBase
         get
         {
             var total = Fines.Where(f => f.IsActive).Sum(f => f.AmountCredits);
-            return total > 0 ? $"Je betaalt nu -{total} CC per maand aan boetes" : "Er lopen nu geen boetes";
+            return total > 0 ? $"You now pay -{total} CC per month in fines" : "No active fines";
         }
     }
 
     protected string GetStatusLabel(FineModel fine) => fine.EndedMonth is int endedMonth
-        ? $"Gestopt in {CommonGameUtils.FormatMonthYear(endedMonth, StartYear)}"
-        : $"Loopt sinds {CommonGameUtils.FormatMonthYear(fine.StartedMonth, StartYear)}";
+        ? $"Stopped in {CommonGameUtils.FormatMonthYear(endedMonth, StartYear)}"
+        : $"Active since {CommonGameUtils.FormatMonthYear(fine.StartedMonth, StartYear)}";
 }

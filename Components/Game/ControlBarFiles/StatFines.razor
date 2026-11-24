@@ -1,22 +1,22 @@
 @namespace USPSimGame.Components.Game.ControlBarFiles
 
-<StatPanel Title="Boetes" Subtitle="@Subtitle">
+<StatPanel Title="Fines" Subtitle="@Subtitle">
     <StatContent>
         <Stat Icon="bi-emoji-angry-fill"
               IconStyle="StatIconStyle.Plain"
-              Label="Boetes"
-              Caption="Boete"
+              Label="Fines"
+              Caption="Fine"
               Value="@ActiveCount.ToString()"
               IsWarning="@(ActiveCount > 0)"
               IsPreview="@IsPreview"
-              Title="Boetes voor gemiste deadlines, klik voor details" />
+              Title="Fines for missed deadlines, click for details" />
     </StatContent>
     <ChildContent>
         @if (!Fines.Any())
         {
             <p class="fines-empty">
                 <i class="bi bi-check2-circle" aria-hidden="true"></i>
-                Je hebt nog geen boetes gekregen.
+                You have not received any fines yet.
             </p>
         }
         else
@@ -31,7 +31,7 @@
                         </div>
                         <p class="fine-reason">@fine.Reason</p>
                         <div class="fine-footer">
-                            <span class="fine-amount">-@fine.AmountCredits CC per maand</span>
+                            <span class="fine-amount">-@fine.AmountCredits CC per month</span>
                             <span class="fine-status">@GetStatusLabel(fine)</span>
                         </div>
                     </li>
@@ -41,7 +41,7 @@
 
         @if (IsPreview)
         {
-            <p class="fines-preview-note">Voorbeelddata: wordt vervangen door de echte boetes uit het spel.</p>
+            <p class="fines-preview-note">Sample data: will be replaced by the real fines from the game.</p>
         }
     </ChildContent>
 </StatPanel>

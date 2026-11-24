@@ -28,9 +28,9 @@ public partial class PlannableLayerCatalogModal : ComponentBase
     {
         return type switch
         {
-            PlannableGeometryType.Point => "Punt",
-            PlannableGeometryType.Line => "Lijn",
-            PlannableGeometryType.Polygon => "Vlak",
+            PlannableGeometryType.Point => "Point",
+            PlannableGeometryType.Line => "Line",
+            PlannableGeometryType.Polygon => "Area",
             _ => type.ToString()
         };
     }
@@ -42,7 +42,7 @@ public partial class PlannableLayerCatalogModal : ComponentBase
 
     protected string GetExpenseDisplay(PlannableLayerDefinition def)
     {
-        return GetAmountDisplay(def.GeometryType, def.BaseMonthlyExpensePoints, def.MonthlyExpensePointsPerUnit, " per maand");
+        return GetAmountDisplay(def.GeometryType, def.BaseMonthlyExpensePoints, def.MonthlyExpensePointsPerUnit, " per month");
     }
 
     protected string GetConstructionTimeDisplay(PlannableLayerDefinition def)
@@ -53,7 +53,7 @@ public partial class PlannableLayerCatalogModal : ComponentBase
         }
 
         return def.ConstructionTimeModifierPerUnit > 0
-            ? $"vanaf {FormatMonths(def.BaseConstructionTimeMonths)}"
+            ? $"from {FormatMonths(def.BaseConstructionTimeMonths)}"
             : FormatMonths(def.BaseConstructionTimeMonths);
     }
 
@@ -68,5 +68,5 @@ public partial class PlannableLayerCatalogModal : ComponentBase
         };
     }
 
-    private static string FormatMonths(int months) => months == 1 ? "1 maand" : $"{months} maanden";
+    private static string FormatMonths(int months) => months == 1 ? "1 month" : $"{months} months";
 }

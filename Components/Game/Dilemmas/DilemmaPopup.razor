@@ -6,7 +6,7 @@
         <div class="dilemma-popup-hero">
             <span class="dilemma-popup-icon" aria-hidden="true"><i class="bi bi-envelope-paper-fill"></i></span>
             <div>
-                <span class="dilemma-popup-eyebrow">Nieuw dilemma · bericht van de gemeente</span>
+                <span class="dilemma-popup-eyebrow">New challenge · message from the municipality</span>
                 <h2 id="dilemma-popup-title" class="dilemma-popup-title">@Dilemma.Title</h2>
             </div>
         </div>
@@ -16,49 +16,49 @@
                 <span class="dilemma-popup-code">@Dilemma.Code</span>
                 @if (Dilemma.IsCollaborative)
                 {
-                    <span class="dilemma-popup-tag"><i class="bi bi-people-fill" aria-hidden="true"></i> Samen met alle organisaties</span>
+                    <span class="dilemma-popup-tag"><i class="bi bi-people-fill" aria-hidden="true"></i> Together with all organizations</span>
                 }
             </div>
 
-            <h3 class="dilemma-popup-label">Opdracht</h3>
+            <h3 class="dilemma-popup-label">Objective</h3>
             <p class="dilemma-popup-assignment">@Dilemma.Assignment</p>
 
             <dl class="dilemma-popup-facts">
                 <div class="dilemma-popup-fact">
                     <dt><i class="bi bi-hourglass-split" aria-hidden="true"></i> Deadline</dt>
                     <dd>
-                        t/m @DeadlineLabel
+                        End of @DeadlineLabel
                         <small>@TimeLeftLabel</small>
                     </dd>
                 </div>
                 <div class="dilemma-popup-fact dilemma-popup-fact--reward">
-                    <dt><i class="bi bi-star-fill" aria-hidden="true"></i> Beloning</dt>
+                    <dt><i class="bi bi-star-fill" aria-hidden="true"></i> Reward</dt>
                     <dd>
                         +@Dilemma.RewardPoints pts
-                        <small>als het op tijd lukt</small>
+                        <small>if completed on time</small>
                     </dd>
                 </div>
                 <div class="dilemma-popup-fact dilemma-popup-fact--fine">
-                    <dt><i class="bi bi-coin" aria-hidden="true"></i> Boete</dt>
+                    <dt><i class="bi bi-coin" aria-hidden="true"></i> Fine</dt>
                     <dd>
                         -@Dilemma.FineCredits CC
-                        <small>bij een gemiste deadline</small>
+                        <small>if the deadline is missed</small>
                     </dd>
                 </div>
             </dl>
 
             <p class="dilemma-popup-note">
                 <i class="bi bi-bullseye" aria-hidden="true"></i>
-                <span>Dit dilemma staat nu bij je <strong>Doelen</strong>.</span>
+                <span>You can find this challenge under <strong>Challenges</strong>.</span>
             </p>
         </div>
 
         <footer class="dilemma-popup-actions">
             <button type="button" class="dilemma-popup-button dilemma-popup-button--secondary" @onclick="OnViewGoals">
-                Bekijk Doelen
+                View Challenges
             </button>
             <button @ref="primaryButton" type="button" class="dilemma-popup-button dilemma-popup-button--primary" @onclick="CloseAsync">
-                Aan de slag
+                Get started
                 <i class="bi bi-arrow-right" aria-hidden="true"></i>
             </button>
         </footer>

@@ -1,31 +1,31 @@
 @namespace USPSimGame.Components.Game.ControlBarFiles
 
-<StatPanel Title="Overlast" Subtitle="Geluid en hinder door je installaties">
+<StatPanel Title="Noise" Subtitle="Noise from your installations">
     <StatContent>
         <Stat Icon="bi-emoji-angry-fill"
               IconStyle="StatIconStyle.Plain"
-              Label="Overlastpunten"
+              Label="Noise points"
               Value="@NoisePollution.OverallNoisePollution.ToString()"
               IsWarning="@(NoisePollution.Level == NoisePollutionLevel.High)"
               IsPreview="@IsPreview"
-              Title="Overlast van je campus, klik voor details" />
+              Title="Noise from your campus, click for details" />
     </StatContent>
     <ChildContent>
         <div class="disruption-score disruption-score--@LevelClass">
             <span class="disruption-score-value">@NoisePollution.OverallNoisePollution</span>
-            <span class="disruption-score-unit">overlastpunten</span>
+            <span class="disruption-score-unit">noise points</span>
             <span class="disruption-score-level">@LevelLabel</span>
         </div>
 
-        <div class="disruption-meter" role="meter" aria-label="Overlastmeter"
+        <div class="disruption-meter" role="meter" aria-label="Noise meter"
              aria-valuemin="0" aria-valuemax="@MeterMax" aria-valuenow="@NoisePollution.OverallNoisePollution">
             <div class="disruption-meter-fill disruption-meter-fill--@LevelClass" style="width: @FillPercent"></div>
             <div class="disruption-meter-limit" style="left: @LimitPercent">
-                <span>grens @NoisePollution.Limit</span>
+                <span>limit @NoisePollution.Limit</span>
             </div>
         </div>
 
-        <h3 class="disruption-section-title">Waar komt het vandaan?</h3>
+        <h3 class="disruption-section-title">Where does it come from?</h3>
         <ul class="disruption-sources">
             @foreach (var source in OrderedSources)
             {
@@ -33,7 +33,7 @@
                     <span class="disruption-source-icon" aria-hidden="true"><i class="bi @source.Icon"></i></span>
                     <span class="disruption-source-name">
                         @source.Name
-                        <small>@source.Count × @source.PointsPerUnit @(source.PointsPerUnit == 1 ? "punt" : "punten")</small>
+                        <small>@source.Count × @source.PointsPerUnit @(source.PointsPerUnit == 1 ? "point" : "points")</small>
                     </span>
                     <span class="disruption-source-total">+@source.SectorNoisePollution</span>
                 </li>
@@ -42,12 +42,12 @@
 
         <p class="disruption-hint">
             <i class="bi bi-lightbulb" aria-hidden="true"></i>
-            Elke installatie die je plaatst telt mee. Kies je voor installaties met veel punten per stuk, dan loopt je overlast snel op.
+            Every installation you place counts. If you choose installations with many points each, your noise rises quickly.
         </p>
 
         @if (IsPreview)
         {
-            <p class="disruption-preview-note">Voorbeelddata: wordt vervangen door de echte waarden uit het spel.</p>
+            <p class="disruption-preview-note">Sample data: will be replaced by the real values from the game.</p>
         }
     </ChildContent>
 </StatPanel>

@@ -16,6 +16,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
     const grid = {
         map: null,
         layer: null,
+        visible: true,
         baseSize: 0,
         selectedCell: null,
         hoverCell: null,
@@ -153,7 +154,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
     }
 
     function handleMapClick(evt) {
-        if (grid.snapInteraction) return;
+        if (!grid.visible || grid.snapInteraction) return;
         const cell = cellAt(evt.coordinate, currentSpacing());
         grid.selectedCell = sameCell(cell, grid.selectedCell) ? null : cell;
         redraw();
@@ -177,6 +178,7 @@ window.uspsim2d5 = window.uspsim2d5 || {};
         }
 
         grid.map = map;
+        grid.visible = true;
         grid.baseSize = baseSizeFor(map);
         grid.selectedCell = null;
         grid.hoverCell = null;
@@ -193,7 +195,8 @@ window.uspsim2d5 = window.uspsim2d5 || {};
 
         grid.snapInteraction = new ol.interaction.Interaction({
             handleEvent: function (evt) {
-                if (!evt.coordinate) return true;
+                // With the grid switched off, points are placed freely.
+                if (!grid.visible || !evt.coordinate) return true;
 
                 const spacing = currentSpacing();
                 if (snapToCellCenter) {
@@ -215,6 +218,13 @@ window.uspsim2d5 = window.uspsim2d5 || {};
             grid.snapDraw = drawInteraction;
             drawInteraction.on('drawend', selectPlacedCell);
         }
+    };
+
+    window.uspsim2d5.toggleGridVisibility = function (isVisible) {
+        grid.visible = isVisible;
+        grid.selectedCell = null;
+        grid.hoverCell = null;
+        if (grid.layer) grid.layer.setVisible(isVisible);
     };
 
     window.uspsim2d5.disableGridSnapping = function () {

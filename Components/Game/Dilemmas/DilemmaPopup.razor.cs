@@ -24,10 +24,10 @@ public partial class DilemmaPopup : ComponentBase
             var monthsLeft = Dilemma.MonthsLeft(CurrentMonth);
             return monthsLeft switch
             {
-                <= 0 => "alleen deze maand nog",
-                1 => "nog 1 maand",
-                < 24 => $"nog {monthsLeft} maanden",
-                _ => $"nog {monthsLeft / 12} jaar"
+                <= 0 => "this month only",
+                1 => "1 month left",
+                < 24 => $"{monthsLeft} months left",
+                _ => $"{monthsLeft / 12} years left"
             };
         }
     }

@@ -6,7 +6,7 @@
     var team = PlayerSessionState.CurrentTeam;
 }
 
-<header class="control-bar" aria-label="Spelstatus">
+<header class="control-bar" aria-label="Game status">
     <div class="control-bar-logo" title="Common Ground">
         <i class="bi bi-globe2" aria-hidden="true"></i>
     </div>
@@ -22,19 +22,19 @@
         }
         else if (team != null)
         {
-            <div class="control-bar-item" title="@PlayerSessionState.CurrentPlayerSession?.UserName speelt voor @TeamLabel(team.Name)">
+            <div class="control-bar-item" title="@PlayerSessionState.CurrentPlayerSession?.UserName plays for @TeamLabel(team.Name)">
                 <TeamBadge Name="@team.Name" Color="@team.Color" />
                 <span class="control-bar-text control-bar-team-name">@TeamLabel(team.Name)</span>
             </div>
             <div class="control-bar-item">
-                <Stat Icon="bi-star" Label="Duurzaamheidspunten"
+                <Stat Icon="bi-star" Label="Sustainability points"
                       Value="@SustainabilityPoints.ToString()" Unit="pts" IsPreview="true" />
             </div>
             <div class="control-bar-item">
                 <StatTeamInfo TeamId="@team.Id" />
             </div>
             <div class="control-bar-item">
-                <Stat Icon="bi-lightning-charge-fill" IconStyle="StatIconStyle.Accent" Label="Duurzame elektriciteit"
+                <Stat Icon="bi-lightning-charge-fill" IconStyle="StatIconStyle.Accent" Label="Renewable electricity"
                       Value="@RenewableElectricityPercent.ToString()" Unit="%" IsPreview="true" />
             </div>
             <div class="control-bar-item">
@@ -52,7 +52,7 @@
             <div class="control-bar-item">
                 @if (PlayerSessionState.IsAdmin)
                 {
-                    <button type="button" class="control-bar-state control-bar-state--button" @onclick="ToggleStateControlPanel" title="Spelstatus en timer beheren">
+                    <button type="button" class="control-bar-state control-bar-state--button" @onclick="ToggleStateControlPanel" title="Manage game state and timer">
                         @session.State.ToString().ToUpperInvariant()
                         <i class="bi bi-sliders" aria-hidden="true"></i>
                     </button>
@@ -64,13 +64,13 @@
 
                 @if ((session.State == GameState.Play || session.State == GameState.Pause) && !string.IsNullOrEmpty(RemainingTimeFormatted))
                 {
-                    <span class="control-bar-timer" title="@(session.State == GameState.Pause ? "Timer gepauzeerd" : "Resterende tijd deze maand")">
+                    <span class="control-bar-timer" title="@(session.State == GameState.Pause ? "Timer paused" : "Time left this month")">
                         <i class="bi bi-stopwatch" aria-hidden="true"></i>@RemainingTimeFormatted
                     </span>
                 }
             </div>
             <div class="control-bar-item">
-                <span class="control-bar-text" title="Huidige speldatum">01 @FormattedGameDate</span>
+                <span class="control-bar-text" title="Current game date">01 @FormattedGameDate</span>
             </div>
         }
 
