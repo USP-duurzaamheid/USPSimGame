@@ -52,12 +52,13 @@ public partial class LayerControls : ComponentBase
 
     protected bool ShowTeamAreas { get; set; } = true;
     protected bool ShowImplementedFeatures { get; set; } = true;
+    protected bool ShowGrid { get; set; } = true;
     protected string ActiveTab { get; set; } = "layers";
     protected int? DraggedIndex { get; set; }
 
-    protected int TotalLayersCount => SessionLayers.Count + 2;
+    protected int TotalLayersCount => SessionLayers.Count + 3;
 
-    protected int VisibleCount => LayerVisibilities.Values.Count(v => v) + (ShowTeamAreas ? 1 : 0) + (ShowImplementedFeatures ? 1 : 0);
+    protected int VisibleCount => LayerVisibilities.Values.Count(v => v) + (ShowTeamAreas ? 1 : 0) + (ShowImplementedFeatures ? 1 : 0) + (ShowGrid ? 1 : 0);
 
     protected override void OnInitialized()
     {
@@ -145,6 +146,20 @@ public partial class LayerControls : ComponentBase
     {
         IsCollapsed = !IsCollapsed;
         await OnToggleCollapse.InvokeAsync(IsCollapsed);
+    }
+
+    // The grid is a drawing aid, not a data layer, so it stays out of the legend and z-order list.
+    protected async Task ToggleGridVisibilityAsync(bool isVisible)
+    {
+        ShowGrid = isVisible;
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("uspsim2d5.toggleGridVisibility", isVisible);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[LayerControls] JS Error toggling grid visibility: {ex.Message}");
+        }
     }
 
     protected async Task ToggleTeamAreasVisibilityAsync(bool isVisible)

@@ -48,6 +48,16 @@
                     </div>
 
                     <div class="d-flex flex-column gap-2">
+                        <!-- Grid Toggle -->
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white layer-item @(ShowGrid ? "border-start border-primary border-3" : "")">
+                            <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0 mb-0">
+                                <label class="form-check-label flex-grow-1 cursor-pointer me-2" for="switch-grid">
+                                    <div class="fw-bold text-dark small mb-1">Grid</div>
+                                </label>
+                                <input class="form-check-input ms-0 cursor-pointer" type="checkbox" role="switch" id="switch-grid" checked="@ShowGrid" @onchange="(e) => ToggleGridVisibilityAsync((bool)e.Value!)" />
+                            </div>
+                        </div>
+
                         <!-- Existing Team Areas Toggle -->
                         <div class="card border-0 shadow-sm p-3 rounded-3 bg-white layer-item @(ShowTeamAreas ? "border-start border-primary border-3" : "")">
                             <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0 mb-0">
