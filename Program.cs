@@ -105,9 +105,7 @@ builder.Services.AddScoped<CreatorAuthState>(); // Per scoped circuit, when on c
 builder.Services.AddScoped<PlayerSessionState>();
 
 // Register Building Service & Map Layer Strategy Providers
-builder.Services.AddHttpClient<BuildingService>();
-builder.Services.AddTransient<IBuildingService>(sp => sp.GetRequiredService<BuildingService>());
-builder.Services.AddTransient<IMapLayerProvider>(sp => sp.GetRequiredService<BuildingService>());
+
 
 builder.Services.AddHttpClient<LianderElektraService>();
 builder.Services.AddTransient<IMapLayerProvider>(sp => sp.GetRequiredService<LianderElektraService>());

@@ -12,7 +12,7 @@ using USPSimGame.Data;
 namespace USPSimGame.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260929152913_InitialCommit")]
+    [Migration("20261112114135_InitialCommit")]
     partial class InitialCommit
     {
         /// <inheritdoc />
@@ -239,6 +239,11 @@ namespace USPSimGame.Migrations
                     b.Property<int>("CurrentMonth")
                         .HasColumnType("integer");
 
+                    b.Property<string>("JoinCode")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
+
                     b.Property<int>("MonthDurationSeconds")
                         .HasColumnType("integer");
 
@@ -263,6 +268,9 @@ namespace USPSimGame.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JoinCode")
+                        .IsUnique();
 
                     b.ToTable("GameSessions");
                 });
@@ -378,16 +386,6 @@ namespace USPSimGame.Migrations
                     b.ToTable("MapLayerDefinitions");
 
                     b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Buildings",
-                            Description = "3D building footprints, roof shapes, heights, and volumes from 3D BAG (Kadaster/TU Delft).",
-                            IsEnabledByDefault = true,
-                            Key = "pdok-3dbag-buildings",
-                            LayerType = "VectorGeoJson",
-                            Name = "3D BAG Buildings"
-                        },
                         new
                         {
                             Id = 2,
