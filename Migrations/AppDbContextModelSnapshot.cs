@@ -385,7 +385,7 @@ namespace USPSimGame.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 2,
+                            Id = 1,
                             Category = "Infrastructure",
                             Description = "Low-, medium-, and high-voltage electricity grid network for Liander service territory.",
                             IsEnabledByDefault = false,
@@ -395,7 +395,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 2,
                             Category = "Infrastructure",
                             Description = "Complete low-, medium-, and high-voltage electricity cables and transformer stations for Stedin service territory.",
                             IsEnabledByDefault = false,
@@ -405,7 +405,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 3,
                             Category = "Infrastructure",
                             Description = "Municipal urban water, sewage pipes, inspection manholes, and pumping stations from Stichting Rioned GWSW.",
                             IsEnabledByDefault = false,
@@ -415,7 +415,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             Category = "Environment",
                             Description = "Official municipal boundaries and administrative jurisdiction borders derived from Kadaster BRK.",
                             IsEnabledByDefault = false,
@@ -425,7 +425,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 5,
                             Category = "Environment",
                             Description = "Official cadastral land parcel boundaries, plot sizes, section codes, and parcel numbers from Kadaster BRK.",
                             IsEnabledByDefault = false,
