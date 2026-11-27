@@ -12,8 +12,8 @@ using USPSimGame.Data;
 namespace USPSimGame.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261101183816_RemoveTeamPasswordHash")]
-    partial class RemoveTeamPasswordHash
+    [Migration("20261127132144_InitialCommit")]
+    partial class InitialCommit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -389,16 +389,6 @@ namespace USPSimGame.Migrations
                         new
                         {
                             Id = 1,
-                            Category = "Buildings",
-                            Description = "3D building footprints, roof shapes, heights, and volumes from 3D BAG (Kadaster/TU Delft).",
-                            IsEnabledByDefault = true,
-                            Key = "pdok-3dbag-buildings",
-                            LayerType = "VectorGeoJson",
-                            Name = "3D BAG Buildings"
-                        },
-                        new
-                        {
-                            Id = 2,
                             Category = "Infrastructure",
                             Description = "Low-, medium-, and high-voltage electricity grid network for Liander service territory.",
                             IsEnabledByDefault = false,
@@ -408,7 +398,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 2,
                             Category = "Infrastructure",
                             Description = "Complete low-, medium-, and high-voltage electricity cables and transformer stations for Stedin service territory.",
                             IsEnabledByDefault = false,
@@ -418,7 +408,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 3,
                             Category = "Infrastructure",
                             Description = "Municipal urban water, sewage pipes, inspection manholes, and pumping stations from Stichting Rioned GWSW.",
                             IsEnabledByDefault = false,
@@ -428,7 +418,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             Category = "Environment",
                             Description = "Official municipal boundaries and administrative jurisdiction borders derived from Kadaster BRK.",
                             IsEnabledByDefault = false,
@@ -438,7 +428,7 @@ namespace USPSimGame.Migrations
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 5,
                             Category = "Environment",
                             Description = "Official cadastral land parcel boundaries, plot sizes, section codes, and parcel numbers from Kadaster BRK.",
                             IsEnabledByDefault = false,
