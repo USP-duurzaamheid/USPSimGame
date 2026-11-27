@@ -1,4 +1,5 @@
 @namespace USPSimGame.Components.Creator.Sessions
+@using Microsoft.AspNetCore.Components.Authorization
 
 <header class="creator-header mb-4 shadow-sm">
     <div class="container d-flex flex-wrap justify-content-between align-items-center py-2">
@@ -17,18 +18,22 @@
         </div>
 
         <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
-            @if (AuthState.CurrentUser != null)
-            {
-                <span class="user-badge badge bg-light text-dark border">
-                    <i class="bi bi-person-circle me-1 text-primary"></i>@AuthState.CurrentUser.Username
-                </span>
-                <NavLink class="nav-link" href="/">
-                    <i class="bi bi-door-open me-1"></i>Game Login
-                </NavLink>
-                <button class="btn btn-sm btn-outline-danger" @onclick="HandleLogout">
-                    <i class="bi bi-box-arrow-right me-1"></i>Log Out
-                </button>
-            }
+            <AuthorizeView>
+                <Authorized>
+                    <span class="user-badge badge bg-light text-dark border">
+                        <i class="bi bi-person-circle me-1 text-primary"></i>@context.User.Identity?.Name
+                    </span>
+                    <NavLink class="nav-link" href="/">
+                        <i class="bi bi-door-open me-1"></i>Game Login
+                    </NavLink>
+                    @* The auth cookie can only be cleared by a normal HTTP request, not over the Blazor circuit, so post to the /user-logout endpoint. *@
+                    <form action="/user-logout" method="post" class="m-0">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-box-arrow-right me-1"></i>Log Out
+                        </button>
+                    </form>
+                </Authorized>
+            </AuthorizeView>
         </div>
     </div>
 </header>

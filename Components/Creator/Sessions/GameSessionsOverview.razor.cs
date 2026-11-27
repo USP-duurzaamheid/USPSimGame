@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using USPSimGame.Data.Entities;
 using USPSimGame.Services;
 using USPSimGame.Services.Auth;
@@ -23,11 +24,9 @@ public partial class GameSessionsOverview : ComponentBase, IDisposable
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;
 
-    [Parameter, EditorRequired]
-    public User CurrentUser { get; set; } = default!;
-
-    [Parameter]
-    public EventCallback OnLogout { get; set; }
+    // Provided by ASP.NET Identity via AddCascadingAuthenticationState (see Program.cs).
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
 
     protected List<GameSession>? Sessions { get; set; }
     protected bool IsLoading { get; set; } = true;
@@ -101,9 +100,19 @@ public partial class GameSessionsOverview : ComponentBase, IDisposable
     }
 
     // The creator is already authenticated on this page, so no second admin login is needed to open a game.
-    protected void OpenSessionAsAdmin(GameSession session)
+    protected async Task OpenSessionAsAdmin(GameSession session)
     {
-        PlayerSessionState.SetAdminSession(CurrentUser, session);
+        var userName = AuthenticationState is null
+            ? null
+            : (await AuthenticationState).User.Identity?.Name;
+
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            ErrorMessage = "Your login session has expired. Please log in again.";
+            return;
+        }
+
+        PlayerSessionState.SetAdminSession(userName, session);
         Navigation.NavigateTo("/game");
     }
 

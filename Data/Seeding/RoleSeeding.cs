@@ -28,24 +28,33 @@ public class Seeder
     }
     catch (Exception e)
     {
-      Console.WriteLine($"Can't seed roles: ${e}");
+      Console.WriteLine($"Can't seed roles: {e}");
     }
 
+    // Look the admin up in the database: a fresh database has no Identity users, so without this nobody can reach /creator.
+    if (await userManager.FindByNameAsync("admin") != null) return;
 
-    var testuser = new ApplicationUser { UserName = "admin", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", Email = "testmail@gmail.com", Id = "1" };
-    if (await userManager.GetUserIdAsync(testuser) == testuser.Id) return;
+    var adminUser = new ApplicationUser { UserName = "admin", PasswordHash = "AQAAAAIAAYagAAAAEITB3XoBD9OUNfCEFQjdACjOmvavSu6DAGcOCZui+ELzkJlD0TPulJwrfEH7Bdajfg==", Email = "testmail@gmail.com" };
 
     try
     {
-      await userManager.CreateAsync(testuser);
-      await userManager.AddToRoleAsync(testuser, "Creator");
+      // CreateAsync and AddToRoleAsync report failures in their result instead of throwing.
+      var created = await userManager.CreateAsync(adminUser);
+      if (!created.Succeeded)
+      {
+        Console.WriteLine($"Can't seed admin user: {string.Join(", ", created.Errors.Select(err => err.Description))}");
+        return;
+      }
+
+      var addedToRole = await userManager.AddToRoleAsync(adminUser, "Creator");
+      if (!addedToRole.Succeeded)
+      {
+        Console.WriteLine($"Can't give admin user the Creator role: {string.Join(", ", addedToRole.Errors.Select(err => err.Description))}");
+      }
     }
     catch (Exception e)
     {
-      Console.WriteLine($"Can't seed test user: ${e}");
+      Console.WriteLine($"Can't seed admin user: {e}");
     }
-
-
-
   }
 }
